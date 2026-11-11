@@ -184,6 +184,30 @@ def _entry_published_iso(entry):
     return ""
 
 
+@app.get("/api/suggest")
+def suggest():
+    """Return YouTube search autocomplete suggestions for partial queries."""
+    query = request.args.get("q", "").strip()
+    if not query or len(query) > 120 or re.match(r"^(?:https?://|www\.|youtu\.be/|youtube\.com/)", query, re.I):
+        return jsonify({"suggestions": []})
+    try:
+        resp = requests.get(
+            "https://suggestqueries.google.com/complete/search",
+            params={"client": "firefox", "ds": "yt", "q": query},
+            headers=YT_WEB_HEADERS,
+            timeout=(2, 3),
+        )
+        if resp.status_code != 200:
+            return jsonify({"suggestions": []})
+        payload = resp.json()
+        raw = payload[1] if isinstance(payload, list) and len(payload) > 1 and isinstance(payload[1], list) else []
+        suggestions = [str(s).strip() for s in raw if isinstance(s, str) and s.strip()][:10]
+        return jsonify({"suggestions": suggestions})
+    except Exception:
+        log.warning("Search autocomplete lookup failed")
+        return jsonify({"suggestions": []})
+
+
 @app.get("/api/search")
 def search():
     query = request.args.get("q", "").strip()

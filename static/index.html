@@ -329,18 +329,77 @@
       line-height: 1.6;
     }
 
+    .search-wrap {
+      position: relative;
+      max-width: 740px;
+      margin: 0 auto 14px;
+    }
+
     .search {
       display: flex;
       align-items: center;
       gap: 8px;
-      max-width: 740px;
-      margin: 0 auto 14px;
+      margin: 0;
       padding: 6px 6px 6px 16px;
       border: 1px solid var(--line-strong);
       border-radius: 16px;
       background: var(--panel);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
       transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-suggest {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 40;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 6px 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 14px;
+      background: #171a22;
+      box-shadow: 0 22px 52px rgba(0, 0, 0, 0.7);
+    }
+
+    .suggest-item {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      text-align: left;
+      font-size: 14.5px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .suggest-item:hover,
+    .suggest-item.active {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .suggest-item svg {
+      width: 16px;
+      height: 16px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .suggest-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 400;
+    }
+
+    .suggest-text strong {
+      font-weight: 700;
+      color: #ffffff;
     }
 
     .search:focus-within {
@@ -1503,14 +1562,17 @@
           <p class="intro">Search YouTube videos or playlists, skip sponsor segments automatically, and manage your own Watch Later &amp; Subscriptions library.</p>
         </div>
 
-        <form class="search" id="search-form">
-          <span class="search-icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          </span>
-          <input id="query" type="search" placeholder="Search YouTube or paste a video / playlist link…" autocomplete="off" aria-label="Search YouTube or paste a video or playlist link">
-          <button id="clear-query" class="clear-btn" type="button" aria-label="Clear search">×</button>
-          <button class="primary" type="submit">Search</button>
-        </form>
+        <div class="search-wrap" id="search-wrap">
+          <form class="search" id="search-form">
+            <span class="search-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input id="query" type="search" placeholder="Search YouTube or paste a video / playlist link…" autocomplete="off" aria-label="Search YouTube or paste a video or playlist link" aria-autocomplete="list" aria-controls="search-suggest">
+            <button id="clear-query" class="clear-btn" type="button" aria-label="Clear search">×</button>
+            <button class="primary" type="submit">Search</button>
+          </form>
+          <div id="search-suggest" class="search-suggest" role="listbox" hidden></div>
+        </div>
 
         <div class="quick-chips" id="quick-chips">
           <button type="button" class="chip" data-query="lofi hip hop playlist">🎧 Lo-fi playlist</button>
@@ -3346,14 +3408,155 @@
       }
     }
 
+    const searchWrap = document.querySelector('#search-wrap');
+    const suggestBox = document.querySelector('#search-suggest');
+    const suggestCache = new Map();
+    let suggestItems = [];
+    let suggestIndex = -1;
+    let suggestRawInput = '';
+    let suggestTimer = null;
+    let suggestController = null;
+
     function syncClearBtn() {
       clearQuery.classList.toggle('visible', queryInput.value.length > 0);
     }
 
-    queryInput.addEventListener('input', syncClearBtn);
+    function closeSuggestions() {
+      clearTimeout(suggestTimer);
+      if (suggestController) { suggestController.abort(); suggestController = null; }
+      suggestItems = [];
+      suggestIndex = -1;
+      suggestBox.hidden = true;
+      suggestBox.replaceChildren();
+    }
+
+    function pickSuggestion(term) {
+      queryInput.value = term;
+      syncClearBtn();
+      closeSuggestions();
+      search(term);
+    }
+
+    function updateSuggestHighlight() {
+      const rows = suggestBox.querySelectorAll('.suggest-item');
+      rows.forEach((row, idx) => row.classList.toggle('active', idx === suggestIndex));
+      if (suggestIndex >= 0 && suggestItems[suggestIndex]) {
+        queryInput.value = suggestItems[suggestIndex];
+        suggestBox.querySelector('.suggest-item.active')?.scrollIntoView({ block: 'nearest' });
+      } else if (suggestIndex === -1 && suggestRawInput) {
+        queryInput.value = suggestRawInput;
+      }
+      syncClearBtn();
+    }
+
+    function renderSuggestions(list, typedText) {
+      suggestBox.replaceChildren();
+      suggestItems = list;
+      suggestIndex = -1;
+      if (!list.length || document.activeElement !== queryInput) {
+        suggestBox.hidden = true;
+        return;
+      }
+
+      const lowerTyped = typedText.toLowerCase();
+      for (const s of list) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'suggest-item';
+        btn.setAttribute('role', 'option');
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
+
+        const span = document.createElement('span');
+        span.className = 'suggest-text';
+        const lowerS = s.toLowerCase();
+        if (lowerTyped && lowerS.startsWith(lowerTyped) && s.length > typedText.length) {
+          span.append(document.createTextNode(s.slice(0, typedText.length)));
+          const strong = document.createElement('strong');
+          strong.textContent = s.slice(typedText.length);
+          span.append(strong);
+        } else {
+          span.textContent = s;
+        }
+
+        btn.append(span);
+        btn.addEventListener('mousedown', event => {
+          event.preventDefault();
+          pickSuggestion(s);
+        });
+        suggestBox.append(btn);
+      }
+      suggestBox.hidden = false;
+    }
+
+    async function fetchSuggestions(raw) {
+      const q = raw.trim();
+      if (!q || parseVideoLink(q)) {
+        closeSuggestions();
+        return;
+      }
+      if (suggestCache.has(q)) {
+        renderSuggestions(suggestCache.get(q), raw);
+        return;
+      }
+
+      if (suggestController) suggestController.abort();
+      suggestController = new AbortController();
+      try {
+        const resp = await fetch(`${API_BASE}/api/suggest?q=${encodeURIComponent(q)}`, {
+          signal: suggestController.signal
+        });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const list = Array.isArray(data.suggestions) ? data.suggestions : [];
+        suggestCache.set(q, list);
+        if (queryInput.value.trim() === q) renderSuggestions(list, raw);
+      } catch (_) {}
+    }
+
+    queryInput.addEventListener('input', () => {
+      syncClearBtn();
+      suggestRawInput = queryInput.value;
+      clearTimeout(suggestTimer);
+      if (!suggestRawInput.trim()) {
+        closeSuggestions();
+        return;
+      }
+      suggestTimer = setTimeout(() => fetchSuggestions(suggestRawInput), 140);
+    });
+
+    queryInput.addEventListener('focus', () => {
+      const q = queryInput.value.trim();
+      if (q && suggestCache.has(q)) {
+        suggestRawInput = queryInput.value;
+        renderSuggestions(suggestCache.get(q), queryInput.value);
+      }
+    });
+
+    queryInput.addEventListener('keydown', event => {
+      if (suggestBox.hidden || !suggestItems.length) return;
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        suggestIndex = suggestIndex < suggestItems.length - 1 ? suggestIndex + 1 : -1;
+        updateSuggestHighlight();
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        suggestIndex = suggestIndex > -1 ? suggestIndex - 1 : suggestItems.length - 1;
+        updateSuggestHighlight();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        closeSuggestions();
+      }
+    });
+
+    document.addEventListener('click', event => {
+      if (searchWrap && !searchWrap.contains(event.target)) closeSuggestions();
+    });
+
     clearQuery.addEventListener('click', () => {
       queryInput.value = '';
+      suggestRawInput = '';
       syncClearBtn();
+      closeSuggestions();
       queryInput.focus();
     });
 
@@ -3407,6 +3610,7 @@
 
     form.addEventListener('submit', async event => {
       event.preventDefault();
+      closeSuggestions();
       const term = queryInput.value.trim();
       if (!term) return;
       const parsed = parseVideoLink(term);
