@@ -5,12 +5,14 @@ Video playback is served directly by YouTube's official embed player. This
 server does not extract, proxy, remux, cache, or deliver video streams.
 """
 
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import logging
 import os
 import re
 from urllib.parse import quote_plus
+import xml.etree.ElementTree as ET
 
 import requests
 import yt_dlp
@@ -26,6 +28,8 @@ CORS(app)
 
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
 PLAYLIST_ID = re.compile(r"^[A-Za-z0-9_-]{10,100}$")
+CHANNEL_ID = re.compile(r"^UC[A-Za-z0-9_-]{20,30}$")
+RSS_NS = {"atom": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015"}
 SPONSOR_CATEGORIES = [
     "sponsor", "selfpromo", "interaction", "intro", "outro", "preview",
     "music_offtopic", "filler",
@@ -63,8 +67,12 @@ def search():
         }
         with yt_dlp.YoutubeDL(options) as ydl:
             videos = ydl.extract_info(f"ytsearch{page_end}:{query}", download=False)
-            playlist_url = f"https://www.youtube.com/results?search_query={quote_plus(query)}&sp=EgIQAw%3D%3D"
-            playlists = ydl.extract_info(playlist_url, download=False)
+            playlists = {}
+            try:
+                playlist_url = f"https://www.youtube.com/results?search_query={quote_plus(query)}&sp=EgIQAw%3D%3D"
+                playlists = ydl.extract_info(playlist_url, download=False) or {}
+            except Exception:
+                log.warning("Playlist search skipped for query: %s", query)
         video_items = _video_cards(videos.get("entries"))
         playlist_items = []
         for entry in playlists.get("entries") or []:
@@ -99,6 +107,8 @@ def _video_cards(entries, exclude=""):
             "id": video_id,
             "title": entry.get("title") or "Untitled video",
             "author": entry.get("uploader") or entry.get("channel") or "YouTube creator",
+            "channel_id": entry.get("channel_id") or "",
+            "channel_url": entry.get("channel_url") or entry.get("uploader_url") or "",
             "duration": entry.get("duration"),
             "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
         })
@@ -181,6 +191,99 @@ def sponsorblock(video_id):
     except (requests.RequestException, ValueError):
         log.exception("SponsorBlock lookup failed for %s", video_id)
         return jsonify({"error": "SponsorBlock is temporarily unavailable."}), 502
+
+
+@app.get("/api/video/<video_id>")
+def video_info(video_id):
+    if not VIDEO_ID.fullmatch(video_id or ""):
+        return jsonify({"error": "Invalid YouTube video ID."}), 400
+    try:
+        options = {
+            "quiet": True,
+            "no_warnings": True,
+            "skip_download": True,
+            "extract_flat": "in_playlist",
+            "noplaylist": True,
+            "socket_timeout": 8,
+        }
+        with yt_dlp.YoutubeDL(options) as ydl:
+            data = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
+        return jsonify({
+            "id": video_id,
+            "title": data.get("title") or "YouTube video",
+            "author": data.get("uploader") or data.get("channel") or "YouTube creator",
+            "channel_id": data.get("channel_id") or "",
+            "channel_url": data.get("channel_url") or data.get("uploader_url") or "",
+            "duration": data.get("duration"),
+            "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+        })
+    except Exception:
+        log.exception("Video metadata lookup failed for %s", video_id)
+        return jsonify({"error": "Video metadata is temporarily unavailable."}), 502
+
+
+def _fetch_channel_rss(channel_id):
+    if not CHANNEL_ID.fullmatch(channel_id or ""):
+        return []
+    try:
+        resp = requests.get(
+            f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}",
+            timeout=(3, 6),
+        )
+        if resp.status_code != 200:
+            return []
+        root = ET.fromstring(resp.text)
+        channel_title = root.findtext("atom:title", "", RSS_NS) or "YouTube channel"
+        items = []
+        for entry in root.findall("atom:entry", RSS_NS)[:15]:
+            vid = entry.findtext("yt:videoId", "", RSS_NS)
+            if not VIDEO_ID.fullmatch(vid or ""):
+                continue
+            author = entry.findtext("atom:author/atom:name", "", RSS_NS) or channel_title
+            items.append({
+                "id": vid,
+                "title": entry.findtext("atom:title", "", RSS_NS) or "Untitled video",
+                "author": author,
+                "channel_id": channel_id,
+                "channel_url": f"https://www.youtube.com/channel/{channel_id}",
+                "published": entry.findtext("atom:published", "", RSS_NS) or "",
+                "duration": None,
+                "thumbnail": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
+            })
+        return items
+    except Exception:
+        log.warning("RSS feed fetch failed for channel %s", channel_id)
+        return []
+
+
+@app.get("/api/channel/<channel_id>/videos")
+def channel_videos(channel_id):
+    if not CHANNEL_ID.fullmatch(channel_id or ""):
+        return jsonify({"error": "Invalid YouTube channel ID."}), 400
+    items = _fetch_channel_rss(channel_id)
+    return jsonify({"channel_id": channel_id, "results": items})
+
+
+@app.get("/api/subscriptions/feed")
+def subscriptions_feed():
+    raw = request.args.get("channels", "")
+    channel_ids = []
+    seen = set()
+    for part in raw.split(","):
+        cid = part.strip()
+        if cid and cid not in seen and CHANNEL_ID.fullmatch(cid):
+            seen.add(cid)
+            channel_ids.append(cid)
+        if len(channel_ids) >= 25:
+            break
+    if not channel_ids:
+        return jsonify({"results": []})
+    merged = []
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        for batch in pool.map(_fetch_channel_rss, channel_ids):
+            merged.extend(batch)
+    merged.sort(key=lambda item: item.get("published") or "", reverse=True)
+    return jsonify({"results": merged[:45]})
 
 
 @app.get("/health")
