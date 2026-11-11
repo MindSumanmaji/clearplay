@@ -703,6 +703,17 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .card-stats {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.88;
     }
 
     .card-remove-btn {
@@ -894,11 +905,19 @@
       flex-shrink: 0;
     }
 
+    .channel-text { min-width: 0; }
+
     #video-author {
       margin: 0;
       font-size: 14.5px;
       font-weight: 700;
       color: var(--text);
+    }
+
+    #video-stats {
+      margin: 2px 0 0;
+      font-size: 12.5px;
+      color: var(--muted);
     }
 
     .sub-btn {
@@ -951,6 +970,7 @@
     .suggestion-list .card-copy { padding: 2px; }
     .suggestion-list .card-title { font-size: 13.5px; line-height: 1.35; }
     .suggestion-list .card-meta { font-size: 12px; }
+    .suggestion-list .card-stats { font-size: 11.5px; }
 
     /* Playlist Queue */
     .playlist-summary {
@@ -1636,7 +1656,10 @@
             <div class="channel-bar">
               <div class="channel-info">
                 <div class="channel-info-avatar" id="channel-avatar">C</div>
-                <p id="video-author"></p>
+                <div class="channel-text">
+                  <p id="video-author"></p>
+                  <p id="video-stats"></p>
+                </div>
               </div>
               <button id="subscribe-btn" class="sub-btn" type="button">Subscribe</button>
             </div>
@@ -1898,17 +1921,27 @@
       syncAllCardBookmarkIcons();
     }
 
-    async function saveHistoryEntry(item) {
-      if (!currentUser || !item?.id) return;
-      const prev = userHistory.find(x => x.id === item.id);
-      const clean = {
+    function buildBaseVideoRecord(item, prev = null) {
+      return {
         id: item.id,
         title: item.title || prev?.title || 'YouTube video',
         author: item.author || prev?.author || '',
         channel_id: item.channel_id || prev?.channel_id || '',
         duration: item.duration ?? prev?.duration ?? null,
+        view_count: item.view_count ?? prev?.view_count ?? null,
+        views_text: item.views_text || prev?.views_text || '',
+        published: item.published || prev?.published || '',
+        published_text: item.published_text || prev?.published_text || '',
         thumbnail: item.thumbnail || prev?.thumbnail || `https://i.ytimg.com/vi/${item.id}/hqdefault.jpg`,
-        playlistId: item.playlistId || prev?.playlistId || '',
+        playlistId: item.playlistId || prev?.playlistId || ''
+      };
+    }
+
+    async function saveHistoryEntry(item) {
+      if (!currentUser || !item?.id) return;
+      const prev = userHistory.find(x => x.id === item.id);
+      const clean = {
+        ...buildBaseVideoRecord(item, prev),
         progressSeconds: typeof item.progressSeconds === 'number' ? item.progressSeconds : (prev?.progressSeconds || 0),
         completed: typeof item.completed === 'boolean' ? item.completed : Boolean(prev?.completed),
         watchedAt: Date.now()
@@ -1946,13 +1979,7 @@
       if (nextDur && !video.duration) video.duration = nextDur;
 
       const updated = {
-        id: video.id,
-        title: video.title || prev?.title || 'YouTube video',
-        author: video.author || prev?.author || '',
-        channel_id: video.channel_id || prev?.channel_id || '',
-        duration: nextDur,
-        thumbnail: video.thumbnail || prev?.thumbnail || `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`,
-        playlistId: video.playlistId || prev?.playlistId || '',
+        ...buildBaseVideoRecord({ ...video, duration: nextDur }, prev),
         progressSeconds: nextProgress,
         completed: ended,
         watchedAt: Date.now()
@@ -2022,12 +2049,7 @@
         showToast('Removed from Watch Later');
       } else {
         const clean = {
-          id: item.id,
-          title: item.title || 'YouTube video',
-          author: item.author || '',
-          channel_id: item.channel_id || '',
-          duration: item.duration ?? null,
-          thumbnail: item.thumbnail || `https://i.ytimg.com/vi/${item.id}/hqdefault.jpg`,
+          ...buildBaseVideoRecord(item),
           addedAt: Date.now()
         };
         userWatchLater = [clean, ...userWatchLater];
@@ -2237,10 +2259,39 @@
       if (!isoStr) return '';
       const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
       if (!Number.isFinite(diff) || diff < 0) return '';
+      if (diff < 60) return 'just now';
       if (diff < 3600) return `${Math.max(1, Math.floor(diff / 60))}m ago`;
       if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
       if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
-      return `${Math.floor(diff / 2592000)}mo ago`;
+      if (diff < 31536000) return `${Math.floor(diff / 2592000)}mo ago`;
+      return `${Math.floor(diff / 31536000)}y ago`;
+    }
+
+    function formatViews(count, fallbackText = '') {
+      const n = Number(count);
+      if (Number.isFinite(n) && n >= 0 && count !== null && count !== '') {
+        if (n < 1000) return `${Math.floor(n)} view${Math.floor(n) === 1 ? '' : 's'}`;
+        if (n < 1_000_000) return `${(n / 1000).toFixed(n < 10_000 ? 1 : 0).replace(/\.0$/, '')}K views`;
+        if (n < 1_000_000_000) return `${(n / 1_000_000).toFixed(n < 10_000_000 ? 1 : 0).replace(/\.0$/, '')}M views`;
+        return `${(n / 1_000_000_000).toFixed(1).replace(/\.0$/, '')}B views`;
+      }
+      const txt = (fallbackText || '').trim();
+      if (!txt) return '';
+      return /view/i.test(txt) ? txt : `${txt} views`;
+    }
+
+    function formatUploadAge(item) {
+      if (!item) return '';
+      if (item.published_text) return item.published_text.trim();
+      if (item.published) return relativeTime(item.published);
+      return '';
+    }
+
+    function formatVideoStats(item, prefixNote = '') {
+      if (!item) return prefixNote || '';
+      const views = formatViews(item.view_count, item.views_text);
+      const age = formatUploadAge(item);
+      return [prefixNote, views, age].filter(Boolean).join(' · ');
     }
 
     function showSkeletons(container, count = 6) {
@@ -2330,7 +2381,7 @@
       meta.className = 'card-meta';
       const authorSpan = document.createElement('span');
       authorSpan.className = 'card-meta-author';
-      authorSpan.textContent = subtitleExtra ? `${item.author || 'YouTube'} · ${subtitleExtra}` : (item.author || '');
+      authorSpan.textContent = item.author || '';
       meta.append(authorSpan);
 
       if (onRemove) {
@@ -2347,6 +2398,13 @@
       }
 
       copy.append(title, meta);
+      const statsText = kind === 'PLAYLIST' ? '' : formatVideoStats(item, subtitleExtra);
+      if (statsText) {
+        const statsEl = document.createElement('div');
+        statsEl.className = 'card-stats';
+        statsEl.textContent = statsText;
+        copy.append(statsEl);
+      }
       card.append(thumbWrap, copy);
 
       const triggerOpen = () => kind === 'PLAYLIST' ? openPlaylist(item) : openPlayer(item);
@@ -2468,7 +2526,9 @@
       const author = document.createElement('div');
       author.className = 'continue-author';
       const ago = resumeItem.watchedAt ? relativeTime(new Date(resumeItem.watchedAt).toISOString()) : '';
-      author.textContent = [resumeItem.author || 'YouTube creator', ago ? `Paused ${ago}` : ''].filter(Boolean).join(' · ');
+      const vw = formatViews(resumeItem.view_count, resumeItem.views_text);
+      const up = formatUploadAge(resumeItem);
+      author.textContent = [resumeItem.author || 'YouTube creator', vw, up, ago ? `Paused ${ago}` : ''].filter(Boolean).join(' · ');
 
       infoWrap.append(pill, title, author);
 
@@ -2554,8 +2614,7 @@
         for (const item of subVideos.slice(0, 8)) {
           grid.append(buildVideoCard(item, {
             kind: '',
-            isNew: isRecentUpload(item.published),
-            subtitleExtra: relativeTime(item.published)
+            isNew: isRecentUpload(item.published)
           }));
         }
         sec.append(grid);
@@ -2782,7 +2841,7 @@
         grid.replaceChildren();
         subStatus.textContent = list.length ? `${list.length} recent uploads` : 'No recent videos found for these channels.';
         for (const item of list) {
-          grid.append(buildVideoCard(item, { kind: '', subtitleExtra: relativeTime(item.published) }));
+          grid.append(buildVideoCard(item, { kind: '', isNew: isRecentUpload(item.published) }));
         }
       } catch (_) {
         grid.replaceChildren();
@@ -2946,16 +3005,28 @@
     }
 
     async function hydrateMissingVideoMeta(item) {
-      if (item.channel_id && item.title && item.title !== 'YouTube video') return item;
+      const hasStats = item.view_count != null || item.views_text;
+      if (item.channel_id && item.title && item.title !== 'YouTube video' && hasStats) return item;
       try {
         const resp = await fetch(`${API_BASE}/api/video/${encodeURIComponent(item.id)}`);
         if (!resp.ok) return item;
         const meta = await resp.json();
         if (video?.id !== item.id) return item;
-        video = { ...item, ...meta, playlistId: item.playlistId || '' };
+        video = {
+          ...item,
+          ...meta,
+          duration: meta.duration ?? item.duration ?? null,
+          view_count: meta.view_count ?? item.view_count ?? null,
+          views_text: item.views_text || meta.views_text || '',
+          published: meta.published || item.published || '',
+          published_text: item.published_text || meta.published_text || '',
+          playlistId: item.playlistId || '',
+          _resumeApplied: item._resumeApplied
+        };
         document.title = `${video.title} — Clearplay`;
         document.querySelector('#video-title').textContent = video.title;
         document.querySelector('#video-author').textContent = video.author || '';
+        document.querySelector('#video-stats').textContent = formatVideoStats(video);
         updatePlayerActionButtons();
         saveHistoryEntry(video);
         return video;
@@ -2984,6 +3055,7 @@
       document.title = `${item.title || 'Watching video'} — Clearplay`;
       document.querySelector('#video-title').textContent = item.title || 'YouTube video';
       document.querySelector('#video-author').textContent = item.author || 'Loading channel…';
+      document.querySelector('#video-stats').textContent = formatVideoStats(item);
       updatePlayerActionButtons();
 
       fetchSegments(item.id);

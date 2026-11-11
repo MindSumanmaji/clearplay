@@ -6,6 +6,7 @@ server does not extract, proxy, remux, cache, or deliver video streams.
 """
 
 from concurrent.futures import ThreadPoolExecutor, wait as wait_futures
+from datetime import datetime, timezone
 import hashlib
 import json
 import logging
@@ -29,7 +30,16 @@ CORS(app)
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
 PLAYLIST_ID = re.compile(r"^[A-Za-z0-9_-]{10,100}$")
 CHANNEL_ID = re.compile(r"^UC[A-Za-z0-9_-]{20,30}$")
-RSS_NS = {"atom": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015"}
+RSS_NS = {
+    "atom": "http://www.w3.org/2005/Atom",
+    "yt": "http://www.youtube.com/xml/schemas/2015",
+    "media": "http://search.yahoo.com/mrss/",
+}
+YT_WEB_HEADERS = {
+    "Accept-Language": "en-US,en;q=0.9",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+}
+YT_WEB_COOKIES = {"CONSENT": "YES+1"}
 SPONSOR_CATEGORIES = [
     "sponsor", "selfpromo", "interaction", "intro", "outro", "preview",
     "music_offtopic", "filler",
@@ -40,6 +50,60 @@ SPONSOR_CATEGORIES = [
 @app.get("/watch")
 def index():
     return send_from_directory(os.path.join(app.root_path, "static"), "index.html")
+
+
+def _fetch_search_meta(query):
+    """Best-effort extract relative publish time & short view text from YouTube search page."""
+    meta = {}
+    try:
+        resp = requests.get(
+            "https://www.youtube.com/results",
+            params={"search_query": query},
+            headers=YT_WEB_HEADERS,
+            cookies=YT_WEB_COOKIES,
+            timeout=(2.5, 4),
+        )
+        if resp.status_code != 200:
+            return meta
+        match = re.search(r"var ytInitialData = (\{.*?\});</script>", resp.text)
+        if not match:
+            return meta
+        data = json.loads(match.group(1))
+    except Exception:
+        return meta
+
+    stack = [data]
+    while stack:
+        obj = stack.pop()
+        if isinstance(obj, dict):
+            vr = obj.get("videoRenderer")
+            if isinstance(vr, dict):
+                vid = vr.get("videoId")
+                if vid and VIDEO_ID.fullmatch(vid):
+                    pub = " ".join(((vr.get("publishedTimeText") or {}).get("simpleText") or "").split())
+                    vw = " ".join(
+                        (
+                            (vr.get("shortViewCountText") or {}).get("simpleText")
+                            or (vr.get("viewCountText") or {}).get("simpleText")
+                            or ""
+                        ).split()
+                    )
+                    if pub or vw:
+                        meta[vid] = {"published_text": pub, "views_text": vw}
+            stack.extend(obj.values())
+        elif isinstance(obj, list):
+            stack.extend(obj)
+    return meta
+
+
+def _entry_published_iso(entry):
+    ts = entry.get("timestamp") or entry.get("release_timestamp")
+    if isinstance(ts, (int, float)) and ts > 0:
+        return datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
+    u = str(entry.get("upload_date") or "")
+    if len(u) == 8 and u.isdigit():
+        return f"{u[:4]}-{u[4:6]}-{u[6:8]}T00:00:00+00:00"
+    return ""
 
 
 @app.get("/api/search")
@@ -65,15 +129,25 @@ def search():
             "playliststart": 1,
             "playlistend": page_end,
         }
-        with yt_dlp.YoutubeDL(options) as ydl:
-            videos = ydl.extract_info(f"ytsearch{page_end}:{query}", download=False)
-            playlists = {}
-            try:
-                playlist_url = f"https://www.youtube.com/results?search_query={quote_plus(query)}&sp=EgIQAw%3D%3D"
-                playlists = ydl.extract_info(playlist_url, download=False) or {}
-            except Exception:
-                log.warning("Playlist search skipped for query: %s", query)
-        video_items = _video_cards(videos.get("entries"))
+
+        def _yt_extract():
+            with yt_dlp.YoutubeDL(options) as ydl:
+                videos = ydl.extract_info(f"ytsearch{page_end}:{query}", download=False)
+                playlists = {}
+                try:
+                    playlist_url = f"https://www.youtube.com/results?search_query={quote_plus(query)}&sp=EgIQAw%3D%3D"
+                    playlists = ydl.extract_info(playlist_url, download=False) or {}
+                except Exception:
+                    log.warning("Playlist search skipped for query: %s", query)
+            return videos, playlists
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            meta_fut = pool.submit(_fetch_search_meta, query)
+            yt_fut = pool.submit(_yt_extract)
+            videos, playlists = yt_fut.result()
+            meta_map = meta_fut.result()
+
+        video_items = _video_cards(videos.get("entries"), meta_map=meta_map)
         playlist_items = []
         for entry in playlists.get("entries") or []:
             playlist_id = entry.get("id") or entry.get("playlist_id")
@@ -97,12 +171,14 @@ def search():
         return jsonify({"error": "Search is temporarily unavailable. Try again shortly."}), 502
 
 
-def _video_cards(entries, exclude=""):
+def _video_cards(entries, exclude="", meta_map=None):
     cards = []
+    meta_map = meta_map or {}
     for entry in entries or []:
         video_id = entry.get("id")
         if not VIDEO_ID.fullmatch(video_id or "") or video_id == exclude:
             continue
+        m = meta_map.get(video_id) or {}
         cards.append({
             "id": video_id,
             "title": entry.get("title") or "Untitled video",
@@ -110,6 +186,10 @@ def _video_cards(entries, exclude=""):
             "channel_id": entry.get("channel_id") or "",
             "channel_url": entry.get("channel_url") or entry.get("uploader_url") or "",
             "duration": entry.get("duration"),
+            "view_count": entry.get("view_count"),
+            "views_text": m.get("views_text") or "",
+            "published": _entry_published_iso(entry),
+            "published_text": m.get("published_text") or "",
             "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
         })
     return cards
@@ -128,6 +208,30 @@ def _restore_ascending_numbered_playlist(items):
     return items
 
 
+def _ytsearch_enriched(query, limit=12, exclude="", timeout_sec=7):
+    """Run ytsearch and HTML search-meta lookup concurrently and return enriched video cards."""
+    options = {
+        "quiet": True,
+        "no_warnings": True,
+        "skip_download": True,
+        "extract_flat": "in_playlist",
+        "noplaylist": True,
+        "socket_timeout": timeout_sec,
+        "retries": 1,
+    }
+
+    def _run_ytdlp():
+        with yt_dlp.YoutubeDL(options) as ydl:
+            return ydl.extract_info(f"ytsearch{limit}:{query}", download=False)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        meta_fut = pool.submit(_fetch_search_meta, query)
+        yt_fut = pool.submit(_run_ytdlp)
+        data = yt_fut.result()
+        meta_map = meta_fut.result()
+    return _video_cards(data.get("entries"), exclude, meta_map=meta_map)
+
+
 @app.get("/api/related")
 def related():
     query = request.args.get("q", "").strip()
@@ -135,9 +239,7 @@ def related():
     if not query or len(query) > 240 or not VIDEO_ID.fullmatch(exclude):
         return jsonify({"error": "Invalid related video request."}), 400
     try:
-        with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True, "skip_download": True, "extract_flat": "in_playlist", "noplaylist": True, "socket_timeout": 8}) as ydl:
-            data = ydl.extract_info(f"ytsearch12:{query}", download=False)
-        return jsonify({"results": _video_cards(data.get("entries"), exclude)[:10]})
+        return jsonify({"results": _ytsearch_enriched(query, limit=12, exclude=exclude, timeout_sec=8)[:10]})
     except Exception:
         log.exception("Related-video lookup failed")
         return jsonify({"error": "Related videos are temporarily unavailable."}), 502
@@ -203,29 +305,63 @@ def video_info(video_id):
     channel_id = ""
     channel_url = ""
     duration = None
+    view_count = None
+    published = ""
 
-    try:
+    def _fetch_oembed():
         oe = requests.get(
             "https://www.youtube.com/oembed",
             params={"url": f"https://www.youtube.com/watch?v={video_id}", "format": "json"},
             timeout=(3, 5),
         )
-        if oe.status_code == 200:
-            oe_data = oe.json()
+        return oe.json() if oe.status_code == 200 else {}
+
+    def _fetch_watch_meta():
+        wr = requests.get(
+            f"https://www.youtube.com/watch?v={video_id}",
+            headers=YT_WEB_HEADERS,
+            cookies=YT_WEB_COOKIES,
+            timeout=(3, 5),
+        )
+        return wr.text if wr.status_code == 200 else ""
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        oe_fut = pool.submit(_fetch_oembed)
+        wr_fut = pool.submit(_fetch_watch_meta)
+        try:
+            oe_data = oe_fut.result() or {}
             title = oe_data.get("title") or ""
             author = oe_data.get("author_name") or ""
             channel_url = oe_data.get("author_url") or ""
-            if channel_url:
-                ch_resp = requests.get(channel_url, timeout=(3, 5))
-                if ch_resp.status_code == 200:
-                    match = re.search(
-                        r'<link[^>]+rel="canonical"[^>]+href="https://www\.youtube\.com/channel/(UC[A-Za-z0-9_-]{20,30})"',
-                        ch_resp.text,
-                    )
-                    if match:
-                        channel_id = match.group(1)
-    except Exception:
-        log.warning("oEmbed fallback lookup failed for %s", video_id)
+        except Exception:
+            log.warning("oEmbed lookup failed for %s", video_id)
+        try:
+            html = wr_fut.result() or ""
+            if html:
+                m_ch = re.search(r'"channelId":"(UC[A-Za-z0-9_-]{20,30})"', html)
+                if m_ch:
+                    channel_id = m_ch.group(1)
+                m_vw = re.search(r'"viewCount":"(\d+)"', html)
+                if m_vw:
+                    view_count = int(m_vw.group(1))
+                m_pub = re.search(r'"(?:publishDate|uploadDate)":"([^"]+)"', html)
+                if m_pub:
+                    published = m_pub.group(1)
+        except Exception:
+            log.warning("Watch HTML meta lookup failed for %s", video_id)
+
+    if not channel_id and channel_url:
+        try:
+            ch_resp = requests.get(channel_url, headers=YT_WEB_HEADERS, timeout=(3, 5))
+            if ch_resp.status_code == 200:
+                match = re.search(
+                    r'<link[^>]+rel="canonical"[^>]+href="https://www\.youtube\.com/channel/(UC[A-Za-z0-9_-]{20,30})"',
+                    ch_resp.text,
+                )
+                if match:
+                    channel_id = match.group(1)
+        except Exception:
+            pass
 
     if not channel_id:
         try:
@@ -244,6 +380,8 @@ def video_info(video_id):
             channel_id = data.get("channel_id") or ""
             channel_url = channel_url or data.get("channel_url") or data.get("uploader_url") or ""
             duration = data.get("duration")
+            view_count = view_count if view_count is not None else data.get("view_count")
+            published = published or _entry_published_iso(data)
         except Exception:
             log.exception("Video metadata lookup failed for %s", video_id)
 
@@ -257,6 +395,8 @@ def video_info(video_id):
         "channel_id": channel_id,
         "channel_url": channel_url,
         "duration": duration,
+        "view_count": view_count,
+        "published": published,
         "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
     })
 
@@ -279,6 +419,13 @@ def _fetch_channel_rss(channel_id):
             if not VIDEO_ID.fullmatch(vid or ""):
                 continue
             author = entry.findtext("atom:author/atom:name", "", RSS_NS) or channel_title
+            stats = entry.find("media:group/media:community/media:statistics", RSS_NS)
+            view_count = None
+            if stats is not None:
+                try:
+                    view_count = int(stats.attrib.get("views", ""))
+                except (TypeError, ValueError):
+                    view_count = None
             items.append({
                 "id": vid,
                 "title": entry.findtext("atom:title", "", RSS_NS) or "Untitled video",
@@ -286,6 +433,7 @@ def _fetch_channel_rss(channel_id):
                 "channel_id": channel_id,
                 "channel_url": f"https://www.youtube.com/channel/{channel_id}",
                 "published": entry.findtext("atom:published", "", RSS_NS) or "",
+                "view_count": view_count,
                 "duration": None,
                 "thumbnail": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
             })
@@ -375,19 +523,8 @@ def _build_rec_queries(history_items, max_queries=3):
 
 
 def _fetch_ytsearch_cards(query, limit=8):
-    options = {
-        "quiet": True,
-        "no_warnings": True,
-        "skip_download": True,
-        "extract_flat": "in_playlist",
-        "noplaylist": True,
-        "socket_timeout": 5,
-        "retries": 1,
-    }
     try:
-        with yt_dlp.YoutubeDL(options) as ydl:
-            data = ydl.extract_info(f"ytsearch{limit}:{query}", download=False)
-        return _video_cards(data.get("entries"))
+        return _ytsearch_enriched(query, limit=limit, timeout_sec=5)
     except Exception:
         log.warning("Home recommendation search failed for query: %s", query)
         return []
