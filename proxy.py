@@ -90,10 +90,88 @@ def _fetch_search_meta(query):
                     )
                     if pub or vw:
                         meta[vid] = {"published_text": pub, "views_text": vw}
+            lv = obj.get("lockupViewModel")
+            if isinstance(lv, dict):
+                vid = lv.get("contentId")
+                ctype = str(lv.get("contentType") or "")
+                if vid and VIDEO_ID.fullmatch(vid) and "PLAYLIST" not in ctype:
+                    rows = (
+                        (lv.get("metadata") or {})
+                        .get("lockupMetadataViewModel", {})
+                        .get("metadata", {})
+                        .get("contentMetadataViewModel", {})
+                        .get("metadataRows", [])
+                    )
+                    parts = [
+                        " ".join(((p.get("text") or {}).get("content") or "").split())
+                        for r in rows
+                        for p in r.get("metadataParts", [])
+                    ]
+                    pub = next((p for p in parts if re.search(r"\bago\b", p, re.I)), "")
+                    vw = next(
+                        (
+                            p
+                            for p in parts
+                            if p != pub and (re.search(r"\bview", p, re.I) or re.fullmatch(r"[\d.,]+\s*[KMB]?", p))
+                        ),
+                        "",
+                    )
+                    if (pub or vw) and vid not in meta:
+                        meta[vid] = {"published_text": pub, "views_text": vw}
             stack.extend(obj.values())
         elif isinstance(obj, list):
             stack.extend(obj)
     return meta
+
+
+def _fetch_watch_publish_meta(video_id):
+    """Lightweight fallback to read upload date & view count from watch HTML."""
+    try:
+        resp = requests.get(
+            f"https://www.youtube.com/watch?v={video_id}",
+            headers=YT_WEB_HEADERS,
+            cookies=YT_WEB_COOKIES,
+            timeout=(2.5, 3.5),
+        )
+        if resp.status_code != 200:
+            return "", None
+        html = resp.text
+        m_pub = re.search(r'"(?:publishDate|uploadDate)":"([^"]+)"', html) or re.search(
+            r'itemprop="(?:datePublished|uploadDate)" content="([^"]+)"', html
+        )
+        m_vw = re.search(r'"viewCount":"(\d+)"', html)
+        return (m_pub.group(1) if m_pub else ""), (int(m_vw.group(1)) if m_vw else None)
+    except Exception:
+        return "", None
+
+
+def _fill_missing_dates(cards, limit_fetches=8, timeout_sec=3.5):
+    """Concurrently hydrate upload date on any video cards missing both published and published_text."""
+    targets = [
+        c for c in cards
+        if c.get("kind") != "playlist"
+        and not c.get("published")
+        and not c.get("published_text")
+        and VIDEO_ID.fullmatch(c.get("id") or "")
+    ][:limit_fetches]
+    if not targets:
+        return cards
+
+    pool = ThreadPoolExecutor(max_workers=min(6, len(targets)))
+    try:
+        fut_map = {pool.submit(_fetch_watch_publish_meta, c["id"]): c for c in targets}
+        wait_futures(list(fut_map.keys()), timeout=timeout_sec)
+        for fut, card in fut_map.items():
+            if not fut.done():
+                continue
+            pub, vw = fut.result()
+            if pub:
+                card["published"] = pub
+            if card.get("view_count") is None and vw is not None:
+                card["view_count"] = vw
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
+    return cards
 
 
 def _entry_published_iso(entry):
@@ -164,7 +242,7 @@ def search():
             })
         playlist_first = "playlist" in query.casefold()
         ordered = ([*playlist_items, *video_items] if playlist_first else [*video_items, *playlist_items])
-        page = ordered[offset:offset + 10]
+        page = _fill_missing_dates(ordered[offset:offset + 10], limit_fetches=10, timeout_sec=4.0)
         return jsonify({"results": page, "has_more": len(ordered) > offset + 10})
     except Exception:
         log.exception("YouTube search failed")
@@ -229,7 +307,8 @@ def _ytsearch_enriched(query, limit=12, exclude="", timeout_sec=7):
         yt_fut = pool.submit(_run_ytdlp)
         data = yt_fut.result()
         meta_map = meta_fut.result()
-    return _video_cards(data.get("entries"), exclude, meta_map=meta_map)
+    cards = _video_cards(data.get("entries"), exclude, meta_map=meta_map)
+    return _fill_missing_dates(cards, limit_fetches=5, timeout_sec=3.0)
 
 
 @app.get("/api/related")
