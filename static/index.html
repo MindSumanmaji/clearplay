@@ -108,9 +108,8 @@
     const suggestionList = document.querySelector('#suggestion-list');
     const suggestionTitle = document.querySelector('#suggestion-title');
     const playlistLayout = document.querySelector('#playlist-layout');
-    // Set your Render backend URL here if deploying frontend to Firebase (e.g. 'https://my-clearplay-api.onrender.com')
-    // Leave empty '' for local development
-    const API_BASE = window.CLEARPLAY_API_BASE || '';
+    // Render live backend URL
+    const API_BASE = window.CLEARPLAY_API_BASE || 'https://clearplay.onrender.com';
     const categoryNames = ['sponsor','selfpromo','interaction','intro','outro','preview','music_offtopic','filler'];
     const defaults = { sponsor:'skip', selfpromo:'ask', interaction:'ask', intro:'show', outro:'show', preview:'show', music_offtopic:'off', filler:'off' };
     let actions = readActions();
