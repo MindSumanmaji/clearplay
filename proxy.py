@@ -15,12 +15,14 @@ from urllib.parse import quote_plus
 import requests
 import yt_dlp
 from flask import Flask, jsonify, request, send_from_directory
+from flask_cors import CORS
 
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8080"))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("clearplay")
 app = Flask(__name__)
+CORS(app)
 
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
 PLAYLIST_ID = re.compile(r"^[A-Za-z0-9_-]{10,100}$")

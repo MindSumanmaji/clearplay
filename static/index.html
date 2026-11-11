@@ -108,6 +108,9 @@
     const suggestionList = document.querySelector('#suggestion-list');
     const suggestionTitle = document.querySelector('#suggestion-title');
     const playlistLayout = document.querySelector('#playlist-layout');
+    // Set your Render backend URL here if deploying frontend to Firebase (e.g. 'https://my-clearplay-api.onrender.com')
+    // Leave empty '' for local development
+    const API_BASE = window.CLEARPLAY_API_BASE || '';
     const categoryNames = ['sponsor','selfpromo','interaction','intro','outro','preview','music_offtopic','filler'];
     const defaults = { sponsor:'skip', selfpromo:'ask', interaction:'ask', intro:'show', outro:'show', preview:'show', music_offtopic:'off', filler:'off' };
     let actions = readActions();
@@ -173,7 +176,7 @@
     }
     async function fetchSegments(id) {
       segments=[]; handled=new Set(); askSegment=null; sbSkip.hidden=true; drawSegments(); sbMessage.textContent='Checking SponsorBlock…';
-      try { const response=await fetch(`/api/sponsorblock/${encodeURIComponent(id)}`); const data=await response.json(); if(!response.ok) throw new Error(); segments=data.segments||[]; sbMessage.textContent=segments.length?`${segments.length} SponsorBlock segment${segments.length===1?'':'s'} found.`:'No SponsorBlock segments found.'; drawSegments(); }
+      try { const response=await fetch(`${API_BASE}/api/sponsorblock/${encodeURIComponent(id)}`); const data=await response.json(); if(!response.ok) throw new Error(); segments=data.segments||[]; sbMessage.textContent=segments.length?`${segments.length} SponsorBlock segment${segments.length===1?'':'s'} found.`:'No SponsorBlock segments found.'; drawSegments(); }
       catch (_) { sbMessage.textContent='SponsorBlock is unavailable; playback is unaffected.'; }
     }
     function loadPlayer(item) {
@@ -195,7 +198,7 @@
       try {
         let list=[];
         if (item.playlistId) {
-          const response=await fetch(`/api/playlist/${encodeURIComponent(item.playlistId)}`); const data=await response.json(); if(!response.ok) throw new Error();
+          const response=await fetch(`${API_BASE}/api/playlist/${encodeURIComponent(item.playlistId)}`); const data=await response.json(); if(!response.ok) throw new Error();
           playQueue=data.results||[]; queuePlaylistId=item.playlistId;
           queueIndex=playQueue.findIndex(row=>row.id===item.id);
           suggestionTitle.textContent=''; suggestionList.hidden=true; playlistLayout.hidden=false; renderPlaylist(data.title||'Playlist',data.author||data.uploader||''); return;
@@ -203,7 +206,7 @@
           playQueue=[]; queuePlaylistId=''; queueIndex=-1;
           playlistLayout.hidden=true; suggestionList.hidden=false;
           const q=`${item.title||''} ${item.author||''}`.trim();
-          const response=await fetch(`/api/related?q=${encodeURIComponent(q)}&exclude=${encodeURIComponent(item.id)}`); const data=await response.json(); if(!response.ok) throw new Error();
+          const response=await fetch(`${API_BASE}/api/related?q=${encodeURIComponent(q)}&exclude=${encodeURIComponent(item.id)}`); const data=await response.json(); if(!response.ok) throw new Error();
           list=data.results||[]; suggestionTitle.textContent='Related picks';
         }
         for(const row of list){const card=document.createElement('button');card.className='card';card.type='button';const image=document.createElement('img');image.src=row.thumbnail;image.alt='';image.loading='lazy';const copy=document.createElement('div');copy.className='card-copy';const title=document.createElement('div');title.className='card-title';title.textContent=row.title;const meta=document.createElement('div');meta.className='card-meta';meta.textContent=row.author;copy.append(title,meta);card.append(image,copy);card.addEventListener('click',()=>{const next={...row,playlistId:item.playlistId||''};history.pushState({view:'watch',video:next},'',`/watch?v=${encodeURIComponent(row.id)}${next.playlistId?`&list=${encodeURIComponent(next.playlistId)}`:''}`);loadPlayer(next);});suggestionList.append(card);}
@@ -231,14 +234,14 @@
       viewMore.disabled=true; viewMore.textContent='Loading…';
       setStatus(append?'Loading more results…':'Searching…'); watch.hidden=true; clearInterval(poll);
       try {
-        const response=await fetch(`/api/search?q=${encodeURIComponent(term)}&offset=${searchOffset}`); const data=await response.json(); if(!response.ok) throw new Error(data.error||'Search failed.');
+        const response=await fetch(`${API_BASE}/api/search?q=${encodeURIComponent(term)}&offset=${searchOffset}`); const data=await response.json(); if(!response.ok) throw new Error(data.error||'Search failed.');
         for(const item of data.results||[]) appendResult(item,item.kind==='playlist'?'PLAYLIST':'VIDEO');
         searchOffset+=data.results?.length||0; viewMore.hidden=!data.has_more; viewMore.disabled=false; viewMore.textContent='View more';
         setStatus(`${searchOffset} results${data.has_more?' · more available':''}`);
       } catch(error) { viewMore.disabled=false;viewMore.textContent='View more';setStatus(error.message||'Search is unavailable.',true); }
     }
     function openPlayer(item) { history.pushState({view:'watch',video:item},'',`/watch?v=${encodeURIComponent(item.id)}${item.playlistId?`&list=${encodeURIComponent(item.playlistId)}`:''}`); loadPlayer(item); }
-    async function openPlaylist(item) { try {setStatus('Loading playlist…');const response=await fetch(`/api/playlist/${encodeURIComponent(item.id)}`);const data=await response.json();if(!response.ok||!data.results?.length)throw new Error();const first={...data.results[0],playlistId:item.id};history.pushState({view:'watch',video:first},'',`/watch?v=${encodeURIComponent(first.id)}&list=${encodeURIComponent(item.id)}`);loadPlayer(first);}catch(_){setStatus('Could not load that playlist.',true);} }
+    async function openPlaylist(item) { try {setStatus('Loading playlist…');const response=await fetch(`${API_BASE}/api/playlist/${encodeURIComponent(item.id)}`);const data=await response.json();if(!response.ok||!data.results?.length)throw new Error();const first={...data.results[0],playlistId:item.id};history.pushState({view:'watch',video:first},'',`/watch?v=${encodeURIComponent(first.id)}&list=${encodeURIComponent(item.id)}`);loadPlayer(first);}catch(_){setStatus('Could not load that playlist.',true);} }
     function showSearch() { document.body.classList.remove('watch-mode'); watch.hidden=true; player?.destroy?.(); player=null; clearInterval(poll); }
     document.querySelector('#back-results').addEventListener('click',()=>history.back());
     viewMore.addEventListener('click',()=>search(currentQuery,true));
@@ -247,7 +250,7 @@
       if(id) loadPlayer(event.state?.video || {id,title:'YouTube video',author:''});
       else { showSearch(); const term=event.state?.query || new URLSearchParams(location.search).get('q') || ''; if(term && !results.children.length){query.value=term;search(term);} }
     });
-    form.addEventListener('submit',async event=>{ event.preventDefault(); const term=query.value.trim(); if(!term)return; const parsed=parseVideoLink(term); if(parsed?.id&&/^[\w-]{11}$/.test(parsed.id)) openPlayer({id:parsed.id,title:'YouTube video',author:'',playlistId:parsed.playlistId}); else if(parsed?.playlistId){setStatus('Loading playlist…');try{const response=await fetch(`/api/playlist/${encodeURIComponent(parsed.playlistId)}`);const data=await response.json();if(!response.ok||!data.results?.length)throw new Error();openPlayer({...data.results[0],playlistId:parsed.playlistId});}catch(_){setStatus('Could not load that playlist.',true);}}else search(term); });
+    form.addEventListener('submit',async event=>{ event.preventDefault(); const term=query.value.trim(); if(!term)return; const parsed=parseVideoLink(term); if(parsed?.id&&/^[\w-]{11}$/.test(parsed.id)) openPlayer({id:parsed.id,title:'YouTube video',author:'',playlistId:parsed.playlistId}); else if(parsed?.playlistId){setStatus('Loading playlist…');try{const response=await fetch(`${API_BASE}/api/playlist/${encodeURIComponent(parsed.playlistId)}`);const data=await response.json();if(!response.ok||!data.results?.length)throw new Error();openPlayer({...data.results[0],playlistId:parsed.playlistId});}catch(_){setStatus('Could not load that playlist.',true);}}else search(term); });
     document.querySelector('#back').addEventListener('click',()=>{if(player?.getCurrentTime)player.seekTo(Math.max(0,player.getCurrentTime()-10),true);});
     document.querySelector('#forward').addEventListener('click',()=>{if(player?.getCurrentTime)player.seekTo(player.getCurrentTime()+10,true);});
     document.querySelector('#speed').addEventListener('change',event=>player?.setPlaybackRate?.(Number(event.target.value)));
@@ -259,7 +262,7 @@
     const api=document.createElement('script'); api.src='https://www.youtube.com/iframe_api'; document.head.append(api);
     const params=new URLSearchParams(location.search); const initial=params.get('v'); const initialQuery=params.get('q'); const initialPlaylist=params.get('list')||'';
     if(initial&&/^[\w-]{11}$/.test(initial)){loadPlayer({id:initial,title:'YouTube video',author:'',playlistId:initialPlaylist});}
-    else if(initialPlaylist){fetch(`/api/playlist/${encodeURIComponent(initialPlaylist)}`).then(response=>response.json()).then(data=>{if(data.results?.length)loadPlayer({...data.results[0],playlistId:initialPlaylist});else setStatus('Playlist is empty or unavailable.',true);}).catch(()=>setStatus('Could not load that playlist.',true));}
+    else if(initialPlaylist){fetch(`${API_BASE}/api/playlist/${encodeURIComponent(initialPlaylist)}`).then(response=>response.json()).then(data=>{if(data.results?.length)loadPlayer({...data.results[0],playlistId:initialPlaylist});else setStatus('Playlist is empty or unavailable.',true);}).catch(()=>setStatus('Could not load that playlist.',true));}
     else if(initialQuery){query.value=initialQuery;search(initialQuery);}
   </script>
 </body>
