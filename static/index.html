@@ -3072,6 +3072,7 @@
         const playerVars = { enablejsapi: 1, origin: location.origin, rel: 0 };
         if (resumeAt >= 2) playerVars.start = resumeAt;
         player = new YT.Player(mountPoint, {
+          host: 'https://www.youtube-nocookie.com',
           videoId: item.id,
           playerVars,
           events: {
@@ -3472,6 +3473,7 @@
     });
     window.addEventListener('pagehide', () => flushVideoProgress(true));
 
+    window.YTConfig = { host: 'https://www.youtube-nocookie.com' };
     window.onYouTubeIframeAPIReady = () => window.pendingYTPlayer?.();
     const api = document.createElement('script');
     api.src = 'https://www.youtube.com/iframe_api';
