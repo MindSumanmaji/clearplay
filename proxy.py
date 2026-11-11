@@ -5,7 +5,7 @@ Video playback is served directly by YouTube's official embed player. This
 server does not extract, proxy, remux, cache, or deliver video streams.
 """
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait as wait_futures
 import hashlib
 import json
 import logging
@@ -323,6 +323,172 @@ def subscriptions_feed():
             merged.extend(batch)
     merged.sort(key=lambda item: item.get("published") or "", reverse=True)
     return jsonify({"results": merged[:45]})
+
+
+_NOISE_RE = re.compile(
+    r"\b(?:official|video|music|audio|lyrics|lyric|4k|hd|1080p|uhd|full|version|live|shorts|feat|ft|for|the|and|with|from)\b",
+    re.IGNORECASE,
+)
+
+
+def _build_rec_queries(history_items, max_queries=3):
+    """Build diverse short search queries from recent watch history items."""
+    queries = []
+    seen_q = set()
+    seen_authors = set()
+
+    # Pass 1: distinct authors/creators first; Pass 2: fallback to remaining items
+    ordered = []
+    deferred = []
+    for item in history_items[:8]:
+        if not isinstance(item, dict):
+            continue
+        author = (item.get("author") or "").strip().casefold()
+        if author and author != "youtube creator" and author not in seen_authors:
+            seen_authors.add(author)
+            ordered.append(item)
+        else:
+            deferred.append(item)
+
+    for item in [*ordered, *deferred]:
+        title = (item.get("title") or "").strip()
+        author = (item.get("author") or "").strip()
+        if not title or title == "YouTube video":
+            continue
+        cleaned = re.split(r"[|—/]", re.sub(r"[\(\[].*?[\)\]]", " ", title))[0]
+        cleaned = _NOISE_RE.sub(" ", cleaned)
+        words = [w for w in re.findall(r"[\w'-]+", cleaned) if len(w) > 1][:4]
+        if not words:
+            words = re.findall(r"[\w'-]+", title)[:4]
+        base = " ".join(words).strip()
+        if author and author.casefold() != "youtube creator" and author.casefold() not in base.casefold():
+            q = f"{author} {base}".strip()
+        else:
+            q = base
+        q_key = q.casefold()
+        if q and q_key not in seen_q:
+            seen_q.add(q_key)
+            queries.append(q[:100])
+        if len(queries) >= max_queries:
+            break
+    return queries
+
+
+def _fetch_ytsearch_cards(query, limit=8):
+    options = {
+        "quiet": True,
+        "no_warnings": True,
+        "skip_download": True,
+        "extract_flat": "in_playlist",
+        "noplaylist": True,
+        "socket_timeout": 5,
+        "retries": 1,
+    }
+    try:
+        with yt_dlp.YoutubeDL(options) as ydl:
+            data = ydl.extract_info(f"ytsearch{limit}:{query}", download=False)
+        return _video_cards(data.get("entries"))
+    except Exception:
+        log.warning("Home recommendation search failed for query: %s", query)
+        return []
+
+
+@app.post("/api/home/feed")
+def home_feed():
+    """Return personalized Home feed: new subscription uploads + history-based suggestions."""
+    payload = request.get_json(silent=True) or {}
+
+    sub_channels = []
+    seen_ch = set()
+    for cid in payload.get("channels") or []:
+        if isinstance(cid, str):
+            cid = cid.strip()
+            if cid and cid not in seen_ch and CHANNEL_ID.fullmatch(cid):
+                seen_ch.add(cid)
+                sub_channels.append(cid)
+        if len(sub_channels) >= 25:
+            break
+
+    history_items = [x for x in (payload.get("history") or []) if isinstance(x, dict)][:8]
+    exclude_ids = {
+        x for x in (payload.get("exclude_ids") or [])
+        if isinstance(x, str) and VIDEO_ID.fullmatch(x)
+    }
+    for h in history_items:
+        hid = h.get("id")
+        if isinstance(hid, str) and VIDEO_ID.fullmatch(hid):
+            exclude_ids.add(hid)
+
+    rec_queries = _build_rec_queries(history_items, max_queries=2)
+
+    hist_channels = []
+    for h in history_items:
+        cid = (h.get("channel_id") or "").strip()
+        if cid and CHANNEL_ID.fullmatch(cid) and cid not in seen_ch and cid not in hist_channels:
+            hist_channels.append(cid)
+        if len(hist_channels) >= 3:
+            break
+
+    sub_videos = []
+    rec_buckets = []
+
+    pool = ThreadPoolExecutor(max_workers=8)
+    try:
+        sub_futures = [pool.submit(_fetch_channel_rss, cid) for cid in sub_channels]
+        hist_ch_futures = [pool.submit(_fetch_channel_rss, cid) for cid in hist_channels]
+        search_futures = [pool.submit(_fetch_ytsearch_cards, q, 10) for q in rec_queries]
+        all_futures = [*sub_futures, *hist_ch_futures, *search_futures]
+        if all_futures:
+            wait_futures(all_futures, timeout=12)
+
+        for fut in sub_futures:
+            if fut.done():
+                sub_videos.extend(fut.result())
+
+        for fut, cap in [*((f, 4) for f in hist_ch_futures), *((f, None) for f in search_futures)]:
+            if not fut.done():
+                continue
+            items = [v for v in fut.result() if v["id"] not in exclude_ids]
+            if cap:
+                items = items[:cap]
+            if items:
+                rec_buckets.append(items)
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
+
+    sub_videos.sort(key=lambda item: item.get("published") or "", reverse=True)
+    seen_sub = set()
+    unique_subs = []
+    for item in sub_videos:
+        if item["id"] not in seen_sub:
+            seen_sub.add(item["id"])
+            unique_subs.append(item)
+
+    sub_top_ids = {s["id"] for s in unique_subs[:12]}
+
+    # Interleave recommendation buckets for creator/topic diversity
+    recommended = []
+    seen_rec = set()
+    max_bucket = max((len(b) for b in rec_buckets), default=0)
+    for idx in range(max_bucket):
+        for bucket in rec_buckets:
+            if idx >= len(bucket):
+                continue
+            cand = bucket[idx]
+            vid = cand["id"]
+            if vid in seen_rec or vid in exclude_ids or vid in sub_top_ids:
+                continue
+            seen_rec.add(vid)
+            recommended.append(cand)
+            if len(recommended) >= 16:
+                break
+        if len(recommended) >= 16:
+            break
+
+    return jsonify({
+        "subscriptions": unique_subs[:12],
+        "recommended": recommended[:16],
+    })
 
 
 @app.get("/health")

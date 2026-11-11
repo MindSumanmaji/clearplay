@@ -1096,6 +1096,265 @@
     .auth-modal-actions .auth-btn { width: 100%; justify-content: center; padding: 11px 16px; font-size: 14px; }
     .auth-modal-actions .secondary { width: 100%; }
 
+    /* Home Feed, Continue Watching & Progress Timeline */
+    .hero.compact { margin-top: 0; margin-bottom: 14px; }
+    .hero.compact .intro { display: none; }
+    .hero.compact h1 { font-size: clamp(24px, 3.8vw, 34px); margin-bottom: 4px; }
+
+    .thumb-progress {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.24);
+      z-index: 3;
+    }
+
+    .thumb-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(181, 243, 107, 0.55);
+      transition: width 0.25s ease;
+    }
+
+    .card-badge.new {
+      background: rgba(181, 243, 107, 0.94);
+      color: #132006;
+      border-color: transparent;
+    }
+
+    .home-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      margin-top: 26px;
+    }
+
+    body.has-results .home-feed { display: none; }
+
+    .home-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .home-section-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .home-section-head h2 {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .home-section-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .home-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(181, 243, 107, 0.14);
+      color: var(--accent);
+      border: 1px solid rgba(181, 243, 107, 0.3);
+    }
+
+    .continue-card {
+      display: grid;
+      grid-template-columns: minmax(250px, 340px) minmax(0, 1fr);
+      gap: 18px;
+      padding: 14px;
+      border: 1px solid rgba(181, 243, 107, 0.28);
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(181, 243, 107, 0.08), var(--panel) 55%);
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .continue-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(181, 243, 107, 0.6);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+    }
+
+    .continue-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 11px;
+      overflow: hidden;
+      background: #1d2028;
+    }
+
+    .continue-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .continue-card:hover .continue-thumb img { transform: scale(1.03); }
+
+    .continue-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(11, 12, 16, 0.22);
+      transition: background 0.2s;
+    }
+
+    .continue-card:hover .continue-play-overlay { background: rgba(11, 12, 16, 0.38); }
+
+    .continue-play-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(181, 243, 107, 0.94);
+      color: var(--accent-dark);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    }
+
+    .continue-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .continue-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .continue-dismiss {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 16px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .continue-dismiss:hover { background: rgba(255, 107, 107, 0.16); color: var(--danger); border-color: rgba(255, 107, 107, 0.35); }
+
+    .continue-title {
+      margin: 6px 0 4px;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .continue-author {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .continue-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .timeline-bar {
+      width: 100%;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+
+    .timeline-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), #d6ff9e);
+      transition: width 0.25s ease;
+    }
+
+    .timeline-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--muted);
+      font-weight: 600;
+      flex-wrap: wrap;
+    }
+
+    .timeline-meta strong { color: var(--accent); font-weight: 700; }
+
+    .continue-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .continue-resume-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 15px;
+      border-radius: 10px;
+      border: 0;
+      background: var(--accent);
+      color: var(--accent-dark);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .continue-resume-btn:hover { background: var(--accent-strong); }
+
+    .home-guest-card {
+      max-width: 740px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 20px 22px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .home-guest-card h3 { margin: 0 0 4px; font-size: 15.5px; font-weight: 700; }
+    .home-guest-card p { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+    .home-guest-card .auth-btn { flex-shrink: 0; }
+
     /* Tablet Breakpoint */
     @media (max-width: 960px) {
       .watch { grid-template-columns: 1fr; gap: 20px; }
@@ -1111,6 +1370,8 @@
       .mobile-nav { display: block; }
       body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
       .toast { bottom: 80px; }
+      .continue-card { grid-template-columns: 1fr; gap: 12px; padding: 12px; }
+      .home-guest-card { flex-direction: column; align-items: flex-start; padding: 16px; }
     }
 
     @media (max-width: 600px) {
@@ -1217,7 +1478,7 @@
     <main>
       <!-- HOME TAB -->
       <section id="view-home" class="tab-view">
-        <div class="hero">
+        <div class="hero" id="home-hero">
           <h1>Watch without distractions</h1>
           <p class="intro">Search YouTube videos or playlists, skip sponsor segments automatically, and manage your own Watch Later &amp; Subscriptions library.</p>
         </div>
@@ -1241,6 +1502,8 @@
         <div id="status" class="status" role="status" aria-live="polite"></div>
         <section id="results" class="results" aria-label="Search results"></section>
         <button id="view-more" class="secondary" type="button" hidden>Load more results</button>
+
+        <div id="home-feed" class="home-feed"></div>
       </section>
 
       <!-- SUBSCRIPTIONS TAB -->
@@ -1498,6 +1761,8 @@
     const watchLaterBtn = document.querySelector('#watch-later-btn');
     const channelAvatar = document.querySelector('#channel-avatar');
     const toastEl = document.querySelector('#toast');
+    const homeHero = document.querySelector('#home-hero');
+    const homeFeed = document.querySelector('#home-feed');
 
     // Auth Elements
     const guestTag = document.querySelector('#guest-tag');
@@ -1524,6 +1789,8 @@
     let pendingAuthAction = null;
 
     let player = null;
+    let playerHasPlayed = false;
+    let lastProgressSyncAt = 0;
     let video = null;
     let segments = [];
     let handled = new Set();
@@ -1535,6 +1802,9 @@
     let queueIndex = -1;
     let queuePlaylistId = '';
     let toastTimer = null;
+    let homeFeedCache = null;
+    let homeFeedToken = 0;
+    const HOME_FEED_TTL_MS = 5 * 60 * 1000;
 
     function showToast(msg) {
       toastEl.textContent = msg;
@@ -1574,6 +1844,7 @@
         userHistory = [];
         userWatchLater = [];
         userSubs = [];
+        homeFeedCache = null;
         actions = readActions();
         refreshCurrentTabView();
         updatePlayerActionButtons();
@@ -1612,7 +1883,15 @@
         }
       }
 
-      if (video) await saveHistoryEntry(video);
+      if (video) {
+        const savedHist = userHistory.find(x => x.id === video.id);
+        if (savedHist && !savedHist.completed && (savedHist.progressSeconds || 0) >= 2 && !video._resumeApplied && !playerHasPlayed && player?.seekTo) {
+          video._resumeApplied = true;
+          player.seekTo(savedHist.progressSeconds, true);
+          showToast(`Resuming from ${formatDuration(savedHist.progressSeconds)}`);
+        }
+        await saveHistoryEntry(video);
+      }
 
       refreshCurrentTabView();
       updatePlayerActionButtons();
@@ -1621,27 +1900,91 @@
 
     async function saveHistoryEntry(item) {
       if (!currentUser || !item?.id) return;
+      const prev = userHistory.find(x => x.id === item.id);
       const clean = {
         id: item.id,
-        title: item.title || 'YouTube video',
-        author: item.author || '',
-        channel_id: item.channel_id || '',
-        duration: item.duration ?? null,
-        thumbnail: item.thumbnail || `https://i.ytimg.com/vi/${item.id}/hqdefault.jpg`,
-        playlistId: item.playlistId || '',
+        title: item.title || prev?.title || 'YouTube video',
+        author: item.author || prev?.author || '',
+        channel_id: item.channel_id || prev?.channel_id || '',
+        duration: item.duration ?? prev?.duration ?? null,
+        thumbnail: item.thumbnail || prev?.thumbnail || `https://i.ytimg.com/vi/${item.id}/hqdefault.jpg`,
+        playlistId: item.playlistId || prev?.playlistId || '',
+        progressSeconds: typeof item.progressSeconds === 'number' ? item.progressSeconds : (prev?.progressSeconds || 0),
+        completed: typeof item.completed === 'boolean' ? item.completed : Boolean(prev?.completed),
         watchedAt: Date.now()
       };
 
       userHistory = [clean, ...userHistory.filter(x => x.id !== clean.id)].slice(0, 50);
       try {
-        await setDoc(doc(db, 'users', currentUser.uid, 'history', clean.id), clean);
+        await setDoc(doc(db, 'users', currentUser.uid, 'history', clean.id), clean, { merge: true });
       } catch (err) { console.error(err); }
       if (activeTab === 'history') renderHistoryTab();
+    }
+
+    async function flushVideoProgress(force = false) {
+      if (!currentUser || !video?.id || !player || typeof player.getCurrentTime !== 'function') return;
+      let cur = 0;
+      let dur = 0;
+      let state = -1;
+      try {
+        cur = Number(player.getCurrentTime() || 0);
+        dur = Number(player.getDuration?.() || video.duration || 0);
+        state = player.getPlayerState?.();
+      } catch (_) {
+        return;
+      }
+
+      if (!playerHasPlayed && state !== YT.PlayerState.PAUSED && state !== YT.PlayerState.ENDED) return;
+      if (!Number.isFinite(cur)) return;
+
+      const ended = state === YT.PlayerState.ENDED || (dur > 0 && (cur / dur >= 0.95 || dur - cur <= 8));
+      if (cur < 2 && !ended) return;
+
+      const prev = userHistory.find(x => x.id === video.id);
+      const nextProgress = ended && dur > 0 ? Math.floor(dur) : Math.floor(cur);
+      const nextDur = dur > 0 ? Math.floor(dur) : (video.duration ?? prev?.duration ?? null);
+      if (nextDur && !video.duration) video.duration = nextDur;
+
+      const updated = {
+        id: video.id,
+        title: video.title || prev?.title || 'YouTube video',
+        author: video.author || prev?.author || '',
+        channel_id: video.channel_id || prev?.channel_id || '',
+        duration: nextDur,
+        thumbnail: video.thumbnail || prev?.thumbnail || `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`,
+        playlistId: video.playlistId || prev?.playlistId || '',
+        progressSeconds: nextProgress,
+        completed: ended,
+        watchedAt: Date.now()
+      };
+
+      userHistory = [updated, ...userHistory.filter(x => x.id !== updated.id)].slice(0, 50);
+
+      const now = Date.now();
+      if (!force && now - lastProgressSyncAt < 10000) return;
+      lastProgressSyncAt = now;
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid, 'history', updated.id), updated, { merge: true });
+      } catch (err) { console.error(err); }
+      if (activeTab === 'history') renderHistoryTab();
+    }
+
+    async function dismissContinueWatching(videoId) {
+      if (!currentUser || !videoId) return;
+      const existing = userHistory.find(x => x.id === videoId);
+      if (existing) {
+        existing.completed = true;
+      }
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid, 'history', videoId), { completed: true }, { merge: true });
+      } catch (err) { console.error(err); }
+      renderHomeFeed();
     }
 
     async function removeHistoryEntry(videoId) {
       if (!currentUser) return;
       userHistory = userHistory.filter(x => x.id !== videoId);
+      homeFeedCache = null;
       try { await deleteDoc(doc(db, 'users', currentUser.uid, 'history', videoId)); }
       catch (err) { console.error(err); }
       renderHistoryTab();
@@ -1654,6 +1997,7 @@
         userHistory.forEach(item => batch.delete(doc(db, 'users', currentUser.uid, 'history', item.id)));
         await batch.commit();
         userHistory = [];
+        homeFeedCache = null;
       } catch (err) { console.error(err); }
       renderHistoryTab();
       showToast('Watch History cleared');
@@ -1757,7 +2101,9 @@
         showToast(`Subscribed to ${sub.name}!`);
       }
       updatePlayerActionButtons();
+      homeFeedCache = null;
       if (activeTab === 'subscriptions') renderSubscriptionsTab();
+      else if (activeTab === 'home' && !document.body.classList.contains('has-results')) renderHomeFeed();
     }
 
     async function saveSponsorBlockSettings() {
@@ -1821,6 +2167,16 @@
 
     // ==================== NAVIGATION & TABS ====================
 
+    function clearHomeSearch() {
+      document.body.classList.remove('has-results');
+      results.replaceChildren();
+      viewMore.hidden = true;
+      queryInput.value = '';
+      currentQuery = '';
+      syncClearBtn();
+      setStatus('');
+    }
+
     function switchTab(tabName, updateUrl = true) {
       activeTab = tabName;
       showSearch(false);
@@ -1841,13 +2197,20 @@
     }
 
     function refreshCurrentTabView() {
-      if (activeTab === 'subscriptions') renderSubscriptionsTab();
+      if (activeTab === 'home') {
+        if (!document.body.classList.contains('has-results')) renderHomeFeed();
+      } else if (activeTab === 'subscriptions') renderSubscriptionsTab();
       else if (activeTab === 'history') renderHistoryTab();
       else if (activeTab === 'watchlater') renderWatchLaterTab();
     }
 
     document.querySelectorAll('.nav-tab, .m-tab').forEach(btn => {
-      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+      btn.addEventListener('click', () => {
+        if (btn.dataset.tab === 'home' && activeTab === 'home' && document.body.classList.contains('has-results')) {
+          clearHomeSearch();
+        }
+        switchTab(btn.dataset.tab);
+      });
     });
 
     document.querySelectorAll('[data-goto]').forEach(btn => {
@@ -1890,7 +2253,7 @@
       }
     }
 
-    function buildVideoCard(item, { kind = 'VIDEO', onRemove = null, subtitleExtra = '' } = {}) {
+    function buildVideoCard(item, { kind = 'VIDEO', onRemove = null, subtitleExtra = '', isNew = false } = {}) {
       const card = document.createElement('div');
       card.className = 'card';
       card.setAttribute('role', 'button');
@@ -1899,7 +2262,12 @@
       const thumbWrap = document.createElement('div');
       thumbWrap.className = 'card-thumb';
 
-      if (kind) {
+      if (isNew) {
+        const newBadge = document.createElement('span');
+        newBadge.className = 'card-badge new';
+        newBadge.textContent = 'NEW';
+        thumbWrap.append(newBadge);
+      } else if (kind) {
         const badge = document.createElement('span');
         badge.className = `card-badge${kind === 'PLAYLIST' ? ' playlist' : ''}`;
         badge.textContent = kind;
@@ -1939,6 +2307,17 @@
         pBadge.className = 'thumb-duration';
         pBadge.textContent = `${item.video_count} videos`;
         thumbWrap.append(pBadge);
+      }
+
+      if (item.duration > 0 && item.progressSeconds >= 2) {
+        const pct = item.completed ? 100 : Math.min(98, Math.max(4, Math.round((item.progressSeconds / item.duration) * 100)));
+        const progTrack = document.createElement('div');
+        progTrack.className = 'thumb-progress';
+        const progFill = document.createElement('div');
+        progFill.className = 'thumb-progress-fill';
+        progFill.style.width = `${pct}%`;
+        progTrack.append(progFill);
+        thumbWrap.append(progTrack);
       }
 
       const copy = document.createElement('div');
@@ -1993,6 +2372,336 @@
       if (gate) gate.hidden = !isGuest;
       if (content) content.hidden = isGuest;
       return isGuest;
+    }
+
+    function isRecentUpload(isoStr) {
+      if (!isoStr) return false;
+      const age = Date.now() - new Date(isoStr).getTime();
+      return Number.isFinite(age) && age >= 0 && age <= 72 * 3600 * 1000;
+    }
+
+    function createHomeSectionHead(titleText, subText = '', actionLabel = '', onAction = null) {
+      const head = document.createElement('div');
+      head.className = 'home-section-head';
+      const wrap = document.createElement('div');
+      wrap.className = 'home-section-title-wrap';
+      const h2 = document.createElement('h2');
+      h2.textContent = titleText;
+      wrap.append(h2);
+      if (subText) {
+        const sub = document.createElement('p');
+        sub.className = 'home-section-sub';
+        sub.textContent = subText;
+        wrap.append(sub);
+      }
+      head.append(wrap);
+      if (actionLabel && onAction) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ghost-btn';
+        btn.textContent = actionLabel;
+        btn.addEventListener('click', onAction);
+        head.append(btn);
+      }
+      return head;
+    }
+
+    function renderContinueWatchingSection(resumeItem) {
+      const sec = document.createElement('section');
+      sec.className = 'home-section';
+      sec.append(createHomeSectionHead('Continue watching', 'Pick up right where you left off'));
+
+      const watched = Math.floor(resumeItem.progressSeconds || 0);
+      const dur = Math.floor(resumeItem.duration || 0);
+      const hasDur = dur > 0;
+      const pct = hasDur ? Math.min(99, Math.max(2, Math.round((watched / dur) * 100))) : 30;
+      const leftSec = hasDur ? Math.max(0, dur - watched) : 0;
+
+      const card = document.createElement('div');
+      card.className = 'continue-card';
+      card.setAttribute('role', 'button');
+      card.tabIndex = 0;
+
+      const thumb = document.createElement('div');
+      thumb.className = 'continue-thumb';
+      const img = document.createElement('img');
+      img.src = resumeItem.thumbnail || `https://i.ytimg.com/vi/${resumeItem.id}/hqdefault.jpg`;
+      img.alt = '';
+      thumb.append(img);
+
+      const overlay = document.createElement('div');
+      overlay.className = 'continue-play-overlay';
+      overlay.innerHTML = '<div class="continue-play-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg></div>';
+      thumb.append(overlay);
+
+      if (hasDur) {
+        const dBadge = document.createElement('span');
+        dBadge.className = 'thumb-duration';
+        dBadge.textContent = formatDuration(dur);
+        thumb.append(dBadge);
+      }
+
+      const thumbTrack = document.createElement('div');
+      thumbTrack.className = 'thumb-progress';
+      const thumbFill = document.createElement('div');
+      thumbFill.className = 'thumb-progress-fill';
+      thumbFill.style.width = `${pct}%`;
+      thumbTrack.append(thumbFill);
+      thumb.append(thumbTrack);
+
+      const body = document.createElement('div');
+      body.className = 'continue-body';
+
+      const top = document.createElement('div');
+      top.className = 'continue-top';
+      const infoWrap = document.createElement('div');
+      infoWrap.style.minWidth = '0';
+
+      const pill = document.createElement('span');
+      pill.className = 'home-pill';
+      pill.textContent = `Resume from ${formatDuration(watched)}`;
+
+      const title = document.createElement('h3');
+      title.className = 'continue-title';
+      title.textContent = resumeItem.title || 'YouTube video';
+
+      const author = document.createElement('div');
+      author.className = 'continue-author';
+      const ago = resumeItem.watchedAt ? relativeTime(new Date(resumeItem.watchedAt).toISOString()) : '';
+      author.textContent = [resumeItem.author || 'YouTube creator', ago ? `Paused ${ago}` : ''].filter(Boolean).join(' · ');
+
+      infoWrap.append(pill, title, author);
+
+      const dismissBtn = document.createElement('button');
+      dismissBtn.type = 'button';
+      dismissBtn.className = 'continue-dismiss';
+      dismissBtn.title = 'Dismiss from Continue Watching';
+      dismissBtn.setAttribute('aria-label', 'Dismiss from Continue Watching');
+      dismissBtn.textContent = '×';
+      dismissBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        dismissContinueWatching(resumeItem.id);
+      });
+
+      top.append(infoWrap, dismissBtn);
+
+      const timeline = document.createElement('div');
+      timeline.className = 'continue-timeline';
+
+      const bar = document.createElement('div');
+      bar.className = 'timeline-bar';
+      const barFill = document.createElement('div');
+      barFill.className = 'timeline-bar-fill';
+      barFill.style.width = `${pct}%`;
+      bar.append(barFill);
+
+      const meta = document.createElement('div');
+      meta.className = 'timeline-meta';
+      const leftMeta = document.createElement('span');
+      leftMeta.innerHTML = '';
+      const watchedStrong = document.createElement('strong');
+      watchedStrong.textContent = formatDuration(watched);
+      leftMeta.append(watchedStrong, hasDur ? ` watched (${pct}%)` : ' watched');
+
+      const rightMeta = document.createElement('span');
+      rightMeta.textContent = hasDur ? `${formatDuration(leftSec)} left · ${formatDuration(dur)}` : 'Continue playback';
+      meta.append(leftMeta, rightMeta);
+      timeline.append(bar, meta);
+
+      const actionsRow = document.createElement('div');
+      actionsRow.className = 'continue-actions';
+      const resumeBtn = document.createElement('button');
+      resumeBtn.type = 'button';
+      resumeBtn.className = 'continue-resume-btn';
+      resumeBtn.textContent = `▶ Resume at ${formatDuration(watched)}`;
+      actionsRow.append(resumeBtn);
+
+      body.append(top, timeline, actionsRow);
+      card.append(thumb, body);
+
+      const openResume = () => openPlayer({ ...resumeItem, resumeAt: watched });
+      card.addEventListener('click', openResume);
+      resumeBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        openResume();
+      });
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openResume();
+        }
+      });
+
+      sec.append(card);
+      return sec;
+    }
+
+    function populateHomeFeedSections(subsSlot, recSlot, subVideos = [], recVideos = []) {
+      subsSlot.replaceChildren();
+      recSlot.replaceChildren();
+
+      if (userSubs.length > 0 && subVideos.length > 0) {
+        const sec = document.createElement('section');
+        sec.className = 'home-section';
+        sec.append(createHomeSectionHead(
+          'New from your subscriptions',
+          'Latest uploads from creators you follow',
+          'View all →',
+          () => switchTab('subscriptions')
+        ));
+        const grid = document.createElement('div');
+        grid.className = 'results';
+        for (const item of subVideos.slice(0, 8)) {
+          grid.append(buildVideoCard(item, {
+            kind: '',
+            isNew: isRecentUpload(item.published),
+            subtitleExtra: relativeTime(item.published)
+          }));
+        }
+        sec.append(grid);
+        subsSlot.append(sec);
+      }
+
+      if (recVideos.length > 0) {
+        const sec = document.createElement('section');
+        sec.className = 'home-section';
+        sec.append(createHomeSectionHead(
+          'Recommended for you',
+          'Based on your watch history',
+          '↻ Refresh',
+          () => renderHomeFeed(true)
+        ));
+        const grid = document.createElement('div');
+        grid.className = 'results';
+        for (const item of recVideos) {
+          grid.append(buildVideoCard(item, { kind: '' }));
+        }
+        sec.append(grid);
+        recSlot.append(sec);
+      }
+    }
+
+    async function renderHomeFeed(forceRefresh = false) {
+      if (!homeFeed) return;
+      homeFeed.replaceChildren();
+
+      if (!currentUser) {
+        homeHero?.classList.remove('compact');
+        const card = document.createElement('div');
+        card.className = 'home-guest-card';
+        const copy = document.createElement('div');
+        const h3 = document.createElement('h3');
+        h3.textContent = 'Your personal Clearplay Home';
+        const p = document.createElement('p');
+        p.textContent = 'Sign in with Google to resume videos from where you left off with timeline progress, see new subscription uploads, and get history-based suggestions.';
+        copy.append(h3, p);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'auth-btn';
+        btn.textContent = 'Sign in with Google';
+        btn.addEventListener('click', triggerGoogleLogin);
+        card.append(copy, btn);
+        homeFeed.append(card);
+        return;
+      }
+
+      const hasAnyData = userHistory.length > 0 || userSubs.length > 0;
+      homeHero?.classList.toggle('compact', hasAnyData);
+
+      if (!hasAnyData) {
+        const starter = document.createElement('div');
+        starter.className = 'empty-state';
+        starter.innerHTML = '<div class="empty-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><h3>Your Home feed is waiting</h3><p>Search and watch a video or subscribe to a channel — your Continue Watching timeline and personalized picks will show right here.</p>';
+        homeFeed.append(starter);
+        return;
+      }
+
+      const continueSlot = document.createElement('div');
+      const subsSlot = document.createElement('div');
+      const recSlot = document.createElement('div');
+      homeFeed.append(continueSlot, subsSlot, recSlot);
+
+      // Render Continue Watching immediately from synced Firestore history
+      const lastUnfinished = userHistory.find(h => !h.completed && (h.progressSeconds || 0) >= 2);
+      if (lastUnfinished) {
+        continueSlot.append(renderContinueWatchingSection(lastUnfinished));
+      }
+
+      const subIds = userSubs.map(s => s.channelId).filter(Boolean).sort();
+      const histSeeds = userHistory.slice(0, 6).map(h => ({
+        id: h.id,
+        title: h.title || '',
+        author: h.author || '',
+        channel_id: h.channel_id || ''
+      }));
+      const feedKey = `${subIds.join(',')}||${histSeeds.map(h => h.id).join(',')}`;
+
+      if (!forceRefresh && homeFeedCache && homeFeedCache.key === feedKey && (Date.now() - homeFeedCache.ts) < HOME_FEED_TTL_MS) {
+        populateHomeFeedSections(subsSlot, recSlot, homeFeedCache.subscriptions, homeFeedCache.recommended);
+        return;
+      }
+
+      const token = ++homeFeedToken;
+      if (subIds.length > 0) {
+        const subSkelSec = document.createElement('section');
+        subSkelSec.className = 'home-section';
+        subSkelSec.append(createHomeSectionHead('New from your subscriptions', 'Checking subscribed channels…'));
+        const skGrid = document.createElement('div');
+        skGrid.className = 'results';
+        showSkeletons(skGrid, 4);
+        subSkelSec.append(skGrid);
+        subsSlot.append(subSkelSec);
+      }
+
+      if (histSeeds.length > 0) {
+        const recSkelSec = document.createElement('section');
+        recSkelSec.className = 'home-section';
+        recSkelSec.append(createHomeSectionHead('Recommended for you', 'Finding videos based on your watch history…'));
+        const skGrid = document.createElement('div');
+        skGrid.className = 'results';
+        showSkeletons(skGrid, 4);
+        recSkelSec.append(skGrid);
+        recSlot.append(recSkelSec);
+      }
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/home/feed`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            channels: subIds,
+            history: histSeeds,
+            exclude_ids: userHistory.slice(0, 20).map(h => h.id)
+          })
+        });
+        if (!resp.ok) throw new Error('Feed fetch failed');
+        const data = await resp.json();
+        if (token !== homeFeedToken || !currentUser) return;
+
+        const subVideos = data.subscriptions || [];
+        const recVideos = data.recommended || [];
+        homeFeedCache = { key: feedKey, ts: Date.now(), subscriptions: subVideos, recommended: recVideos };
+        populateHomeFeedSections(subsSlot, recSlot, subVideos, recVideos);
+      } catch (_) {
+        if (token !== homeFeedToken) return;
+        subsSlot.replaceChildren();
+        recSlot.replaceChildren();
+        const retryWrap = document.createElement('div');
+        retryWrap.className = 'home-guest-card';
+        const msg = document.createElement('div');
+        const h3 = document.createElement('h3');
+        h3.textContent = 'Suggestions are waking up';
+        const p = document.createElement('p');
+        p.textContent = 'The recommendation server may be waking from sleep. Try refreshing in a moment.';
+        msg.append(h3, p);
+        const retryBtn = document.createElement('button');
+        retryBtn.type = 'button';
+        retryBtn.className = 'ghost-btn';
+        retryBtn.textContent = '↻ Try again';
+        retryBtn.addEventListener('click', () => renderHomeFeed(true));
+        retryWrap.append(msg, retryBtn);
+        recSlot.append(retryWrap);
+      }
     }
 
     async function renderSubscriptionsTab() {
@@ -2099,8 +2808,12 @@
       }
       empty.hidden = true;
       for (const item of userHistory) {
+        const subExtra = item.progressSeconds >= 2 && !item.completed
+          ? `Paused at ${formatDuration(item.progressSeconds)}`
+          : (item.completed ? 'Watched' : '');
         grid.append(buildVideoCard(item, {
           kind: '',
+          subtitleExtra: subExtra,
           onRemove: row => removeHistoryEntry(row.id)
         }));
       }
@@ -2182,6 +2895,7 @@
 
     function processSegments() {
       if (!player || player.getPlayerState?.() !== YT.PlayerState.PLAYING) return;
+      flushVideoProgress(false);
       const current = player.getCurrentTime();
       const active = segments.find(item => current >= item.start && current < item.end && ['skip', 'ask'].includes(actions[item.category]));
       if (!active) { askSegment = null; sbSkip.hidden = true; return; }
@@ -2251,7 +2965,17 @@
     }
 
     function loadPlayer(item) {
-      video = item;
+      if (video?.id && player) flushVideoProgress(true);
+      playerHasPlayed = false;
+      lastProgressSyncAt = 0;
+
+      const histMatch = userHistory.find(x => x.id === item.id);
+      const rawResume = typeof item.resumeAt === 'number'
+        ? item.resumeAt
+        : (histMatch && !histMatch.completed ? (histMatch.progressSeconds || 0) : 0);
+      const resumeAt = rawResume >= 2 ? Math.floor(rawResume) : 0;
+
+      video = { ...item, _resumeApplied: resumeAt >= 2 };
       document.body.classList.add('watch-mode');
       watch.hidden = false;
       frame.replaceChildren();
@@ -2264,7 +2988,7 @@
 
       fetchSegments(item.id);
       if (item.playlistId) loadSuggestions(item);
-      hydrateMissingVideoMeta(item).then(hydrated => {
+      hydrateMissingVideoMeta(video).then(hydrated => {
         saveHistoryEntry(hydrated);
         if (!item.playlistId) loadSuggestions(hydrated);
       });
@@ -2273,14 +2997,34 @@
         if (!window.YT?.Player || video?.id !== item.id) return;
         const mountPoint = document.createElement('div');
         frame.replaceChildren(mountPoint);
+        const playerVars = { enablejsapi: 1, origin: location.origin, rel: 0 };
+        if (resumeAt >= 2) playerVars.start = resumeAt;
         player = new YT.Player(mountPoint, {
           videoId: item.id,
-          playerVars: { enablejsapi: 1, origin: location.origin, rel: 0 },
+          playerVars,
           events: {
-            onReady: () => { poll = setInterval(processSegments, 500); drawSegments(); },
+            onReady: () => {
+              if (resumeAt >= 2) {
+                try {
+                  if ((player.getCurrentTime?.() || 0) < resumeAt - 5) player.seekTo(resumeAt, true);
+                } catch (_) {}
+                showToast(`Resuming from ${formatDuration(resumeAt)}`);
+              }
+              poll = setInterval(processSegments, 500);
+              drawSegments();
+            },
             onStateChange: event => {
-              if (event.data === YT.PlayerState.PLAYING) drawSegments();
-              if (event.data === YT.PlayerState.ENDED) playNext();
+              if (event.data === YT.PlayerState.PLAYING) {
+                playerHasPlayed = true;
+                drawSegments();
+              }
+              if (event.data === YT.PlayerState.PAUSED) {
+                flushVideoProgress(true);
+              }
+              if (event.data === YT.PlayerState.ENDED) {
+                flushVideoProgress(true);
+                playNext();
+              }
             }
           }
         });
@@ -2516,6 +3260,8 @@
     }
 
     function showSearch(focusInput = false) {
+      flushVideoProgress(true);
+      playerHasPlayed = false;
       document.body.classList.remove('watch-mode');
       document.title = 'Clearplay — YouTube Embed & Personal Library';
       watch.hidden = true;
@@ -2557,13 +3303,7 @@
 
     document.querySelector('#brand-link').addEventListener('click', event => {
       event.preventDefault();
-      document.body.classList.remove('has-results');
-      results.replaceChildren();
-      viewMore.hidden = true;
-      queryInput.value = '';
-      currentQuery = '';
-      syncClearBtn();
-      setStatus('');
+      clearHomeSearch();
       switchTab('home');
     });
 
@@ -2579,14 +3319,15 @@
         if (tab && ['home', 'subscriptions', 'history', 'watchlater'].includes(tab)) {
           switchTab(tab, false);
         } else {
-          switchTab('home', false);
           const term = event.state?.query || sp.get('q') || '';
+          if (!term && !results.children.length) {
+            document.body.classList.remove('has-results');
+          }
+          switchTab('home', false);
           if (term && !results.children.length) {
             queryInput.value = term;
             syncClearBtn();
             search(term);
-          } else if (!term && !results.children.length) {
-            document.body.classList.remove('has-results');
           }
         }
       }
@@ -2653,6 +3394,11 @@
       if (!modal.hidden) modal.hidden = true;
       if (authModal && !authModal.hidden) closeAuthPrompt();
     });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') flushVideoProgress(true);
+    });
+    window.addEventListener('pagehide', () => flushVideoProgress(true));
 
     window.onYouTubeIframeAPIReady = () => window.pendingYTPlayer?.();
     const api = document.createElement('script');
