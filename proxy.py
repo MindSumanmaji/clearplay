@@ -197,29 +197,68 @@ def sponsorblock(video_id):
 def video_info(video_id):
     if not VIDEO_ID.fullmatch(video_id or ""):
         return jsonify({"error": "Invalid YouTube video ID."}), 400
+
+    title = ""
+    author = ""
+    channel_id = ""
+    channel_url = ""
+    duration = None
+
     try:
-        options = {
-            "quiet": True,
-            "no_warnings": True,
-            "skip_download": True,
-            "extract_flat": "in_playlist",
-            "noplaylist": True,
-            "socket_timeout": 8,
-        }
-        with yt_dlp.YoutubeDL(options) as ydl:
-            data = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
-        return jsonify({
-            "id": video_id,
-            "title": data.get("title") or "YouTube video",
-            "author": data.get("uploader") or data.get("channel") or "YouTube creator",
-            "channel_id": data.get("channel_id") or "",
-            "channel_url": data.get("channel_url") or data.get("uploader_url") or "",
-            "duration": data.get("duration"),
-            "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
-        })
+        oe = requests.get(
+            "https://www.youtube.com/oembed",
+            params={"url": f"https://www.youtube.com/watch?v={video_id}", "format": "json"},
+            timeout=(3, 5),
+        )
+        if oe.status_code == 200:
+            oe_data = oe.json()
+            title = oe_data.get("title") or ""
+            author = oe_data.get("author_name") or ""
+            channel_url = oe_data.get("author_url") or ""
+            if channel_url:
+                ch_resp = requests.get(channel_url, timeout=(3, 5))
+                if ch_resp.status_code == 200:
+                    match = re.search(
+                        r'<link[^>]+rel="canonical"[^>]+href="https://www\.youtube\.com/channel/(UC[A-Za-z0-9_-]{20,30})"',
+                        ch_resp.text,
+                    )
+                    if match:
+                        channel_id = match.group(1)
     except Exception:
-        log.exception("Video metadata lookup failed for %s", video_id)
+        log.warning("oEmbed fallback lookup failed for %s", video_id)
+
+    if not channel_id:
+        try:
+            options = {
+                "quiet": True,
+                "no_warnings": True,
+                "skip_download": True,
+                "extract_flat": "in_playlist",
+                "noplaylist": True,
+                "socket_timeout": 8,
+            }
+            with yt_dlp.YoutubeDL(options) as ydl:
+                data = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
+            title = title or data.get("title") or ""
+            author = author or data.get("uploader") or data.get("channel") or ""
+            channel_id = data.get("channel_id") or ""
+            channel_url = channel_url or data.get("channel_url") or data.get("uploader_url") or ""
+            duration = data.get("duration")
+        except Exception:
+            log.exception("Video metadata lookup failed for %s", video_id)
+
+    if not title and not channel_id:
         return jsonify({"error": "Video metadata is temporarily unavailable."}), 502
+
+    return jsonify({
+        "id": video_id,
+        "title": title or "YouTube video",
+        "author": author or "YouTube creator",
+        "channel_id": channel_id,
+        "channel_url": channel_url,
+        "duration": duration,
+        "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+    })
 
 
 def _fetch_channel_rss(channel_id):

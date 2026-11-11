@@ -1085,6 +1085,17 @@
     .cat-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
     .category select { padding: 7px 10px; border: 1px solid var(--line-strong); border-radius: 9px; background: var(--bg-elev); color: var(--text); font-size: 13px; }
 
+    .auth-modal-body { text-align: center; padding: 6px 4px 4px; }
+    .auth-modal-icon {
+      width: 54px; height: 54px; border-radius: 16px; margin: 0 auto 14px;
+      display: grid; place-items: center; background: rgba(181, 243, 107, 0.14); color: var(--accent);
+    }
+    .auth-modal-body h2 { margin: 0 0 8px; font-size: 19px; font-weight: 800; }
+    .auth-modal-body p { margin: 0 0 20px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .auth-modal-actions { display: flex; flex-direction: column; gap: 10px; }
+    .auth-modal-actions .auth-btn { width: 100%; justify-content: center; padding: 11px 16px; font-size: 14px; }
+    .auth-modal-actions .secondary { width: 100%; }
+
     /* Tablet Breakpoint */
     @media (max-width: 960px) {
       .watch { grid-template-columns: 1fr; gap: 20px; }
@@ -1234,69 +1245,87 @@
 
       <!-- SUBSCRIPTIONS TAB -->
       <section id="view-subscriptions" class="tab-view" hidden>
-        <div class="sync-banner" id="subs-guest-banner">
-          <span>You're in <strong>Guest Mode</strong>. Subscriptions are saved only in this browser. Sign in with Google to sync across devices.</span>
-          <button type="button" class="banner-signin">Sign in</button>
-        </div>
-        <div class="section-head">
-          <h2>Subscriptions</h2>
-          <div class="section-actions">
-            <button id="refresh-subs-btn" class="ghost-btn" type="button">↻ Refresh Feed</button>
-          </div>
-        </div>
-        <div id="channels-strip" class="channels-strip"></div>
-        <div id="subs-status" class="status"></div>
-        <div id="subs-results" class="results"></div>
-        <div id="subs-empty" class="empty-state" hidden>
+        <div id="subs-guest-gate" class="empty-state" hidden>
           <div class="empty-icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
           </div>
-          <h3>No subscribed channels yet</h3>
-          <p>Search and open any video, then click <strong>Subscribe</strong> below the player to see that creator's latest uploads here.</p>
-          <button type="button" class="primary" data-goto="home">Find Creators</button>
+          <h3>Sign in to view Subscriptions</h3>
+          <p>You're currently in <strong>Guest Mode</strong>. Sign in with Google to subscribe to creators and see their latest uploads here.</p>
+          <button type="button" class="auth-btn gate-signin">Sign in with Google</button>
+        </div>
+        <div id="subs-content">
+          <div class="section-head">
+            <h2>Subscriptions</h2>
+            <div class="section-actions">
+              <button id="refresh-subs-btn" class="ghost-btn" type="button">↻ Refresh Feed</button>
+            </div>
+          </div>
+          <div id="channels-strip" class="channels-strip"></div>
+          <div id="subs-status" class="status"></div>
+          <div id="subs-results" class="results"></div>
+          <div id="subs-empty" class="empty-state" hidden>
+            <div class="empty-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+            </div>
+            <h3>No subscribed channels yet</h3>
+            <p>Search and open any video, then click <strong>Subscribe</strong> below the player to see that creator's latest uploads here.</p>
+            <button type="button" class="primary" data-goto="home">Find Creators</button>
+          </div>
         </div>
       </section>
 
       <!-- HISTORY TAB -->
       <section id="view-history" class="tab-view" hidden>
-        <div class="sync-banner" id="history-guest-banner">
-          <span>You're in <strong>Guest Mode</strong>. History is stored locally on this device. Sign in with Google to sync with your account.</span>
-          <button type="button" class="banner-signin">Sign in</button>
-        </div>
-        <div class="section-head">
-          <h2>Watch History</h2>
-          <div class="section-actions">
-            <button id="clear-history-btn" class="ghost-btn danger" type="button">🗑 Clear History</button>
-          </div>
-        </div>
-        <div id="history-results" class="results"></div>
-        <div id="history-empty" class="empty-state" hidden>
+        <div id="history-guest-gate" class="empty-state" hidden>
           <div class="empty-icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
           </div>
-          <h3>Your Watch History is empty</h3>
-          <p>Videos you watch in Clearplay will appear here automatically so you can resume anytime.</p>
-          <button type="button" class="primary" data-goto="home">Explore Videos</button>
+          <h3>Sign in to see Watch History</h3>
+          <p>You're currently in <strong>Guest Mode</strong>. Sign in with Google so Clearplay can remember videos you've watched across your devices.</p>
+          <button type="button" class="auth-btn gate-signin">Sign in with Google</button>
+        </div>
+        <div id="history-content">
+          <div class="section-head">
+            <h2>Watch History</h2>
+            <div class="section-actions">
+              <button id="clear-history-btn" class="ghost-btn danger" type="button">🗑 Clear History</button>
+            </div>
+          </div>
+          <div id="history-results" class="results"></div>
+          <div id="history-empty" class="empty-state" hidden>
+            <div class="empty-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+            </div>
+            <h3>Your Watch History is empty</h3>
+            <p>Videos you watch in Clearplay will appear here automatically so you can resume anytime.</p>
+            <button type="button" class="primary" data-goto="home">Explore Videos</button>
+          </div>
         </div>
       </section>
 
       <!-- WATCH LATER TAB -->
       <section id="view-watchlater" class="tab-view" hidden>
-        <div class="sync-banner" id="wl-guest-banner">
-          <span>You're in <strong>Guest Mode</strong>. Saved videos stay on this browser. Sign in with Google to save to your cloud account.</span>
-          <button type="button" class="banner-signin">Sign in</button>
-        </div>
-        <div class="section-head">
-          <h2>Watch Later</h2>
-        </div>
-        <div id="wl-results" class="results"></div>
-        <div id="wl-empty" class="empty-state" hidden>
+        <div id="wl-guest-gate" class="empty-state" hidden>
           <div class="empty-icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
           </div>
-          <h3>No videos in Watch Later</h3>
-          <p>Click the bookmark button on any video card or below the video player to save it for later.</p>
-          <button type="button" class="primary" data-goto="home">Browse Videos</button>
+          <h3>Sign in to view Watch Later</h3>
+          <p>You're currently in <strong>Guest Mode</strong>. Sign in with Google to save videos for later and access them anytime.</p>
+          <button type="button" class="auth-btn gate-signin">Sign in with Google</button>
+        </div>
+        <div id="wl-content">
+          <div class="section-head">
+            <h2>Watch Later</h2>
+          </div>
+          <div id="wl-results" class="results"></div>
+          <div id="wl-empty" class="empty-state" hidden>
+            <div class="empty-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+            </div>
+            <h3>No videos in Watch Later</h3>
+            <p>Click the bookmark button on any video card or below the video player to save it for later.</p>
+            <button type="button" class="primary" data-goto="home">Browse Videos</button>
+          </div>
         </div>
       </section>
 
@@ -1346,7 +1375,7 @@
                 <div class="channel-info-avatar" id="channel-avatar">C</div>
                 <p id="video-author"></p>
               </div>
-              <button id="subscribe-btn" class="sub-btn" type="button" disabled>Subscribe</button>
+              <button id="subscribe-btn" class="sub-btn" type="button">Subscribe</button>
             </div>
           </div>
         </div>
@@ -1398,6 +1427,29 @@
     </section>
   </div>
 
+  <div id="auth-modal" class="modal-backdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+      <div class="modal-head">
+        <span></span>
+        <button id="close-auth-modal" class="close" aria-label="Close sign in prompt">×</button>
+      </div>
+      <div class="auth-modal-body">
+        <div class="auth-modal-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h2 id="auth-modal-title">Sign in to Clearplay</h2>
+        <p id="auth-modal-desc">Sign in with your Google account to save videos to Watch Later, subscribe to channels, and sync your Watch History.</p>
+        <div class="auth-modal-actions">
+          <button id="modal-signin-btn" class="auth-btn" type="button">
+            <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/><path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/></svg>
+            <span>Sign in with Google</span>
+          </button>
+          <button id="dismiss-auth-modal" class="secondary" type="button">Continue as Guest</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
@@ -1435,6 +1487,9 @@
     const sbMessage = document.querySelector('#sb-message');
     const sbSkip = document.querySelector('#sb-skip');
     const modal = document.querySelector('#settings-modal');
+    const authModal = document.querySelector('#auth-modal');
+    const authModalTitle = document.querySelector('#auth-modal-title');
+    const authModalDesc = document.querySelector('#auth-modal-desc');
     const suggestionList = document.querySelector('#suggestion-list');
     const suggestionTitle = document.querySelector('#suggestion-title');
     const playlistLayout = document.querySelector('#playlist-layout');
@@ -1466,6 +1521,7 @@
     let userHistory = [];
     let userWatchLater = [];
     let userSubs = [];
+    let pendingAuthAction = null;
 
     let player = null;
     let video = null;
@@ -1492,46 +1548,53 @@
       catch (_) { return { ...defaults }; }
     }
 
-    function readLocal(key) {
-      try { return JSON.parse(localStorage.getItem(key) || '[]'); }
-      catch (_) { return []; }
+    function openAuthPrompt(actionType, item = null) {
+      pendingAuthAction = actionType ? { type: actionType, item } : null;
+      if (actionType === 'watchlater') {
+        authModalTitle.textContent = 'Sign in to save to Watch Later';
+        authModalDesc.textContent = 'You are currently in Guest Mode. Sign in with Google to save videos to your personal Watch Later list.';
+      } else if (actionType === 'subscribe') {
+        authModalTitle.textContent = 'Sign in to subscribe';
+        authModalDesc.textContent = 'You are currently in Guest Mode. Sign in with Google to subscribe to creators and view their latest uploads.';
+      } else {
+        authModalTitle.textContent = 'Sign in to Clearplay';
+        authModalDesc.textContent = 'Sign in with Google to save Watch Later videos, subscribe to channels, and sync your Watch History.';
+      }
+      authModal.hidden = false;
     }
 
-    function saveLocal(key, list) {
-      localStorage.setItem(key, JSON.stringify(list));
+    function closeAuthPrompt() {
+      authModal.hidden = true;
     }
 
     // ==================== STORAGE & FIRESTORE LAYER ====================
 
     async function loadUserData() {
       if (!currentUser) {
-        userHistory = readLocal('cp_guest_history');
-        userWatchLater = readLocal('cp_guest_wl');
-        userSubs = readLocal('cp_guest_subs');
+        userHistory = [];
+        userWatchLater = [];
+        userSubs = [];
         actions = readActions();
         refreshCurrentTabView();
         updatePlayerActionButtons();
+        syncAllCardBookmarkIcons();
         return;
       }
 
       const uid = currentUser.uid;
       try {
-        // Load user settings
         const userSnap = await getDoc(doc(db, 'users', uid));
         if (userSnap.exists() && userSnap.data().sponsorblockActions) {
           actions = { ...defaults, ...userSnap.data().sponsorblockActions };
           localStorage.setItem('sponsorblock-actions', JSON.stringify(actions));
         }
 
-        // Load History
         const histSnap = await getDocs(fsQuery(collection(db, 'users', uid, 'history'), orderBy('watchedAt', 'desc'), limit(50)));
         userHistory = histSnap.docs.map(d => d.data());
 
-        // Load Watch Later
         const wlSnap = await getDocs(fsQuery(collection(db, 'users', uid, 'watchLater'), orderBy('addedAt', 'desc'), limit(100)));
         userWatchLater = wlSnap.docs.map(d => d.data());
 
-        // Load Subscriptions
         const subSnap = await getDocs(fsQuery(collection(db, 'users', uid, 'subscriptions'), orderBy('subscribedAt', 'desc'), limit(50)));
         userSubs = subSnap.docs.map(d => d.data());
       } catch (err) {
@@ -1539,38 +1602,25 @@
         showToast('Could not sync cloud data.');
       }
 
+      if (pendingAuthAction) {
+        const action = pendingAuthAction;
+        pendingAuthAction = null;
+        if (action.type === 'watchlater' && action.item && !isWatchLater(action.item.id)) {
+          await toggleWatchLater(action.item);
+        } else if (action.type === 'subscribe' && action.item) {
+          await handleSubscribeClick(action.item);
+        }
+      }
+
+      if (video) await saveHistoryEntry(video);
+
       refreshCurrentTabView();
       updatePlayerActionButtons();
-    }
-
-    async function syncGuestDataOnLogin(uid) {
-      const guestHist = readLocal('cp_guest_history');
-      const guestWl = readLocal('cp_guest_wl');
-      const guestSubs = readLocal('cp_guest_subs');
-      if (!guestHist.length && !guestWl.length && !guestSubs.length) return;
-
-      try {
-        const batch = writeBatch(db);
-        guestHist.slice(0, 20).forEach(item => {
-          if (item?.id) batch.set(doc(db, 'users', uid, 'history', item.id), { ...item, watchedAt: item.watchedAt || Date.now() }, { merge: true });
-        });
-        guestWl.slice(0, 50).forEach(item => {
-          if (item?.id) batch.set(doc(db, 'users', uid, 'watchLater', item.id), { ...item, addedAt: item.addedAt || Date.now() }, { merge: true });
-        });
-        guestSubs.slice(0, 25).forEach(sub => {
-          if (sub?.channelId) batch.set(doc(db, 'users', uid, 'subscriptions', sub.channelId), { ...sub, subscribedAt: sub.subscribedAt || Date.now() }, { merge: true });
-        });
-        await batch.commit();
-        localStorage.removeItem('cp_guest_history');
-        localStorage.removeItem('cp_guest_wl');
-        localStorage.removeItem('cp_guest_subs');
-      } catch (err) {
-        console.warn('Guest merge skipped:', err);
-      }
+      syncAllCardBookmarkIcons();
     }
 
     async function saveHistoryEntry(item) {
-      if (!item?.id) return;
+      if (!currentUser || !item?.id) return;
       const clean = {
         id: item.id,
         title: item.title || 'YouTube video',
@@ -1583,60 +1633,48 @@
       };
 
       userHistory = [clean, ...userHistory.filter(x => x.id !== clean.id)].slice(0, 50);
-
-      if (!currentUser) {
-        saveLocal('cp_guest_history', userHistory);
-      } else {
-        try {
-          await setDoc(doc(db, 'users', currentUser.uid, 'history', clean.id), clean);
-        } catch (err) { console.error(err); }
-      }
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid, 'history', clean.id), clean);
+      } catch (err) { console.error(err); }
       if (activeTab === 'history') renderHistoryTab();
     }
 
     async function removeHistoryEntry(videoId) {
+      if (!currentUser) return;
       userHistory = userHistory.filter(x => x.id !== videoId);
-      if (!currentUser) {
-        saveLocal('cp_guest_history', userHistory);
-      } else {
-        try { await deleteDoc(doc(db, 'users', currentUser.uid, 'history', videoId)); }
-        catch (err) { console.error(err); }
-      }
+      try { await deleteDoc(doc(db, 'users', currentUser.uid, 'history', videoId)); }
+      catch (err) { console.error(err); }
       renderHistoryTab();
     }
 
     async function clearAllHistory() {
-      if (!userHistory.length) return;
-      if (!currentUser) {
+      if (!currentUser || !userHistory.length) return;
+      try {
+        const batch = writeBatch(db);
+        userHistory.forEach(item => batch.delete(doc(db, 'users', currentUser.uid, 'history', item.id)));
+        await batch.commit();
         userHistory = [];
-        saveLocal('cp_guest_history', []);
-      } else {
-        try {
-          const batch = writeBatch(db);
-          userHistory.forEach(item => batch.delete(doc(db, 'users', currentUser.uid, 'history', item.id)));
-          await batch.commit();
-          userHistory = [];
-        } catch (err) { console.error(err); }
-      }
+      } catch (err) { console.error(err); }
       renderHistoryTab();
       showToast('Watch History cleared');
     }
 
     function isWatchLater(videoId) {
-      return userWatchLater.some(x => x.id === videoId);
+      return Boolean(currentUser && userWatchLater.some(x => x.id === videoId));
     }
 
     async function toggleWatchLater(item) {
       if (!item?.id) return;
+      if (!currentUser) {
+        openAuthPrompt('watchlater', item);
+        return;
+      }
+
       const exists = isWatchLater(item.id);
       if (exists) {
         userWatchLater = userWatchLater.filter(x => x.id !== item.id);
-        if (!currentUser) {
-          saveLocal('cp_guest_wl', userWatchLater);
-        } else {
-          try { await deleteDoc(doc(db, 'users', currentUser.uid, 'watchLater', item.id)); }
-          catch (err) { console.error(err); }
-        }
+        try { await deleteDoc(doc(db, 'users', currentUser.uid, 'watchLater', item.id)); }
+        catch (err) { console.error(err); }
         showToast('Removed from Watch Later');
       } else {
         const clean = {
@@ -1649,12 +1687,8 @@
           addedAt: Date.now()
         };
         userWatchLater = [clean, ...userWatchLater];
-        if (!currentUser) {
-          saveLocal('cp_guest_wl', userWatchLater);
-        } else {
-          try { await setDoc(doc(db, 'users', currentUser.uid, 'watchLater', clean.id), clean); }
-          catch (err) { console.error(err); }
-        }
+        try { await setDoc(doc(db, 'users', currentUser.uid, 'watchLater', clean.id), clean); }
+        catch (err) { console.error(err); }
         showToast('Saved to Watch Later');
       }
       updatePlayerActionButtons();
@@ -1663,21 +1697,53 @@
     }
 
     function isSubscribed(channelId) {
-      return Boolean(channelId && userSubs.some(s => s.channelId === channelId));
+      return Boolean(currentUser && channelId && userSubs.some(s => s.channelId === channelId));
+    }
+
+    async function handleSubscribeClick(targetVideo = video) {
+      if (!targetVideo?.id) return;
+      if (!currentUser) {
+        openAuthPrompt('subscribe', targetVideo);
+        return;
+      }
+
+      let chId = targetVideo.channel_id || '';
+      let chName = targetVideo.author || '';
+      if (!chId) {
+        subscribeBtn.disabled = true;
+        subscribeBtn.textContent = 'Loading…';
+        try {
+          const resp = await fetch(`${API_BASE}/api/video/${encodeURIComponent(targetVideo.id)}`);
+          if (resp.ok) {
+            const meta = await resp.json();
+            chId = meta.channel_id || '';
+            chName = chName || meta.author || '';
+            if (video?.id === targetVideo.id) {
+              video = { ...video, ...meta };
+              document.querySelector('#video-title').textContent = video.title;
+              document.querySelector('#video-author').textContent = video.author;
+            }
+          }
+        } catch (_) {}
+        subscribeBtn.disabled = false;
+      }
+
+      if (!chId) {
+        updatePlayerActionButtons();
+        showToast('Could not identify channel yet. Try again in a moment.');
+        return;
+      }
+      await toggleSubscription(chId, chName);
     }
 
     async function toggleSubscription(channelId, channelName) {
-      if (!channelId) return;
+      if (!currentUser || !channelId) return;
       const exists = isSubscribed(channelId);
       if (exists) {
         userSubs = userSubs.filter(s => s.channelId !== channelId);
         if (selectedSubChannel === channelId) selectedSubChannel = '';
-        if (!currentUser) {
-          saveLocal('cp_guest_subs', userSubs);
-        } else {
-          try { await deleteDoc(doc(db, 'users', currentUser.uid, 'subscriptions', channelId)); }
-          catch (err) { console.error(err); }
-        }
+        try { await deleteDoc(doc(db, 'users', currentUser.uid, 'subscriptions', channelId)); }
+        catch (err) { console.error(err); }
         showToast(`Unsubscribed from ${channelName || 'channel'}`);
       } else {
         const sub = {
@@ -1686,12 +1752,8 @@
           subscribedAt: Date.now()
         };
         userSubs = [sub, ...userSubs];
-        if (!currentUser) {
-          saveLocal('cp_guest_subs', userSubs);
-        } else {
-          try { await setDoc(doc(db, 'users', currentUser.uid, 'subscriptions', channelId), sub); }
-          catch (err) { console.error(err); }
-        }
+        try { await setDoc(doc(db, 'users', currentUser.uid, 'subscriptions', channelId), sub); }
+        catch (err) { console.error(err); }
         showToast(`Subscribed to ${sub.name}!`);
       }
       updatePlayerActionButtons();
@@ -1712,6 +1774,7 @@
     async function triggerGoogleLogin() {
       try {
         const res = await signInWithPopup(auth, googleProvider);
+        closeAuthPrompt();
         const first = (res.user?.displayName || res.user?.email || 'User').split(' ')[0];
         showToast(`Signed in as ${first}`);
       } catch (err) {
@@ -1722,8 +1785,13 @@
     }
 
     signinBtn.addEventListener('click', triggerGoogleLogin);
-    document.querySelectorAll('.banner-signin').forEach(b => b.addEventListener('click', triggerGoogleLogin));
+    document.querySelector('#modal-signin-btn').addEventListener('click', triggerGoogleLogin);
+    document.querySelector('#close-auth-modal').addEventListener('click', closeAuthPrompt);
+    document.querySelector('#dismiss-auth-modal').addEventListener('click', closeAuthPrompt);
+    authModal.addEventListener('click', event => { if (event.target === authModal) closeAuthPrompt(); });
+    document.querySelectorAll('.gate-signin').forEach(b => b.addEventListener('click', triggerGoogleLogin));
     signoutBtn.addEventListener('click', async () => {
+      pendingAuthAction = null;
       await signOut(auth);
       showToast('Signed out (Guest Mode)');
     });
@@ -1735,7 +1803,6 @@
       signinBtn.hidden = isSignedIn;
       userChip.hidden = !isSignedIn;
       signoutBtn.hidden = !isSignedIn;
-      document.querySelectorAll('.sync-banner').forEach(el => { el.hidden = isSignedIn; });
 
       if (user) {
         userAvatar.src = user.photoURL || '';
@@ -1747,7 +1814,6 @@
             photoURL: user.photoURL || '',
             lastSeen: serverTimestamp()
           }, { merge: true });
-          await syncGuestDataOnLogin(user.uid);
         } catch (err) { console.error(err); }
       }
       await loadUserData();
@@ -1920,6 +1986,15 @@
       });
     }
 
+    function syncGuestGate(prefix) {
+      const gate = document.querySelector(`#${prefix}-guest-gate`);
+      const content = document.querySelector(`#${prefix}-content`);
+      const isGuest = !currentUser;
+      if (gate) gate.hidden = !isGuest;
+      if (content) content.hidden = isGuest;
+      return isGuest;
+    }
+
     async function renderSubscriptionsTab() {
       const strip = document.querySelector('#channels-strip');
       const grid = document.querySelector('#subs-results');
@@ -1927,6 +2002,11 @@
       const subStatus = document.querySelector('#subs-status');
       strip.replaceChildren();
       grid.replaceChildren();
+
+      if (syncGuestGate('subs')) {
+        subStatus.textContent = '';
+        return;
+      }
 
       if (!userSubs.length) {
         strip.hidden = true;
@@ -2007,6 +2087,11 @@
       const clearBtn = document.querySelector('#clear-history-btn');
       grid.replaceChildren();
 
+      if (syncGuestGate('history')) {
+        clearBtn.hidden = true;
+        return;
+      }
+
       clearBtn.hidden = !userHistory.length;
       if (!userHistory.length) {
         empty.hidden = false;
@@ -2025,6 +2110,8 @@
       const grid = document.querySelector('#wl-results');
       const empty = document.querySelector('#wl-empty');
       grid.replaceChildren();
+
+      if (syncGuestGate('wl')) return;
 
       if (!userWatchLater.length) {
         empty.hidden = false;
@@ -2138,7 +2225,7 @@
 
       const chId = video.channel_id || '';
       const subbed = isSubscribed(chId);
-      subscribeBtn.disabled = !chId;
+      subscribeBtn.disabled = false;
       subscribeBtn.classList.toggle('subscribed', subbed);
       subscribeBtn.textContent = subbed ? '✓ Subscribed' : 'Subscribe';
       channelAvatar.textContent = (video.author || 'Y').charAt(0).toUpperCase();
@@ -2545,9 +2632,7 @@
     });
 
     watchLaterBtn.addEventListener('click', () => toggleWatchLater(video));
-    subscribeBtn.addEventListener('click', () => {
-      if (video?.channel_id) toggleSubscription(video.channel_id, video.author);
-    });
+    subscribeBtn.addEventListener('click', () => handleSubscribeClick(video));
 
     shareBtn.addEventListener('click', async () => {
       const label = shareBtn.querySelector('span');
@@ -2564,7 +2649,9 @@
     });
 
     window.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && !modal.hidden) modal.hidden = true;
+      if (event.key !== 'Escape') return;
+      if (!modal.hidden) modal.hidden = true;
+      if (authModal && !authModal.hidden) closeAuthPrompt();
     });
 
     window.onYouTubeIframeAPIReady = () => window.pendingYTPlayer?.();
