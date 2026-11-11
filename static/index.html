@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101114">
+  <title>Clearplay — YouTube videos</title>
+  <style>
+    :root { color-scheme:dark; --bg:#101114; --panel:#191a1f; --line:#2b2c33; --muted:#9b9ca7; --text:#f4f4f6; --accent:#b5f36b }
+    * { box-sizing:border-box }
+    body { margin:0; min-height:100vh; background:radial-gradient(ellipse at 50% -30%,#282b24 0,transparent 48%),var(--bg); color:var(--text); font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif }
+    button,input,select { font:inherit } button { cursor:pointer }
+    .shell { width:min(1040px,calc(100% - 32px)); margin:auto }
+    header { display:flex; align-items:center; gap:10px; padding:22px 0; border-bottom:1px solid var(--line) }
+    #back-results { display:none; border:1px solid #393a42; border-radius:8px; background:#202127; color:var(--text); padding:7px 10px }
+    body.watch-mode #back-results { display:inline-block }
+    body.watch-mode .intro,body.watch-mode #search-form,body.watch-mode #status,body.watch-mode #results,body.watch-mode .disclosure { display:none }
+    body.watch-mode main { padding-top:22px }
+    body.watch-mode .watch { margin-top:0 }
+    .brand { color:var(--text); text-decoration:none; font-weight:800; font-size:21px; letter-spacing:-.04em }
+    .privacy { margin-left:auto; color:var(--muted); font-size:12px }
+    main { padding:42px 0 64px }
+    h1 { margin:0 0 8px; text-align:center; font-size:clamp(30px,6vw,48px); letter-spacing:-.05em }
+    .intro { margin:0 auto 25px; text-align:center; max-width:660px; color:var(--muted) }
+    .search { display:flex; gap:8px; max-width:760px; margin:0 auto 18px; padding:7px; border:1px solid #363840; border-radius:14px; background:var(--panel) }
+    .search input { min-width:0; flex:1; border:0; outline:0; background:transparent; color:var(--text); padding:9px 12px }
+    .primary,.secondary,.setting { border:1px solid #3a3c43; border-radius:9px; background:#25262c; color:var(--text); padding:9px 13px }
+    .primary { background:var(--accent); border-color:var(--accent); color:#18220d; font-weight:750 }
+    .status { min-height:24px; margin:8px 0 14px; text-align:center; color:var(--muted) }.status.error { color:#ff9e9e }
+    .results { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:14px }
+    .card { position:relative; overflow:hidden; padding:0; border:1px solid var(--line); border-radius:12px; background:var(--panel); color:var(--text); text-align:left }
+    .card:hover { border-color:#65676f; transform:translateY(-1px) }.card img { display:block; width:100%; aspect-ratio:16/9; object-fit:cover; background:#24252a }
+    .card-badge { position:absolute; top:8px; left:8px; z-index:1; padding:3px 7px; border:1px solid #ffffff2b; border-radius:6px; background:#111d; color:white; font-size:10px; font-weight:800; letter-spacing:.06em }
+    .result-heading { grid-column:1/-1; margin:8px 0 -5px; color:var(--muted); font-size:13px; font-weight:700 }
+    #view-more { display:block; margin:18px auto 0; min-width:150px }#view-more[hidden] { display:none }
+    .card-copy { padding:10px 12px }.card-title { display:-webkit-box; min-height:42px; overflow:hidden; -webkit-line-clamp:2; -webkit-box-orient:vertical; font-weight:700; font-size:14px }
+    .card-meta { margin-top:5px; color:var(--muted); font-size:12px }
+    .watch { margin-top:24px; overflow:hidden; border:1px solid var(--line); border-radius:15px; background:var(--panel) }.watch[hidden] { display:none }
+    .player-frame { aspect-ratio:16/9; background:#000 }.player-frame iframe { display:block; width:100%; height:100%; border:0 }
+    .controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid var(--line) }
+    .control { border:1px solid #393a42; border-radius:9px; background:#202127; color:var(--text); padding:8px 11px }.control:hover { border-color:#747680 }
+    .settings { display:flex; align-items:center; gap:8px; margin-left:auto; color:var(--muted); font-size:12px }
+    .setting { padding:6px 8px; font-size:12px }
+    .track { position:relative; height:8px; margin:13px 16px 6px; border-radius:99px; background:#34353b }.mark { position:absolute; height:100%; min-width:2px; border-radius:99px; background:var(--accent) }
+    .sbline { display:flex; align-items:center; gap:10px; min-height:36px; padding:0 16px 12px; color:var(--muted); font-size:12px }
+    .sbline span { flex:1 }.sbline button { border:1px solid #45474e; border-radius:7px; background:#202127; color:var(--accent); padding:5px 9px }
+    .details { padding:14px 16px 18px }.details h2 { margin:0; font-size:18px }.details p { margin:4px 0 0; color:var(--muted); font-size:13px }
+    .suggestions { padding:0 16px 18px }.suggestions h3 { margin:4px 0 10px; font-size:15px }.suggestion-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px }
+    .playlist-layout[hidden] { display:none }
+    .playlist-summary { margin:6px 0 10px; overflow:hidden; border:1px solid var(--line); border-radius:12px; background:#111216 }
+    .now-next { display:grid; grid-template-columns:1fr 1fr; min-height:76px; border-bottom:1px solid var(--line) }
+    .queue-current,.queue-next { display:flex; align-items:center; gap:10px; min-width:0; padding:10px 12px }
+    .queue-next { border-left:1px solid var(--line) }.queue-current img,.queue-next img { width:76px; aspect-ratio:16/9; border-radius:5px; object-fit:cover; background:#27282d }
+    .queue-label { color:#35c995; font-size:9px; font-weight:900; letter-spacing:.1em }.queue-copy { min-width:0 }.queue-title { display:-webkit-box; overflow:hidden; -webkit-line-clamp:2; -webkit-box-orient:vertical; font-size:12px; font-weight:700; line-height:1.35 }.queue-author { overflow:hidden; color:var(--muted); font-size:10px; text-overflow:ellipsis; white-space:nowrap }
+    .playlist-head { display:flex; align-items:center; gap:10px; min-height:68px; padding:10px 14px; border-bottom:1px solid var(--line) }.playlist-head-copy { min-width:0; flex:1 }.playlist-head h4 { overflow:hidden; margin:0; text-overflow:ellipsis; white-space:nowrap; font-size:17px }.playlist-head span { color:var(--muted); font-size:12px }.playlist-head-actions { display:flex; align-items:center; gap:12px }.playlist-head a,.playlist-close { border:0; background:transparent; color:#bfc0c7; text-decoration:none; font-size:17px }.playlist-close { font-size:22px }
+    .playlist-items { max-height:min(70vh,680px); overflow:auto }
+    .playlist-row { display:grid; grid-template-columns:22px 126px minmax(0,1fr); align-items:center; gap:10px; width:100%; min-height:80px; padding:7px 10px; border:0; border-bottom:1px solid #24252a; background:transparent; color:#f0f0f2; text-align:left }
+    .playlist-row:hover { background:#202127 }.playlist-row.active { background:#263035 }.playlist-row img { width:126px; aspect-ratio:16/9; border-radius:7px; object-fit:cover; background:#292a30 }.playlist-index { color:#a2a4ad; text-align:center; font-size:13px }.playlist-row-title { overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; font-size:14px; font-weight:700; line-height:1.35 }.playlist-row-author { margin-top:5px; overflow:hidden; color:#a6a8b1; font-size:12px; text-overflow:ellipsis; white-space:nowrap }.playlist-thumb { position:relative }.playlist-duration { position:absolute; right:4px; bottom:4px; padding:1px 4px; border-radius:4px; background:#08090add; color:white; font-size:10px; font-weight:800 }
+    .disclosure { margin:18px auto 0; max-width:760px; text-align:center; color:#858691; font-size:12px }
+    .modal-backdrop { position:fixed; inset:0; z-index:5; display:grid; place-items:center; padding:20px; background:#0009 }.modal-backdrop[hidden] { display:none }
+    .modal { width:min(440px,100%); max-height:80vh; overflow:auto; padding:18px; border:1px solid #41434a; border-radius:14px; background:#1b1c21 }
+    .modal-head { display:flex; align-items:center; margin-bottom:10px }.modal-head h2 { margin:0; font-size:17px }.close { margin-left:auto; border:0; background:transparent; color:var(--text); font-size:21px }
+    .category { display:grid; grid-template-columns:1fr 110px; gap:10px; align-items:center; padding:7px 0; border-top:1px solid var(--line); color:#c7c8cf; font-size:13px }.category select { padding:6px; border:1px solid #393a42; border-radius:7px; background:#25262c; color:var(--text) }
+    footer { padding:20px 0 28px; border-top:1px solid var(--line); text-align:center; color:#777984; font-size:12px }
+    @media(max-width:600px) { .shell{width:calc(100% - 22px)}header{padding:16px 0}.privacy{font-size:10px}main{padding:32px 0 48px}.search{gap:4px;padding:5px}.search input{padding:8px 6px;font-size:14px}.primary{padding:8px 11px}.results{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card-copy{padding:8px}.card-title{font-size:12px;min-height:38px}.card-meta{font-size:10px}.controls{gap:6px;padding:9px}.control{padding:7px;font-size:12px}.settings{gap:5px}.setting{padding:5px;font-size:11px}.details h2{font-size:16px}.now-next{grid-template-columns:1fr}.queue-next{border-left:0;border-top:1px solid var(--line)}.queue-current img,.queue-next img{width:70px}.playlist-head{min-height:60px;padding:8px}.playlist-head h4{font-size:14px}.playlist-head span{font-size:10px}.playlist-head-actions{gap:6px}.playlist-row{grid-template-columns:18px 112px minmax(0,1fr);gap:7px;min-height:74px;padding:6px}.playlist-row img{width:112px}.playlist-row-title{font-size:12px}.playlist-row-author{font-size:10px} }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header><button id="back-results" type="button">← Search results</button><a class="brand" href="/">Clearplay</a><span class="privacy">Videos play through YouTube's embedded player</span></header>
+    <main>
+      <h1>Find a video</h1>
+      <p class="intro">Search YouTube and watch in the embedded player. Community SponsorBlock segments can be shown or skipped when available.</p>
+      <form class="search" id="search-form"><input id="query" type="search" placeholder="Search videos or paste a YouTube link…" autocomplete="off" aria-label="Search videos or paste a YouTube link"><button class="primary" type="submit">Search</button></form>
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <section id="results" class="results" aria-label="Search results"></section>
+      <button id="view-more" class="secondary" type="button" hidden>View more</button>
+      <section id="watch" class="watch" hidden>
+        <div id="player-frame" class="player-frame"></div>
+        <div class="controls">
+          <button id="back" class="control" type="button">↶ 10 sec</button>
+          <button id="forward" class="control" type="button">10 sec ↷</button>
+          <button id="open-settings" class="control" type="button">⚙ SponsorBlock</button>
+          <label class="settings">Speed <select id="speed" class="setting"><option>0.5</option><option>0.75</option><option selected>1</option><option>1.25</option><option>1.5</option><option>1.75</option><option>2</option></select></label>
+        </div>
+        <div id="track" class="track" aria-label="SponsorBlock segment markers"></div>
+        <div class="sbline"><span id="sb-message">SponsorBlock segments are community submitted and may be unavailable.</span><button id="sb-skip" type="button" hidden>Skip segment</button></div>
+        <div class="details"><h2 id="video-title"></h2><p id="video-author"></p></div>
+        <section class="suggestions"><h3 id="suggestion-title">Related videos</h3><div id="playlist-layout" class="playlist-layout" hidden></div><div id="suggestion-list" class="suggestion-list"></div></section>
+      </section>
+      <p class="disclosure">The YouTube player may show ads according to YouTube and the video owner's settings. Clearplay does not guarantee ad-free playback. Search uses this app's server for metadata; video playback is delivered by YouTube.</p>
+    </main>
+    <footer>Independent prototype. Not affiliated with YouTube or Google.</footer>
+  </div>
+  <div id="settings-modal" class="modal-backdrop" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><h2 id="modal-title">SponsorBlock settings</h2><button id="close-settings" class="close" aria-label="Close settings">×</button></div><div id="categories"></div></section></div>
+  <script>
+    const form = document.querySelector('#search-form');
+    const query = document.querySelector('#query');
+    const status = document.querySelector('#status');
+    const results = document.querySelector('#results');
+    const viewMore = document.querySelector('#view-more');
+    const watch = document.querySelector('#watch');
+    const frame = document.querySelector('#player-frame');
+    const track = document.querySelector('#track');
+    const sbMessage = document.querySelector('#sb-message');
+    const sbSkip = document.querySelector('#sb-skip');
+    const modal = document.querySelector('#settings-modal');
+    const suggestionList = document.querySelector('#suggestion-list');
+    const suggestionTitle = document.querySelector('#suggestion-title');
+    const playlistLayout = document.querySelector('#playlist-layout');
+    const categoryNames = ['sponsor','selfpromo','interaction','intro','outro','preview','music_offtopic','filler'];
+    const defaults = { sponsor:'skip', selfpromo:'ask', interaction:'ask', intro:'show', outro:'show', preview:'show', music_offtopic:'off', filler:'off' };
+    let actions = readActions();
+    let player = null;
+    let video = null;
+    let segments = [];
+    let handled = new Set();
+    let askSegment = null;
+    let poll = null;
+    let currentQuery = '';
+    let searchOffset = 0;
+    let playQueue = [];
+    let queueIndex = -1;
+    let queuePlaylistId = '';
+
+    function readActions() { try { return {...defaults, ...JSON.parse(localStorage.getItem('sponsorblock-actions') || '{}')}; } catch (_) { return {...defaults}; } }
+    function setStatus(message = '', error = false) { status.textContent = message; status.classList.toggle('error', error); }
+    function appendResult(item, kind) {
+      const card=document.createElement('button'); card.className='card'; card.type='button';
+      const badge=document.createElement('span'); badge.className='card-badge'; badge.textContent=kind;
+      const image=document.createElement('img'); image.src=item.thumbnail||''; image.alt=''; image.loading='lazy';
+      if(!item.thumbnail) image.hidden=true;
+      const copy=document.createElement('div'); copy.className='card-copy'; const title=document.createElement('div'); title.className='card-title'; title.textContent=item.title;
+      const meta=document.createElement('div'); meta.className='card-meta'; meta.textContent=item.author||''; copy.append(title,meta);
+      if(kind==='PLAYLIST'&&item.video_count) { const count=document.createElement('div'); count.className='card-meta'; count.textContent=`${item.video_count} videos`; copy.append(count); }
+      card.append(badge,image,copy);
+      card.addEventListener('click',()=>kind==='PLAYLIST'?openPlaylist(item):openPlayer(item));
+      results.append(card);
+    }
+    function renderSettings() {
+      const root = document.querySelector('#categories'); root.replaceChildren();
+      for (const category of categoryNames) {
+        const row = document.createElement('label'); row.className = 'category';
+        const name = document.createElement('span'); name.textContent = category.replaceAll('_',' ');
+        const select = document.createElement('select');
+        for (const [value,label] of [['skip','Skip'],['ask','Ask'],['show','Show'],['off','Off']]) { const option=document.createElement('option'); option.value=value; option.textContent=label; select.append(option); }
+        select.value = actions[category]; select.addEventListener('change', () => { actions[category] = select.value; localStorage.setItem('sponsorblock-actions', JSON.stringify(actions)); drawSegments(); });
+        row.append(name,select); root.append(row);
+      }
+    }
+    function drawSegments() {
+      track.replaceChildren();
+      const duration = player?.getDuration?.() || 0;
+      if (!duration) return;
+      for (const item of segments) {
+        if (actions[item.category] === 'off') continue;
+        const mark = document.createElement('span'); mark.className='mark';
+        mark.title=`${item.category.replaceAll('_',' ')} · ${Math.floor(item.start)}–${Math.floor(item.end)}s`;
+        mark.style.left=`${item.start / duration * 100}%`; mark.style.width=`${Math.max(.4,(item.end-item.start)/duration*100)}%`; track.append(mark);
+      }
+    }
+    function processSegments() {
+      if (!player || player.getPlayerState?.() !== YT.PlayerState.PLAYING) return;
+      const current = player.getCurrentTime();
+      const active = segments.find(item => current >= item.start && current < item.end && ['skip','ask'].includes(actions[item.category]));
+      if (!active) { askSegment=null; sbSkip.hidden=true; return; }
+      const key=`${active.category}:${active.start}:${active.end}`;
+      if (actions[active.category] === 'skip') {
+        if (!handled.has(key)) { handled.add(key); player.seekTo(active.end, true); sbMessage.textContent=`Skipped ${active.category.replaceAll('_',' ')} segment.`; }
+      } else {
+        askSegment=active; sbMessage.textContent=`${active.category.replaceAll('_',' ')} segment · ${Math.ceil(active.end-current)}s`; sbSkip.hidden=false;
+      }
+    }
+    async function fetchSegments(id) {
+      segments=[]; handled=new Set(); askSegment=null; sbSkip.hidden=true; drawSegments(); sbMessage.textContent='Checking SponsorBlock…';
+      try { const response=await fetch(`/api/sponsorblock/${encodeURIComponent(id)}`); const data=await response.json(); if(!response.ok) throw new Error(); segments=data.segments||[]; sbMessage.textContent=segments.length?`${segments.length} SponsorBlock segment${segments.length===1?'':'s'} found.`:'No SponsorBlock segments found.'; drawSegments(); }
+      catch (_) { sbMessage.textContent='SponsorBlock is unavailable; playback is unaffected.'; }
+    }
+    function loadPlayer(item) {
+      video=item; document.body.classList.add('watch-mode'); watch.hidden=false; frame.replaceChildren(); clearInterval(poll); player=null;
+      document.querySelector('#video-title').textContent=item.title||'YouTube video';
+      document.querySelector('#video-author').textContent=item.author||'';
+      fetchSegments(item.id);
+      loadSuggestions(item);
+      const mount=()=>{
+        if (!window.YT?.Player || video?.id!==item.id) return;
+        const mountPoint=document.createElement('div'); frame.replaceChildren(mountPoint);
+        player=new YT.Player(mountPoint,{videoId:item.id,playerVars:{enablejsapi:1,origin:location.origin,rel:0},events:{onReady:()=>{ poll=setInterval(processSegments,500); drawSegments(); },onStateChange:event=>{ if(event.data===YT.PlayerState.PLAYING) drawSegments(); if(event.data===YT.PlayerState.ENDED) playNext(); }}});
+      };
+      if (window.YT?.Player) mount(); else window.pendingYTPlayer=mount;
+      watch.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+    async function loadSuggestions(item) {
+      suggestionList.replaceChildren();
+      try {
+        let list=[];
+        if (item.playlistId) {
+          const response=await fetch(`/api/playlist/${encodeURIComponent(item.playlistId)}`); const data=await response.json(); if(!response.ok) throw new Error();
+          playQueue=data.results||[]; queuePlaylistId=item.playlistId;
+          queueIndex=playQueue.findIndex(row=>row.id===item.id);
+          suggestionTitle.textContent=''; suggestionList.hidden=true; playlistLayout.hidden=false; renderPlaylist(data.title||'Playlist',data.author||data.uploader||''); return;
+        } else {
+          playQueue=[]; queuePlaylistId=''; queueIndex=-1;
+          playlistLayout.hidden=true; suggestionList.hidden=false;
+          const q=`${item.title||''} ${item.author||''}`.trim();
+          const response=await fetch(`/api/related?q=${encodeURIComponent(q)}&exclude=${encodeURIComponent(item.id)}`); const data=await response.json(); if(!response.ok) throw new Error();
+          list=data.results||[]; suggestionTitle.textContent='Related picks';
+        }
+        for(const row of list){const card=document.createElement('button');card.className='card';card.type='button';const image=document.createElement('img');image.src=row.thumbnail;image.alt='';image.loading='lazy';const copy=document.createElement('div');copy.className='card-copy';const title=document.createElement('div');title.className='card-title';title.textContent=row.title;const meta=document.createElement('div');meta.className='card-meta';meta.textContent=row.author;copy.append(title,meta);card.append(image,copy);card.addEventListener('click',()=>{const next={...row,playlistId:item.playlistId||''};history.pushState({view:'watch',video:next},'',`/watch?v=${encodeURIComponent(row.id)}${next.playlistId?`&list=${encodeURIComponent(next.playlistId)}`:''}`);loadPlayer(next);});suggestionList.append(card);}
+      } catch (_) { suggestionTitle.textContent=item.playlistId?'Playlist unavailable':'Related picks unavailable'; }
+    }
+    function renderPlaylist(title,author=''){
+      playlistLayout.replaceChildren();
+      const panel=document.createElement('div');panel.className='playlist-summary';
+      const bar=document.createElement('div');bar.className='now-next';const current=playQueue[queueIndex]||video;const next=playQueue[queueIndex+1];
+      const tile=(item,label)=>{const box=document.createElement('div');box.className=label==='NOW PLAYING'?'queue-current':'queue-next';if(item?.thumbnail){const image=document.createElement('img');image.src=item.thumbnail;image.alt='';box.append(image);}const copy=document.createElement('div');copy.className='queue-copy';const tag=document.createElement('div');tag.className='queue-label';tag.textContent=label;const name=document.createElement('div');name.className='queue-title';name.textContent=item?.title||'End of playlist';const creator=document.createElement('div');creator.className='queue-author';creator.textContent=item?.author||'';copy.append(tag,name,creator);box.append(copy);return box;};
+      bar.append(tile(current,'NOW PLAYING'),tile(next,'NEXT'));
+      const head=document.createElement('div');head.className='playlist-head';const copy=document.createElement('div');copy.className='playlist-head-copy';const h=document.createElement('h4');h.textContent=title;const meta=document.createElement('span');meta.textContent=`${author?`${author} · `:''}${Math.max(0,queueIndex+1)} / ${playQueue.length}`;copy.append(h,meta);
+      const actions=document.createElement('div');actions.className='playlist-head-actions';const link=document.createElement('a');link.href=`https://www.youtube.com/playlist?list=${encodeURIComponent(queuePlaylistId)}`;link.target='_blank';link.rel='noopener';link.setAttribute('aria-label','Open playlist on YouTube');link.textContent='⋮';const close=document.createElement('button');close.type='button';close.className='playlist-close';close.setAttribute('aria-label','Collapse playlist');close.textContent='×';actions.append(link,close);head.append(copy,actions);
+      const rows=document.createElement('div');rows.className='playlist-items';rows.id='playlist-items';
+      const durationText=seconds=>{if(!Number.isFinite(Number(seconds))||Number(seconds)<=0)return '';const n=Math.floor(Number(seconds));const h=Math.floor(n/3600),m=Math.floor(n%3600/60),s=n%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${m}:${String(s).padStart(2,'0')}`;};
+      playQueue.forEach((item,index)=>{const row=document.createElement('button');row.type='button';row.className=`playlist-row${index===queueIndex?' active':''}`;const number=document.createElement('span');number.className='playlist-index';number.textContent=String(index+1);const thumb=document.createElement('span');thumb.className='playlist-thumb';const image=document.createElement('img');image.src=item.thumbnail||'';image.alt='';const duration=document.createElement('span');duration.className='playlist-duration';duration.textContent=durationText(item.duration);thumb.append(image,duration);const textWrap=document.createElement('span');const text=document.createElement('span');text.className='playlist-row-title';text.textContent=item.title;const channel=document.createElement('span');channel.className='playlist-row-author';channel.textContent=item.author||author;textWrap.append(text,channel);row.append(number,thumb,textWrap);row.addEventListener('click',()=>navigateQueue(index));rows.append(row);});
+      close.addEventListener('click',()=>{rows.hidden=!rows.hidden;close.textContent=rows.hidden?'⌄':'×';close.setAttribute('aria-label',rows.hidden?'Expand playlist':'Collapse playlist');});
+      panel.append(bar,head,rows);playlistLayout.append(panel);rows.querySelector('.active')?.scrollIntoView({block:'nearest'});
+    }
+    function navigateQueue(index){if(index<0||index>=playQueue.length)return;const next={...playQueue[index],playlistId:queuePlaylistId};history.pushState({view:'watch',video:next},'',`/watch?v=${encodeURIComponent(next.id)}&list=${encodeURIComponent(queuePlaylistId)}`);loadPlayer(next);}
+    function playNext(){if(queueIndex>=0&&queueIndex+1<playQueue.length)navigateQueue(queueIndex+1);}
+    function parseVideoLink(value) { try { const url=new URL(value); if(url.hostname==='youtu.be') return {id:url.pathname.slice(1,12),playlistId:url.searchParams.get('list')||''}; if(url.hostname.endsWith('youtube.com')) return {id:url.searchParams.get('v') || url.pathname.match(/\/(?:shorts|embed)\/([\w-]{11})/)?.[1] || '',playlistId:url.searchParams.get('list')||''}; } catch (_) {} return /^[\w-]{11}$/.test(value)?{id:value,playlistId:''}:null; }
+    async function search(term, append=false) {
+      if(!append){currentQuery=term;searchOffset=0;results.replaceChildren();history.replaceState({view:'search',query:term},'',`/?q=${encodeURIComponent(term)}`);}
+      viewMore.disabled=true; viewMore.textContent='Loading…';
+      setStatus(append?'Loading more results…':'Searching…'); watch.hidden=true; clearInterval(poll);
+      try {
+        const response=await fetch(`/api/search?q=${encodeURIComponent(term)}&offset=${searchOffset}`); const data=await response.json(); if(!response.ok) throw new Error(data.error||'Search failed.');
+        for(const item of data.results||[]) appendResult(item,item.kind==='playlist'?'PLAYLIST':'VIDEO');
+        searchOffset+=data.results?.length||0; viewMore.hidden=!data.has_more; viewMore.disabled=false; viewMore.textContent='View more';
+        setStatus(`${searchOffset} results${data.has_more?' · more available':''}`);
+      } catch(error) { viewMore.disabled=false;viewMore.textContent='View more';setStatus(error.message||'Search is unavailable.',true); }
+    }
+    function openPlayer(item) { history.pushState({view:'watch',video:item},'',`/watch?v=${encodeURIComponent(item.id)}${item.playlistId?`&list=${encodeURIComponent(item.playlistId)}`:''}`); loadPlayer(item); }
+    async function openPlaylist(item) { try {setStatus('Loading playlist…');const response=await fetch(`/api/playlist/${encodeURIComponent(item.id)}`);const data=await response.json();if(!response.ok||!data.results?.length)throw new Error();const first={...data.results[0],playlistId:item.id};history.pushState({view:'watch',video:first},'',`/watch?v=${encodeURIComponent(first.id)}&list=${encodeURIComponent(item.id)}`);loadPlayer(first);}catch(_){setStatus('Could not load that playlist.',true);} }
+    function showSearch() { document.body.classList.remove('watch-mode'); watch.hidden=true; player?.destroy?.(); player=null; clearInterval(poll); }
+    document.querySelector('#back-results').addEventListener('click',()=>history.back());
+    viewMore.addEventListener('click',()=>search(currentQuery,true));
+    window.addEventListener('popstate',event=>{
+      const id=new URLSearchParams(location.search).get('v');
+      if(id) loadPlayer(event.state?.video || {id,title:'YouTube video',author:''});
+      else { showSearch(); const term=event.state?.query || new URLSearchParams(location.search).get('q') || ''; if(term && !results.children.length){query.value=term;search(term);} }
+    });
+    form.addEventListener('submit',async event=>{ event.preventDefault(); const term=query.value.trim(); if(!term)return; const parsed=parseVideoLink(term); if(parsed?.id&&/^[\w-]{11}$/.test(parsed.id)) openPlayer({id:parsed.id,title:'YouTube video',author:'',playlistId:parsed.playlistId}); else if(parsed?.playlistId){setStatus('Loading playlist…');try{const response=await fetch(`/api/playlist/${encodeURIComponent(parsed.playlistId)}`);const data=await response.json();if(!response.ok||!data.results?.length)throw new Error();openPlayer({...data.results[0],playlistId:parsed.playlistId});}catch(_){setStatus('Could not load that playlist.',true);}}else search(term); });
+    document.querySelector('#back').addEventListener('click',()=>{if(player?.getCurrentTime)player.seekTo(Math.max(0,player.getCurrentTime()-10),true);});
+    document.querySelector('#forward').addEventListener('click',()=>{if(player?.getCurrentTime)player.seekTo(player.getCurrentTime()+10,true);});
+    document.querySelector('#speed').addEventListener('change',event=>player?.setPlaybackRate?.(Number(event.target.value)));
+    document.querySelector('#open-settings').addEventListener('click',()=>{renderSettings();modal.hidden=false;});
+    document.querySelector('#close-settings').addEventListener('click',()=>modal.hidden=true);
+    modal.addEventListener('click',event=>{if(event.target===modal)modal.hidden=true;});
+    sbSkip.addEventListener('click',()=>{if(askSegment&&player)player.seekTo(askSegment.end,true);askSegment=null;sbSkip.hidden=true;});
+    window.onYouTubeIframeAPIReady=()=>window.pendingYTPlayer?.();
+    const api=document.createElement('script'); api.src='https://www.youtube.com/iframe_api'; document.head.append(api);
+    const params=new URLSearchParams(location.search); const initial=params.get('v'); const initialQuery=params.get('q'); const initialPlaylist=params.get('list')||'';
+    if(initial&&/^[\w-]{11}$/.test(initial)){loadPlayer({id:initial,title:'YouTube video',author:'',playlistId:initialPlaylist});}
+    else if(initialPlaylist){fetch(`/api/playlist/${encodeURIComponent(initialPlaylist)}`).then(response=>response.json()).then(data=>{if(data.results?.length)loadPlayer({...data.results[0],playlistId:initialPlaylist});else setStatus('Playlist is empty or unavailable.',true);}).catch(()=>setStatus('Could not load that playlist.',true));}
+    else if(initialQuery){query.value=initialQuery;search(initialQuery);}
+  </script>
+</body>
+</html>
