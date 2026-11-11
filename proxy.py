@@ -52,6 +52,23 @@ def index():
     return send_from_directory(os.path.join(app.root_path, "static"), "index.html")
 
 
+@app.get("/manifest.webmanifest")
+@app.get("/sw.js")
+@app.get("/favicon.svg")
+@app.get("/icon-192.png")
+@app.get("/icon-512.png")
+@app.get("/icon-512-maskable.png")
+@app.get("/apple-touch-icon.png")
+def pwa_asset():
+    name = request.path.lstrip("/")
+    resp = send_from_directory(os.path.join(app.root_path, "static"), name)
+    if name == "sw.js":
+        resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    elif name == "manifest.webmanifest":
+        resp.headers["Content-Type"] = "application/manifest+json; charset=utf-8"
+    return resp
+
+
 def _fetch_search_meta(query):
     """Best-effort extract relative publish time & short view text from YouTube search page."""
     meta = {}
