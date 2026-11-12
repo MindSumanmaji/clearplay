@@ -872,10 +872,7 @@
     /* Fullscreen sizing (native Fullscreen API + YouTube iframe fullscreen + iOS/PWA viewport fallback) */
     .player-stage:fullscreen,
     .player-stage:-webkit-full-screen,
-    body.pseudo-fs .player-stage,
-    .player-frame:fullscreen,
-    .player-frame:-webkit-full-screen,
-    body.pseudo-fs .player-frame {
+    body.pseudo-fs .player-stage {
       position: fixed !important;
       inset: 0 !important;
       width: 100% !important;
@@ -894,8 +891,11 @@
       inset: 0 !important;
       width: 100% !important;
       height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
       aspect-ratio: auto !important;
       border-radius: 0 !important;
+      z-index: auto !important;
     }
     .player-frame iframe:fullscreen,
     .player-frame iframe:-webkit-full-screen {
