@@ -12,12 +12,14 @@ import json
 import logging
 import os
 import re
-from urllib.parse import quote_plus
+import threading
+import time
+from urllib.parse import parse_qs, quote_plus, urlparse
 import xml.etree.ElementTree as ET
 
 import requests
 import yt_dlp
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_from_directory, stream_with_context
 from flask_cors import CORS
 
 HOST = os.getenv("HOST", "0.0.0.0")
@@ -748,9 +750,154 @@ def home_feed():
     })
 
 
+_AUDIO_URL_CACHE = {}
+_AUDIO_CACHE_LOCK = threading.Lock()
+_AUDIO_CACHE_MAX = 120
+
+
+def _audio_mime_from_info(info):
+    ext = str(info.get("ext") or "").lower()
+    acodec = str(info.get("acodec") or "").lower()
+    if ext in ("m4a", "mp4") or "mp4a" in acodec or "aac" in acodec:
+        return "audio/mp4"
+    if ext == "webm" or "opus" in acodec or "vorbis" in acodec:
+        return "audio/webm"
+    if ext in ("mp3", "mpeg"):
+        return "audio/mpeg"
+    return "audio/mp4"
+
+
+def _resolve_audio_stream(video_id, force_refresh=False):
+    """Extract and briefly cache the direct audio-only stream URL for a video."""
+    now = time.time()
+    if not force_refresh:
+        with _AUDIO_CACHE_LOCK:
+            cached = _AUDIO_URL_CACHE.get(video_id)
+            if cached and cached["expires_at"] > now:
+                return cached
+
+    client_profiles = [
+        None,
+        {"youtube": {"player_client": ["android_vr", "ios", "tv"]}},
+    ]
+    last_err = None
+    for profile in client_profiles:
+        opts = {
+            "quiet": True,
+            "no_warnings": True,
+            "skip_download": True,
+            "format": "bestaudio[ext=m4a]/bestaudio[acodec^=mp4a]/bestaudio/best",
+            "socket_timeout": 10,
+            "noplaylist": True,
+        }
+        if profile:
+            opts["extractor_args"] = profile
+        try:
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
+            if not info or not info.get("url"):
+                continue
+            stream_url = info["url"]
+            mime_type = _audio_mime_from_info(info)
+            req_headers = dict(info.get("http_headers") or {})
+            exp_vals = parse_qs(urlparse(stream_url).query).get("expire", [])
+            url_expire = int(exp_vals[0]) if exp_vals and exp_vals[0].isdigit() else int(now + 3600)
+            entry = {
+                "url": stream_url,
+                "mime": mime_type,
+                "headers": req_headers,
+                "expires_at": min(now + 1200, url_expire - 120),
+            }
+            with _AUDIO_CACHE_LOCK:
+                if len(_AUDIO_URL_CACHE) >= _AUDIO_CACHE_MAX:
+                    oldest_key = min(_AUDIO_URL_CACHE, key=lambda k: _AUDIO_URL_CACHE[k]["expires_at"])
+                    _AUDIO_URL_CACHE.pop(oldest_key, None)
+                _AUDIO_URL_CACHE[video_id] = entry
+            return entry
+        except Exception as err:
+            last_err = err
+            continue
+
+    log.warning("Audio stream extraction failed for %s: %s", video_id, last_err)
+    return None
+
+
+@app.route("/api/audio/<video_id>", methods=["GET", "HEAD"])
+def audio_stream(video_id):
+    """Relay audio-only byte ranges for native HTML5 background playback."""
+    if not VIDEO_ID.fullmatch(video_id):
+        return jsonify({"error": "Invalid YouTube video ID."}), 400
+
+    entry = _resolve_audio_stream(video_id, force_refresh=False)
+    if not entry:
+        return jsonify({"error": "Audio stream is unavailable for this video."}), 502
+
+    def _open_upstream(item):
+        headers = dict(item.get("headers") or {})
+        range_hdr = request.headers.get("Range")
+        if range_hdr:
+            headers["Range"] = range_hdr
+        elif request.method == "HEAD":
+            headers["Range"] = "bytes=0-1"
+        return requests.get(item["url"], headers=headers, stream=True, timeout=(6, 20))
+
+    try:
+        upstream = _open_upstream(entry)
+        if upstream.status_code in (403, 410):
+            upstream.close()
+            entry = _resolve_audio_stream(video_id, force_refresh=True)
+            if not entry:
+                return jsonify({"error": "Audio stream expired and could not refresh."}), 502
+            upstream = _open_upstream(entry)
+    except requests.RequestException:
+        return jsonify({"error": "Could not reach audio stream CDN."}), 502
+
+    if upstream.status_code not in (200, 206):
+        status_code = upstream.status_code
+        upstream.close()
+        log.warning("Audio upstream returned HTTP %s for %s", status_code, video_id)
+        return jsonify({"error": "Upstream audio stream rejected request."}), 502
+
+    resp_headers = {
+        "Content-Type": upstream.headers.get("Content-Type") or entry["mime"],
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "private, max-age=300",
+        "Access-Control-Expose-Headers": "Content-Range, Content-Length, Accept-Ranges",
+    }
+    content_range = upstream.headers.get("Content-Range", "")
+    if request.method == "HEAD":
+        upstream.close()
+        total_match = re.search(r"/(\d+)$", content_range)
+        if not request.headers.get("Range") and total_match:
+            resp_headers["Content-Length"] = total_match.group(1)
+            return Response(status=200, headers=resp_headers)
+        if content_range:
+            resp_headers["Content-Range"] = content_range
+        return Response(status=upstream.status_code, headers=resp_headers)
+
+    if content_range:
+        resp_headers["Content-Range"] = content_range
+    if upstream.headers.get("Content-Length"):
+        resp_headers["Content-Length"] = upstream.headers["Content-Length"]
+
+    def _generate():
+        try:
+            for chunk in upstream.iter_content(chunk_size=32768):
+                if chunk:
+                    yield chunk
+        finally:
+            upstream.close()
+
+    return Response(
+        stream_with_context(_generate()),
+        status=upstream.status_code,
+        headers=resp_headers,
+    )
+
+
 @app.get("/health")
 def health():
-    return jsonify({"ok": True, "video_stream_proxy": False})
+    return jsonify({"ok": True, "audio_stream_proxy": True})
 
 
 if __name__ == "__main__":

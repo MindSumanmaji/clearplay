@@ -1020,6 +1020,189 @@
       aspect-ratio: 16 / 9;
     }
 
+    /* Audio-Only Background Player UI */
+    .player-frame.audio-mode .player-embed-slot {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .audio-stage {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 18px;
+      background: #0d1016;
+      overflow: hidden;
+    }
+    .audio-stage[hidden] { display: none !important; }
+    .audio-stage-bg {
+      position: absolute;
+      inset: -20px;
+      background-size: cover;
+      background-position: center;
+      filter: blur(26px) saturate(1.25) brightness(0.32);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .audio-stage-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 640px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .audio-stage-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+    .audio-cover-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 2px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+      background: #141820;
+    }
+    .audio-cover-wrap.playing {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(181, 243, 107, 0.2), 0 10px 26px rgba(0, 0, 0, 0.5);
+    }
+    .audio-cover-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .audio-meta {
+      flex: 1;
+      min-width: 0;
+    }
+    .audio-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--accent);
+      background: rgba(181, 243, 107, 0.14);
+      border: 1px solid rgba(181, 243, 107, 0.3);
+      border-radius: 999px;
+      padding: 2px 9px;
+      margin-bottom: 5px;
+    }
+    .audio-title {
+      margin: 0 0 2px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .audio-author {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .audio-stage-seek {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .audio-time {
+      font-size: 11.5px;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      min-width: 36px;
+    }
+    .audio-time.end { text-align: right; }
+    .audio-seek-range {
+      flex: 1;
+      height: 5px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .audio-stage-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .audio-transport {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .audio-round-btn {
+      width: 36px;
+      height: 36px;
+      min-height: 36px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+    }
+    .audio-round-btn svg { width: 16px; height: 16px; }
+    .audio-round-btn.primary-play {
+      width: 42px;
+      height: 42px;
+      min-height: 42px;
+      background: var(--accent);
+      color: var(--accent-dark);
+      border-color: transparent;
+    }
+    .audio-round-btn.primary-play svg { width: 18px; height: 18px; }
+    .audio-video-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      min-height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .audio-video-btn svg { width: 14px; height: 14px; }
+    #audio-btn.active svg { fill: none; }
+
+    @media (max-width: 600px) {
+      .player-frame.audio-mode { min-height: 204px; }
+      .audio-stage { padding: 12px 14px; gap: 8px; }
+      .audio-cover-wrap { width: 56px; height: 56px; border-radius: 10px; }
+      .audio-title { font-size: 14px; }
+    }
+    body.pip-mode .player-frame.audio-mode {
+      min-height: 0;
+      height: 84px;
+      aspect-ratio: auto;
+    }
+    body.pip-mode .audio-stage { padding: 10px 12px; gap: 6px; }
+    body.pip-mode .audio-cover-wrap { width: 42px; height: 42px; border-radius: 8px; }
+    body.pip-mode .audio-badge,
+    body.pip-mode .audio-stage-actions { display: none !important; }
+
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -1908,6 +2091,44 @@
           </div>
           <div id="player-frame" class="player-frame">
             <div id="player-embed-slot" class="player-embed-slot"></div>
+            <div id="audio-stage" class="audio-stage" hidden>
+              <div id="audio-stage-bg" class="audio-stage-bg"></div>
+              <div class="audio-stage-inner">
+                <div class="audio-stage-top">
+                  <div id="audio-cover-wrap" class="audio-cover-wrap">
+                    <img id="audio-cover" alt="" />
+                  </div>
+                  <div class="audio-meta">
+                    <span id="audio-badge" class="audio-badge">Audio Only · Background Ready</span>
+                    <p id="audio-stage-title" class="audio-title">Loading audio…</p>
+                    <p id="audio-stage-author" class="audio-author"></p>
+                  </div>
+                </div>
+                <div class="audio-stage-seek">
+                  <span id="audio-time-cur" class="audio-time">0:00</span>
+                  <input id="audio-seek" class="audio-seek-range" type="range" min="0" max="100" step="0.5" value="0" aria-label="Seek audio" />
+                  <span id="audio-time-dur" class="audio-time end">0:00</span>
+                </div>
+                <div class="audio-stage-actions">
+                  <div class="audio-transport">
+                    <button id="audio-prev-btn" class="audio-round-btn" type="button" title="Previous track" aria-label="Previous track" hidden>
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+                    </button>
+                    <button id="audio-play-btn" class="audio-round-btn primary-play" type="button" title="Play / Pause" aria-label="Play or Pause">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>
+                    </button>
+                    <button id="audio-next-btn" class="audio-round-btn" type="button" title="Next track" aria-label="Next track" hidden>
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+                    </button>
+                  </div>
+                  <button id="audio-to-video-btn" class="audio-video-btn" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                    <span>Switch to Video</span>
+                  </button>
+                </div>
+              </div>
+              <audio id="audio-player" preload="auto" playsinline></audio>
+            </div>
             <div id="player-fs-overlay" class="player-fs-overlay" hidden>
               <button id="fs-fill-btn" class="fs-pill-btn" type="button" title="Fill screen (remove black bars)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
@@ -1951,6 +2172,10 @@
             <button id="fullscreen-btn" class="control" type="button" title="Fullscreen">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
               <span>Full</span>
+            </button>
+            <button id="audio-btn" class="control" type="button" title="Audio Only (Background Play)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+              <span>Audio Only</span>
             </button>
             <label class="settings">
               <span>Speed</span>
@@ -2092,6 +2317,23 @@
     const fillBtn = document.querySelector('#fill-btn');
     const pipBtn = document.querySelector('#pip-btn');
     const fullscreenBtn = document.querySelector('#fullscreen-btn');
+    const audioBtn = document.querySelector('#audio-btn');
+    const audioStage = document.querySelector('#audio-stage');
+    const audioStageBg = document.querySelector('#audio-stage-bg');
+    const audioCoverWrap = document.querySelector('#audio-cover-wrap');
+    const audioCover = document.querySelector('#audio-cover');
+    const audioBadge = document.querySelector('#audio-badge');
+    const audioStageTitle = document.querySelector('#audio-stage-title');
+    const audioStageAuthor = document.querySelector('#audio-stage-author');
+    const audioTimeCur = document.querySelector('#audio-time-cur');
+    const audioTimeDur = document.querySelector('#audio-time-dur');
+    const audioSeek = document.querySelector('#audio-seek');
+    const audioPrevBtn = document.querySelector('#audio-prev-btn');
+    const audioPlayBtn = document.querySelector('#audio-play-btn');
+    const audioNextBtn = document.querySelector('#audio-next-btn');
+    const audioToVideoBtn = document.querySelector('#audio-to-video-btn');
+    const audioPlayer = document.querySelector('#audio-player');
+    const speedSelect = document.querySelector('#speed');
     const pipBar = document.querySelector('#pip-bar');
     const pipTitle = document.querySelector('#pip-title');
     const pipPlayBtn = document.querySelector('#pip-play-btn');
@@ -2282,23 +2524,75 @@
       if (activeTab === 'history') renderHistoryTab();
     }
 
+    let audioModeActive = false;
+    let audioUsingFallback = false;
+    let audioResumeAt = 0;
+    let pendingVideoMount = null;
+    let audioSeekingDrag = false;
+
+    function getActiveTime() {
+      if (audioModeActive) return Number(audioPlayer?.currentTime || 0);
+      return Number(player?.getCurrentTime?.() || 0);
+    }
+
+    function getActiveDuration() {
+      if (audioModeActive) {
+        const d = Number(audioPlayer?.duration || 0);
+        return Number.isFinite(d) && d > 0 ? d : Number(video?.duration || 0);
+      }
+      const d = Number(player?.getDuration?.() || 0);
+      return d > 0 ? d : Number(video?.duration || 0);
+    }
+
+    function seekActivePlayer(seconds) {
+      const target = Math.max(0, Number(seconds || 0));
+      if (audioModeActive) {
+        if (Number.isFinite(audioPlayer.duration) && audioPlayer.duration > 0) {
+          audioPlayer.currentTime = Math.min(target, audioPlayer.duration);
+        } else {
+          audioPlayer.currentTime = target;
+        }
+        syncAudioProgressUi();
+      } else if (player?.seekTo) {
+        player.seekTo(target, true);
+      }
+    }
+
+    function isAnyPlaying() {
+      if (audioModeActive) return Boolean(audioPlayer && !audioPlayer.paused && !audioPlayer.ended);
+      return player?.getPlayerState?.() === window.YT?.PlayerState?.PLAYING;
+    }
+
+    function isAnyPaused() {
+      if (audioModeActive) return Boolean(audioPlayer && audioPlayer.paused && !audioPlayer.ended);
+      return player?.getPlayerState?.() === window.YT?.PlayerState?.PAUSED;
+    }
+
+    function isAnyEnded() {
+      if (audioModeActive) return Boolean(audioPlayer?.ended);
+      return player?.getPlayerState?.() === window.YT?.PlayerState?.ENDED;
+    }
+
     async function flushVideoProgress(force = false) {
-      if (!currentUser || !video?.id || !player || typeof player.getCurrentTime !== 'function') return;
+      if (!currentUser || !video?.id) return;
+      if (!audioModeActive && (!player || typeof player.getCurrentTime !== 'function')) return;
       let cur = 0;
       let dur = 0;
-      let state = -1;
+      let paused = false;
+      let endedState = false;
       try {
-        cur = Number(player.getCurrentTime() || 0);
-        dur = Number(player.getDuration?.() || video.duration || 0);
-        state = player.getPlayerState?.();
+        cur = getActiveTime();
+        dur = getActiveDuration();
+        paused = isAnyPaused();
+        endedState = isAnyEnded();
       } catch (_) {
         return;
       }
 
-      if (!playerHasPlayed && state !== YT.PlayerState.PAUSED && state !== YT.PlayerState.ENDED) return;
+      if (!playerHasPlayed && !paused && !endedState) return;
       if (!Number.isFinite(cur)) return;
 
-      const ended = state === YT.PlayerState.ENDED || (dur > 0 && (cur / dur >= 0.95 || dur - cur <= 8));
+      const ended = endedState || (dur > 0 && (cur / dur >= 0.95 || dur - cur <= 8));
       if (cur < 2 && !ended) return;
 
       const prev = userHistory.find(x => x.id === video.id);
@@ -3266,7 +3560,7 @@
 
     function drawSegments() {
       track.replaceChildren();
-      const duration = player?.getDuration?.() || 0;
+      const duration = getActiveDuration();
       if (!duration) return;
       for (const item of segments) {
         if (actions[item.category] === 'off') continue;
@@ -3281,16 +3575,16 @@
     }
 
     function processSegments() {
-      if (!player || player.getPlayerState?.() !== YT.PlayerState.PLAYING) return;
+      if (!isAnyPlaying()) return;
       flushVideoProgress(false);
-      const current = player.getCurrentTime();
+      const current = getActiveTime();
       const active = segments.find(item => current >= item.start && current < item.end && ['skip', 'ask'].includes(actions[item.category]));
       if (!active) { askSegment = null; sbSkip.hidden = true; return; }
       const key = `${active.category}:${active.start}:${active.end}`;
       if (actions[active.category] === 'skip') {
         if (!handled.has(key)) {
           handled.add(key);
-          player.seekTo(active.end, true);
+          seekActivePlayer(active.end);
           sbMessage.textContent = `Skipped ${active.category.replaceAll('_', ' ')} segment.`;
         }
       } else {
@@ -3363,8 +3657,10 @@
       }
     }
 
-    function loadPlayer(item) {
-      if (video?.id && player) flushVideoProgress(true);
+    function loadPlayer(item, options = {}) {
+      const keepAudio = Boolean(options.preserveAudio && audioModeActive);
+      const keepPip = Boolean(options.preserveAudio && isPipActive());
+      if (video?.id && (player || audioModeActive)) flushVideoProgress(true);
       playerHasPlayed = false;
       lastProgressSyncAt = 0;
 
@@ -3375,15 +3671,31 @@
       const resumeAt = rawResume >= 2 ? Math.floor(rawResume) : 0;
 
       video = { ...item, _resumeApplied: resumeAt >= 2 };
-      document.body.classList.remove('pip-mode', 'pseudo-fs');
-      pipBar.hidden = true;
-      resetPipPosition();
-      document.body.classList.add('watch-mode');
+      document.body.classList.remove('pseudo-fs');
+      if (!keepPip) {
+        document.body.classList.remove('pip-mode');
+        pipBar.hidden = true;
+        resetPipPosition();
+        document.body.classList.add('watch-mode');
+      }
       watch.hidden = false;
       playerEmbedSlot.replaceChildren();
       clearInterval(poll);
       player = null;
-      document.title = `${item.title || 'Watching video'} — Clearplay`;
+      pendingVideoMount = null;
+
+      if (!keepAudio) {
+        audioModeActive = false;
+        audioPlayer.pause();
+        audioPlayer.removeAttribute('src');
+        audioPlayer.load();
+        frame.classList.remove('audio-mode');
+        audioStage.hidden = true;
+        audioBtn.classList.remove('active');
+        audioBtn.querySelector('span').textContent = 'Audio Only';
+      }
+
+      document.title = keepPip ? 'Clearplay — YouTube Embed & Personal Library' : `${item.title || 'Watching video'} — Clearplay`;
       pipTitle.textContent = item.title || 'Playing video';
       document.querySelector('#video-title').textContent = item.title || 'YouTube video';
       document.querySelector('#video-author').textContent = item.author || 'Loading channel…';
@@ -3394,35 +3706,42 @@
       fetchSegments(item.id);
       if (item.playlistId) loadSuggestions(item);
       hydrateMissingVideoMeta(video).then(hydrated => {
-        if (video?.id === item.id) pipTitle.textContent = hydrated.title || item.title || 'Playing video';
+        if (video?.id === item.id) {
+          pipTitle.textContent = hydrated.title || item.title || 'Playing video';
+          syncAudioStageMeta();
+          syncMediaSession();
+        }
         saveHistoryEntry(hydrated);
         if (!item.playlistId) loadSuggestions(hydrated);
       });
 
-      const mount = () => {
+      const mount = (overrideStart) => {
         if (!window.YT?.Player || video?.id !== item.id) return;
         const mountPoint = document.createElement('div');
         playerEmbedSlot.replaceChildren(mountPoint);
+        const startSec = typeof overrideStart === 'number' ? Math.max(0, Math.floor(overrideStart)) : resumeAt;
         const playerVars = { enablejsapi: 1, origin: location.origin, rel: 0, playsinline: 1, fs: 1 };
-        if (resumeAt >= 2) playerVars.start = resumeAt;
+        if (startSec >= 2) playerVars.start = startSec;
         player = new YT.Player(mountPoint, {
           videoId: item.id,
           playerVars,
           events: {
             onReady: () => {
-              if (resumeAt >= 2) {
+              if (startSec >= 2) {
                 try {
-                  if ((player.getCurrentTime?.() || 0) < resumeAt - 5) player.seekTo(resumeAt, true);
+                  if ((player.getCurrentTime?.() || 0) < startSec - 5) player.seekTo(startSec, true);
                 } catch (_) {}
-                showToast(`Resuming from ${formatDuration(resumeAt)}`);
+                if (typeof overrideStart !== 'number') showToast(`Resuming from ${formatDuration(startSec)}`);
               }
               poll = setInterval(processSegments, 500);
               drawSegments();
               syncPipPlayIcon();
+              syncMediaSession();
               updatePlayerFillScale();
             },
             onStateChange: event => {
               syncPipPlayIcon(event.data);
+              syncMediaSession();
               if (event.data === YT.PlayerState.PLAYING) {
                 playerHasPlayed = true;
                 drawSegments();
@@ -3439,9 +3758,15 @@
         });
       };
 
+      if (keepAudio) {
+        pendingVideoMount = mount;
+        enterAudioMode(resumeAt);
+        return;
+      }
+
       if (window.YT?.Player) mount();
       else window.pendingYTPlayer = mount;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (!keepPip) window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function loadSuggestions(item) {
@@ -3584,15 +3909,21 @@
       rows.querySelector('.active')?.scrollIntoView({ block: 'nearest' });
     }
 
-    function navigateQueue(index) {
+    function navigateQueue(index, preserveAudio = audioModeActive) {
       if (index < 0 || index >= playQueue.length) return;
       const next = { ...playQueue[index], playlistId: queuePlaylistId };
-      history.pushState({ view: 'watch', video: next }, '', `/watch?v=${encodeURIComponent(next.id)}&list=${encodeURIComponent(queuePlaylistId)}`);
-      loadPlayer(next);
+      if (!isPipActive()) {
+        history.pushState({ view: 'watch', video: next }, '', `/watch?v=${encodeURIComponent(next.id)}&list=${encodeURIComponent(queuePlaylistId)}`);
+      }
+      loadPlayer(next, { preserveAudio });
     }
 
     function playNext() {
-      if (queueIndex >= 0 && queueIndex + 1 < playQueue.length) navigateQueue(queueIndex + 1);
+      if (queueIndex >= 0 && queueIndex + 1 < playQueue.length) navigateQueue(queueIndex + 1, audioModeActive);
+    }
+
+    function playPrev() {
+      if (queueIndex > 0) navigateQueue(queueIndex - 1, audioModeActive);
     }
 
     function parseVideoLink(value) {
@@ -3619,7 +3950,9 @@
       viewMore.disabled = true;
       viewMore.textContent = 'Loading…';
       setStatus(append ? 'Loading more results…' : 'Searching YouTube…');
-      if (!isPipActive()) {
+      if (audioModeActive && !isPipActive()) {
+        enterPipMode();
+      } else if (!isPipActive()) {
         watch.hidden = true;
         clearInterval(poll);
       }
@@ -3675,13 +4008,18 @@
     }
 
     function showSearch(focusInput = false, forceStop = false) {
-      if (isPipActive() && !forceStop) {
+      if ((isPipActive() || audioModeActive) && !forceStop) {
+        if (audioModeActive && !isPipActive()) {
+          enterPipMode();
+          return;
+        }
         document.body.classList.remove('watch-mode');
         document.title = 'Clearplay — YouTube Embed & Personal Library';
         return;
       }
       flushVideoProgress(true);
       playerHasPlayed = false;
+      exitAudioMode(false);
       document.body.classList.remove('watch-mode', 'pip-mode', 'pseudo-fs');
       pipBar.hidden = true;
       resetPipPosition();
@@ -3690,7 +4028,9 @@
       watch.hidden = true;
       player?.destroy?.();
       player = null;
+      pendingVideoMount = null;
       clearInterval(poll);
+      if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'none';
       if (focusInput) {
         queryInput.focus();
         queryInput.select();
@@ -3922,17 +4262,22 @@
 
     // Watch Mode Controls
     document.querySelector('#back').addEventListener('click', () => {
-      if (player?.getCurrentTime) player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
+      seekActivePlayer(Math.max(0, getActiveTime() - 10));
     });
     document.querySelector('#forward').addEventListener('click', () => {
-      if (player?.getCurrentTime) player.seekTo(player.getCurrentTime() + 10, true);
+      seekActivePlayer(getActiveTime() + 10);
     });
-    document.querySelector('#speed').addEventListener('change', event => player?.setPlaybackRate?.(Number(event.target.value)));
+    speedSelect.addEventListener('change', event => {
+      const rate = Number(event.target.value || 1);
+      audioPlayer.playbackRate = rate;
+      player?.setPlaybackRate?.(rate);
+      updateMediaPositionState();
+    });
     document.querySelector('#open-settings').addEventListener('click', () => { renderSettings(); modal.hidden = false; });
     document.querySelector('#close-settings').addEventListener('click', () => modal.hidden = true);
     modal.addEventListener('click', event => { if (event.target === modal) modal.hidden = true; });
     sbSkip.addEventListener('click', () => {
-      if (askSegment && player) player.seekTo(askSegment.end, true);
+      if (askSegment) seekActivePlayer(askSegment.end);
       askSegment = null;
       sbSkip.hidden = true;
     });
@@ -4075,16 +4420,17 @@
     }
 
     function syncPipPlayIcon(stateOverride) {
-      const state = typeof stateOverride === 'number' ? stateOverride : player?.getPlayerState?.();
-      const playing = state === window.YT?.PlayerState?.PLAYING;
+      const playing = audioModeActive
+        ? Boolean(audioPlayer && !audioPlayer.paused && !audioPlayer.ended)
+        : (typeof stateOverride === 'number' ? stateOverride : player?.getPlayerState?.()) === window.YT?.PlayerState?.PLAYING;
       pipPlayBtn.innerHTML = playing
         ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>'
         : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>';
-      pipPlayBtn.setAttribute('aria-label', playing ? 'Pause video' : 'Play video');
+      pipPlayBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
     }
 
     function enterPipMode() {
-      if (!video || !player) return;
+      if (!video || (!player && !audioModeActive)) return;
       if (isFullscreenActive()) exitFullscreen();
       frame.classList.remove('fill-mode');
       syncFullscreenUi();
@@ -4124,6 +4470,257 @@
       showSearch(false, true);
     }
 
+    function toggleActivePlayPause() {
+      if (audioModeActive) {
+        if (audioPlayer.paused) audioPlayer.play().catch(() => {});
+        else audioPlayer.pause();
+        return;
+      }
+      if (!player) return;
+      const state = player.getPlayerState?.();
+      if (state === window.YT?.PlayerState?.PLAYING) player.pauseVideo?.();
+      else player.playVideo?.();
+    }
+
+    // Audio-Only Background Player & Lock-Screen Media Session
+    function syncAudioStageMeta() {
+      if (!video?.id) return;
+      const thumbUrl = video.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg`;
+      audioCover.src = thumbUrl;
+      audioStageBg.style.backgroundImage = `url("${thumbUrl.replace(/"/g, '%22')}")`;
+      audioStageTitle.textContent = video.title || 'Playing audio';
+      audioStageAuthor.textContent = video.author || '';
+      audioPrevBtn.hidden = !(queueIndex > 0);
+      audioNextBtn.hidden = !(queueIndex >= 0 && queueIndex + 1 < playQueue.length);
+    }
+
+    function syncAudioPlayBtn() {
+      const playing = Boolean(audioModeActive && !audioPlayer.paused && !audioPlayer.ended);
+      audioCoverWrap.classList.toggle('playing', playing);
+      audioPlayBtn.innerHTML = playing
+        ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>';
+      audioPlayBtn.setAttribute('aria-label', playing ? 'Pause audio' : 'Play audio');
+      syncPipPlayIcon();
+    }
+
+    function syncAudioProgressUi() {
+      const cur = Number(audioPlayer.currentTime || 0);
+      const dur = Number.isFinite(audioPlayer.duration) && audioPlayer.duration > 0
+        ? audioPlayer.duration
+        : Number(video?.duration || 0);
+      audioTimeCur.textContent = formatDuration(cur) || '0:00';
+      audioTimeDur.textContent = dur > 0 ? (formatDuration(dur) || '0:00') : '0:00';
+      if (!audioSeekingDrag && dur > 0) {
+        audioSeek.max = String(Math.floor(dur));
+        audioSeek.value = String(Math.min(Math.floor(cur), Math.floor(dur)));
+      }
+    }
+
+    function updateMediaPositionState() {
+      if (!('mediaSession' in navigator) || typeof navigator.mediaSession.setPositionState !== 'function') return;
+      try {
+        const dur = getActiveDuration();
+        const pos = Math.min(Math.max(0, getActiveTime()), dur || 0);
+        const rate = Number(speedSelect.value || 1) || 1;
+        if (Number.isFinite(dur) && dur > 0) {
+          navigator.mediaSession.setPositionState({ duration: dur, playbackRate: rate, position: pos });
+        }
+      } catch (_) {}
+    }
+
+    function syncMediaSession() {
+      if (!('mediaSession' in navigator) || !video?.id) return;
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: video.title || 'Clearplay',
+          artist: video.author || 'Clearplay',
+          album: 'Clearplay Audio',
+          artwork: [
+            { src: `https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`, sizes: '320x180', type: 'image/jpeg' },
+            { src: `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`, sizes: '480x360', type: 'image/jpeg' },
+          ]
+        });
+        navigator.mediaSession.playbackState = isAnyPlaying() ? 'playing' : (isAnyPaused() ? 'paused' : 'none');
+        navigator.mediaSession.setActionHandler('play', () => toggleActivePlayPause());
+        navigator.mediaSession.setActionHandler('pause', () => toggleActivePlayPause());
+        navigator.mediaSession.setActionHandler('seekbackward', d => {
+          seekActivePlayer(Math.max(0, getActiveTime() - (d?.seekOffset || 10)));
+        });
+        navigator.mediaSession.setActionHandler('seekforward', d => {
+          seekActivePlayer(getActiveTime() + (d?.seekOffset || 10));
+        });
+        navigator.mediaSession.setActionHandler('seekto', d => {
+          if (typeof d?.seekTime === 'number') seekActivePlayer(d.seekTime);
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', queueIndex > 0 ? () => playPrev() : null);
+        navigator.mediaSession.setActionHandler('nexttrack', (queueIndex >= 0 && queueIndex + 1 < playQueue.length) ? () => playNext() : null);
+        updateMediaPositionState();
+      } catch (_) {}
+    }
+
+    function enterAudioMode(startAtOverride = null) {
+      if (!video?.id) return;
+      if (isFullscreenActive()) exitFullscreen();
+      const startSec = typeof startAtOverride === 'number'
+        ? startAtOverride
+        : Math.floor(player?.getCurrentTime?.() || 0);
+      try { player?.pauseVideo?.(); } catch (_) {}
+
+      audioModeActive = true;
+      audioUsingFallback = false;
+      audioResumeAt = Math.max(0, Math.floor(startSec));
+      frame.classList.add('audio-mode');
+      audioStage.hidden = false;
+      audioBtn.classList.add('active');
+      audioBtn.querySelector('span').textContent = 'Audio On';
+      audioBadge.textContent = 'Loading audio stream…';
+      audioSeek.value = '0';
+      audioTimeCur.textContent = formatDuration(audioResumeAt) || '0:00';
+      audioTimeDur.textContent = video.duration ? (formatDuration(video.duration) || '0:00') : '0:00';
+
+      syncAudioStageMeta();
+      syncAudioPlayBtn();
+      syncMediaSession();
+
+      audioPlayer.playbackRate = Number(speedSelect.value || 1) || 1;
+      audioPlayer.src = `${API_BASE}/api/audio/${encodeURIComponent(video.id)}`;
+      audioPlayer.load();
+      clearInterval(poll);
+      poll = setInterval(processSegments, 500);
+
+      const playPromise = audioPlayer.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          if (audioModeActive) {
+            audioBadge.textContent = 'Tap Play to start background audio';
+            syncAudioPlayBtn();
+          }
+        });
+      }
+    }
+
+    function exitAudioMode(resumeVideo = true) {
+      if (!audioModeActive && !audioPlayer.getAttribute('src')) return;
+      const curSec = Math.floor(audioPlayer.currentTime || 0);
+      audioModeActive = false;
+      audioUsingFallback = false;
+      audioResumeAt = 0;
+
+      audioPlayer.pause();
+      audioPlayer.removeAttribute('src');
+      audioPlayer.load();
+
+      frame.classList.remove('audio-mode');
+      audioStage.hidden = true;
+      audioBtn.classList.remove('active');
+      audioBtn.querySelector('span').textContent = 'Audio Only';
+      syncPipPlayIcon();
+
+      if (resumeVideo && video?.id) {
+        if (player?.seekTo) {
+          try {
+            player.seekTo(curSec, true);
+            player.playVideo?.();
+          } catch (_) {}
+        } else if (pendingVideoMount) {
+          const fn = pendingVideoMount;
+          pendingVideoMount = null;
+          if (window.YT?.Player) fn(curSec);
+          else window.pendingYTPlayer = () => fn(curSec);
+        }
+      }
+      syncMediaSession();
+    }
+
+    audioBtn.addEventListener('click', () => {
+      if (audioModeActive) exitAudioMode(true);
+      else enterAudioMode();
+    });
+    audioToVideoBtn.addEventListener('click', () => exitAudioMode(true));
+    audioPlayBtn.addEventListener('click', toggleActivePlayPause);
+    audioPrevBtn.addEventListener('click', playPrev);
+    audioNextBtn.addEventListener('click', playNext);
+
+    audioSeek.addEventListener('input', () => {
+      audioSeekingDrag = true;
+      audioTimeCur.textContent = formatDuration(Number(audioSeek.value || 0)) || '0:00';
+    });
+    audioSeek.addEventListener('change', () => {
+      audioSeekingDrag = false;
+      seekActivePlayer(Number(audioSeek.value || 0));
+    });
+
+    audioPlayer.addEventListener('loadedmetadata', () => {
+      if (!audioModeActive) return;
+      if (audioResumeAt >= 2) {
+        try {
+          if (Math.abs((audioPlayer.currentTime || 0) - audioResumeAt) > 3) {
+            audioPlayer.currentTime = audioResumeAt;
+          }
+        } catch (_) {}
+        audioResumeAt = 0;
+      }
+      drawSegments();
+      syncAudioProgressUi();
+      updateMediaPositionState();
+    });
+    audioPlayer.addEventListener('playing', () => {
+      if (!audioModeActive) return;
+      playerHasPlayed = true;
+      audioBadge.textContent = 'Audio Only · Background Ready';
+      syncAudioPlayBtn();
+      syncMediaSession();
+    });
+    audioPlayer.addEventListener('waiting', () => {
+      if (audioModeActive) audioBadge.textContent = 'Buffering audio…';
+    });
+    audioPlayer.addEventListener('pause', () => {
+      if (!audioModeActive) return;
+      if (!audioPlayer.ended) audioBadge.textContent = 'Paused · Audio Only';
+      flushVideoProgress(true);
+      syncAudioPlayBtn();
+      syncMediaSession();
+    });
+    audioPlayer.addEventListener('timeupdate', () => {
+      if (!audioModeActive) return;
+      syncAudioProgressUi();
+      updateMediaPositionState();
+    });
+    audioPlayer.addEventListener('ended', () => {
+      if (!audioModeActive) return;
+      flushVideoProgress(true);
+      syncAudioPlayBtn();
+      syncMediaSession();
+      playNext();
+    });
+    audioPlayer.addEventListener('error', async () => {
+      if (!audioModeActive || !video?.id || !audioPlayer.getAttribute('src')) return;
+      const failedId = video.id;
+      if (!audioUsingFallback) {
+        audioUsingFallback = true;
+        audioBadge.textContent = 'Trying backup audio source…';
+        try {
+          const resp = await fetch(`https://yt.chocolatemoo53.com/api/v1/videos/${encodeURIComponent(failedId)}`);
+          if (resp.ok) {
+            const data = await resp.json();
+            const fmt = (data.adaptiveFormats || []).find(f => String(f.type || '').includes('audio/mp4'))
+              || (data.adaptiveFormats || []).find(f => String(f.type || '').startsWith('audio/'));
+            if (fmt?.url && audioModeActive && video?.id === failedId) {
+              audioPlayer.src = fmt.url;
+              audioPlayer.load();
+              await audioPlayer.play().catch(() => {});
+              return;
+            }
+          }
+        } catch (_) {}
+      }
+      if (audioModeActive && video?.id === failedId) {
+        showToast('Audio stream unavailable for this track — switched back to video');
+        exitAudioMode(true);
+      }
+    });
+
     fullscreenBtn.addEventListener('click', toggleFullscreen);
     fsExitBtn.addEventListener('click', exitFullscreen);
     fillBtn.addEventListener('click', toggleFillMode);
@@ -4131,12 +4728,7 @@
     pipBtn.addEventListener('click', enterPipMode);
     pipExpandBtn.addEventListener('click', () => exitPipMode(true));
     pipCloseBtn.addEventListener('click', closePipPlayer);
-    pipPlayBtn.addEventListener('click', () => {
-      if (!player) return;
-      const state = player.getPlayerState?.();
-      if (state === window.YT?.PlayerState?.PLAYING) player.pauseVideo?.();
-      else player.playVideo?.();
-    });
+    pipPlayBtn.addEventListener('click', toggleActivePlayPause);
 
     // Drag PiP mini-player via top bar (mouse & touch)
     (() => {
