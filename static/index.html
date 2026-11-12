@@ -935,8 +935,77 @@
       padding: 20px max(16px, env(safe-area-inset-right, 16px)) max(14px, env(safe-area-inset-bottom, 14px)) max(16px, env(safe-area-inset-left, 16px));
       background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.45) 62%, transparent);
     }
-    .player-bar.dimmed { opacity: 0.22; }
-    .player-bar:hover, .player-bar:focus-within { opacity: 1 !important; }
+    /* Fullscreen & landscape overlay HUD tap shield + auto-hide */
+    .fs-tap-shield {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      background: transparent;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .player-stage:fullscreen .fs-tap-shield,
+    .player-stage:-webkit-full-screen .fs-tap-shield,
+    body.pseudo-fs .player-stage .fs-tap-shield {
+      display: block;
+    }
+    @media (max-height: 540px) and (orientation: landscape) {
+      body.watch-mode:not(.pip-mode):not(.pseudo-fs) .fs-tap-shield {
+        display: block;
+      }
+    }
+    .player-frame.audio-mode ~ .fs-tap-shield {
+      display: none !important;
+    }
+    .player-stage.hud-hidden {
+      cursor: none;
+    }
+    .player-stage.hud-hidden .player-bar,
+    .player-stage.hud-hidden .player-fs-overlay {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* Subtle floating controls visible inside fullscreen */
+    .player-fs-overlay {
+      position: absolute;
+      bottom: max(68px, calc(60px + env(safe-area-inset-bottom, 8px)));
+      right: max(12px, env(safe-area-inset-right, 12px));
+      z-index: 11;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px;
+      border-radius: 999px;
+      background: rgba(11, 12, 16, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 1;
+      transition: opacity 0.25s ease;
+    }
+    .player-fs-overlay[hidden] { display: none !important; }
+    .fs-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .fs-pill-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .fs-pill-btn.active {
+      background: rgba(181, 243, 107, 0.18);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     .vp-btn {
       width: 32px;
       height: 32px;
@@ -1013,48 +1082,6 @@
     }
     @media (max-width: 600px) {
       .player-bar { padding: 8px 12px; gap: 8px; }
-    }
-
-    /* Subtle floating controls visible inside fullscreen */
-    .player-fs-overlay {
-      position: absolute;
-      bottom: max(68px, calc(60px + env(safe-area-inset-bottom, 8px)));
-      right: max(12px, env(safe-area-inset-right, 12px));
-      z-index: 11;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 5px;
-      border-radius: 999px;
-      background: rgba(11, 12, 16, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      opacity: 0.92;
-      transition: opacity 0.25s ease;
-    }
-    .player-fs-overlay[hidden] { display: none !important; }
-    .player-fs-overlay.dimmed { opacity: 0.24; }
-    .player-fs-overlay:hover, .player-fs-overlay:focus-within { opacity: 1; }
-    .fs-pill-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 34px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text);
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .fs-pill-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
-    .fs-pill-btn.active {
-      background: rgba(181, 243, 107, 0.18);
-      border-color: var(--accent);
-      color: var(--accent);
     }
 
     /* Draggable Picture-in-Picture (PiP) Mini-Player */
@@ -2348,6 +2375,7 @@
               </button>
             </div>
           </div>
+          <div id="fs-tap-shield" class="fs-tap-shield" aria-hidden="true"></div>
           <div id="player-bar" class="player-bar">
             <button id="vp-play-btn" class="vp-btn vp-play" type="button" title="Play / Pause" aria-label="Play">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>
@@ -2531,6 +2559,7 @@
     const playerColumn = document.querySelector('#player-column');
     const playerStage = document.querySelector('#player-stage');
     const frame = document.querySelector('#player-frame');
+    const fsTapShield = document.querySelector('#fs-tap-shield');
     const playerBar = document.querySelector('#player-bar');
     const vpPlayBtn = document.querySelector('#vp-play-btn');
     const vpTimeCur = document.querySelector('#vp-time-cur');
@@ -4036,12 +4065,15 @@
               if (event.data === YT.PlayerState.PLAYING) {
                 playerHasPlayed = true;
                 drawSegments();
+                if (isOverlayHudMode()) bumpFsOverlay();
               }
               if (event.data === YT.PlayerState.PAUSED) {
                 flushVideoProgress(true);
+                bumpFsOverlay(false);
               }
               if (event.data === YT.PlayerState.ENDED) {
                 flushVideoProgress(true);
+                bumpFsOverlay(false);
                 playNext();
               }
             }
@@ -4620,15 +4652,26 @@
       frame.style.setProperty('--player-fill-scale', scale.toFixed(3));
     }
 
-    function bumpFsOverlay() {
-      playerFsOverlay.classList.remove('dimmed');
-      playerBar.classList.remove('dimmed');
+    function isOverlayHudMode() {
+      return isFullscreenActive()
+        || (document.body.classList.contains('watch-mode')
+          && !isPipActive()
+          && !audioModeActive
+          && window.matchMedia('(max-height: 540px) and (orientation: landscape)').matches);
+    }
+
+    function hideFsHud() {
       clearTimeout(fsDimTimer);
-      if (isFullscreenActive()) {
-        fsDimTimer = setTimeout(() => {
-          playerFsOverlay.classList.add('dimmed');
-          playerBar.classList.add('dimmed');
-        }, 3000);
+      if (isOverlayHudMode() && isAnyPlaying() && !vpSeekingDrag) {
+        playerStage.classList.add('hud-hidden');
+      }
+    }
+
+    function bumpFsOverlay(autoHide = true) {
+      playerStage.classList.remove('hud-hidden');
+      clearTimeout(fsDimTimer);
+      if (autoHide && isOverlayHudMode() && isAnyPlaying() && !vpSeekingDrag) {
+        fsDimTimer = setTimeout(hideFsHud, 3000);
       }
     }
 
@@ -4643,7 +4686,10 @@
         || document.webkitFullscreenElement === frame;
 
       playerFsOverlay.hidden = !ownFrameFs;
-      if (!fsActive) playerBar.classList.remove('dimmed');
+      if (!isOverlayHudMode()) {
+        clearTimeout(fsDimTimer);
+        playerStage.classList.remove('hud-hidden');
+      }
       fullscreenBtn.classList.toggle('active', fsActive);
       fullscreenBtn.querySelector('span').textContent = fsActive ? 'Exit' : 'Full';
 
@@ -5020,9 +5066,9 @@
     });
 
     fullscreenBtn.addEventListener('click', toggleFullscreen);
-    fsExitBtn.addEventListener('click', exitFullscreen);
+    fsExitBtn.addEventListener('click', () => { fsExitBtn.blur(); exitFullscreen(); });
     fillBtn.addEventListener('click', toggleFillMode);
-    fsFillBtn.addEventListener('click', toggleFillMode);
+    fsFillBtn.addEventListener('click', () => { toggleFillMode(); fsFillBtn.blur(); });
     pipBtn.addEventListener('click', enterPipMode);
     pipExpandBtn.addEventListener('click', () => exitPipMode(true));
     pipCloseBtn.addEventListener('click', closePipPlayer);
@@ -5076,16 +5122,49 @@
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    playerStage.addEventListener('pointerdown', () => { if (isFullscreenActive()) bumpFsOverlay(); });
-    playerStage.addEventListener('mousemove', () => { if (isFullscreenActive()) bumpFsOverlay(); });
+    let lastShieldPointerType = 'touch';
+    fsTapShield.addEventListener('pointerdown', event => {
+      lastShieldPointerType = event.pointerType || 'touch';
+    });
+    fsTapShield.addEventListener('pointermove', event => {
+      if (event.pointerType === 'mouse' && isOverlayHudMode()) bumpFsOverlay();
+    });
+    fsTapShield.addEventListener('click', () => {
+      if (!isOverlayHudMode()) return;
+      if (playerStage.classList.contains('hud-hidden')) {
+        bumpFsOverlay();
+        if (!playerHasPlayed && !isAnyPlaying()) player?.playVideo?.();
+        return;
+      }
+      if (lastShieldPointerType === 'touch') {
+        hideFsHud();
+      } else {
+        toggleActivePlayPause();
+        bumpFsOverlay();
+      }
+    });
+
+    const bumpControlActivity = () => {
+      if (isOverlayHudMode()) bumpFsOverlay();
+    };
+    playerBar.addEventListener('pointerdown', bumpControlActivity);
+    playerBar.addEventListener('pointermove', event => {
+      if (event.pointerType === 'mouse') bumpControlActivity();
+    });
+    playerFsOverlay.addEventListener('pointerdown', bumpControlActivity);
+    playerFsOverlay.addEventListener('pointermove', event => {
+      if (event.pointerType === 'mouse') bumpControlActivity();
+    });
 
     vpPlayBtn.addEventListener('click', () => {
+      vpPlayBtn.blur();
       toggleActivePlayPause();
-      if (isFullscreenActive()) bumpFsOverlay();
+      bumpControlActivity();
     });
     vpMuteBtn.addEventListener('click', () => {
+      vpMuteBtn.blur();
       toggleVideoMute();
-      if (isFullscreenActive()) bumpFsOverlay();
+      bumpControlActivity();
     });
     vpSeek.addEventListener('input', () => {
       vpSeekingDrag = true;
@@ -5093,17 +5172,22 @@
       const dur = getActiveDuration() || Number(vpSeek.max || 0);
       vpTimeCur.textContent = formatDuration(val) || '0:00';
       updateVpSeekVisual(val, dur);
-      if (isFullscreenActive()) bumpFsOverlay();
+      if (isOverlayHudMode()) bumpFsOverlay(false);
     });
     vpSeek.addEventListener('change', () => {
       vpSeekingDrag = false;
+      vpSeek.blur();
       seekActivePlayer(Number(vpSeek.value || 0));
-      if (isFullscreenActive()) bumpFsOverlay();
+      bumpControlActivity();
     });
 
     const handleViewportResize = () => {
       updatePlayerFillScale();
       clampPipPosition();
+      if (!isOverlayHudMode()) {
+        clearTimeout(fsDimTimer);
+        playerStage.classList.remove('hud-hidden');
+      }
     };
     window.addEventListener('resize', handleViewportResize);
     window.addEventListener('orientationchange', handleViewportResize);
