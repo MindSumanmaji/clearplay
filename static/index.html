@@ -954,16 +954,214 @@
         display: block;
       }
     }
-    .player-frame.audio-mode ~ .fs-tap-shield {
+    .player-frame.audio-mode ~ .fs-tap-shield,
+    .player-frame.audio-mode ~ .fs-top-overlay,
+    .player-frame.audio-mode ~ .fs-seek-overlay {
       display: none !important;
     }
     .player-stage.hud-hidden {
       cursor: none;
     }
     .player-stage.hud-hidden .player-bar,
-    .player-stage.hud-hidden .player-fs-overlay {
+    .player-stage.hud-hidden .player-fs-overlay,
+    .player-stage.hud-hidden .fs-top-overlay,
+    .player-stage.hud-hidden .fs-seek-overlay {
       opacity: 0 !important;
       pointer-events: none !important;
+    }
+
+    /* Fullscreen Top-Right Autoplay & Settings */
+    .fs-top-overlay {
+      position: absolute;
+      top: max(14px, env(safe-area-inset-top, 14px));
+      right: max(14px, env(safe-area-inset-right, 14px));
+      z-index: 12;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.25s ease;
+    }
+    .fs-top-overlay[hidden] { display: none !important; }
+
+    /* Fullscreen Bottom-Left 10s Rewind/Forward Icons */
+    .fs-seek-overlay {
+      position: absolute;
+      bottom: max(68px, calc(60px + env(safe-area-inset-bottom, 8px)));
+      left: max(14px, env(safe-area-inset-left, 14px));
+      z-index: 12;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.25s ease;
+    }
+    .fs-seek-overlay[hidden] { display: none !important; }
+
+    .fs-icon-btn {
+      width: 36px;
+      height: 36px;
+      min-height: 36px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(11, 12, 16, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: var(--text);
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.12s;
+    }
+    .fs-icon-btn:hover { background: rgba(255, 255, 255, 0.18); }
+    .fs-icon-btn:active { transform: scale(0.94); }
+    .fs-icon-btn svg { width: 17px; height: 17px; display: block; }
+
+    .fs-toggle-btn {
+      width: 44px;
+      height: 26px;
+      min-height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(11, 12, 16, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 2px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .fs-toggle-track { display: block; width: 100%; height: 100%; position: relative; }
+    .fs-toggle-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #14161b;
+      display: grid;
+      place-items: center;
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), background 0.2s;
+      transform: translateX(0);
+    }
+    .fs-toggle-btn.active {
+      background: rgba(181, 243, 107, 0.28);
+      border-color: var(--accent);
+    }
+    .fs-toggle-btn.active .fs-toggle-thumb {
+      transform: translateX(18px);
+      background: var(--accent);
+      color: #132006;
+    }
+    .fs-toggle-icon { width: 11px; height: 11px; display: block; }
+    .fs-toggle-btn .icon-play { display: none; }
+    .fs-toggle-btn .icon-pause { display: block; }
+    .fs-toggle-btn.active .icon-play { display: block; }
+    .fs-toggle-btn.active .icon-pause { display: none; }
+
+    /* YouTube-style Fullscreen Settings Sheet */
+    .fs-settings-sheet {
+      position: absolute;
+      top: max(56px, calc(env(safe-area-inset-top, 12px) + 46px));
+      right: max(14px, env(safe-area-inset-right, 14px));
+      z-index: 25;
+      width: min(300px, calc(100vw - 28px));
+      max-height: calc(100dvh - 80px);
+      overflow-y: auto;
+      background: rgba(14, 17, 24, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 10px 12px 14px;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.72);
+      color: var(--text);
+    }
+    .fs-settings-sheet[hidden] { display: none !important; }
+    .fss-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 700;
+      font-size: 13.5px;
+    }
+    .fss-back-btn {
+      background: transparent;
+      border: 0;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 2px 6px 2px 0;
+    }
+    .fss-close-btn {
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .fss-list, .fss-options { display: flex; flex-direction: column; gap: 2px; }
+    .fss-row, .fss-opt {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 8px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s;
+      text-align: left;
+    }
+    .fss-row:hover, .fss-opt:hover { background: rgba(255, 255, 255, 0.08); }
+    .fss-row-label { display: inline-flex; align-items: center; gap: 9px; }
+    .fss-row-label svg { width: 16px; height: 16px; color: var(--muted); flex-shrink: 0; }
+    .fss-row-val { color: var(--muted); font-size: 12px; margin-left: auto; margin-right: 6px; font-weight: 600; }
+    .fss-chevron { color: var(--muted); font-size: 15px; font-weight: 700; }
+    .fss-opt .fss-check { display: none; color: var(--accent); font-weight: 800; }
+    .fss-opt.active { color: var(--accent); }
+    .fss-opt.active .fss-check { display: inline; }
+    .fss-speed-hero { text-align: center; padding: 6px 4px 10px; }
+    .fss-speed-big { font-size: 20px; font-weight: 800; color: var(--text); display: block; margin-bottom: 8px; }
+    .fss-speed-slider-row { display: flex; align-items: center; gap: 10px; padding: 0 4px; }
+    .fss-step-btn {
+      width: 28px;
+      height: 28px;
+      min-height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--line-strong);
+      background: var(--bg-elev);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .fss-speed-range { flex: 1; accent-color: var(--accent); cursor: pointer; }
+    .fss-presets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+    .fss-preset {
+      padding: 6px 4px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--bg-elev);
+      color: var(--muted);
+      font-size: 11.5px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+    }
+    .fss-preset.active {
+      background: rgba(181, 243, 107, 0.16);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     /* Subtle floating controls visible inside fullscreen */
@@ -2324,9 +2522,9 @@
             </div>
           </div>
           <div id="player-stage" class="player-stage">
-          <div id="player-frame" class="player-frame">
-            <div id="player-embed-slot" class="player-embed-slot"></div>
-            <div id="audio-stage" class="audio-stage" hidden>
+            <div id="player-frame" class="player-frame">
+              <div id="player-embed-slot" class="player-embed-slot"></div>
+              <div id="audio-stage" class="audio-stage" hidden>
               <div id="audio-stage-bg" class="audio-stage-bg"></div>
               <div class="audio-stage-inner">
                 <div class="audio-stage-top">
@@ -2364,18 +2562,122 @@
               </div>
               <audio id="audio-player" preload="auto" playsinline></audio>
             </div>
-            <div id="player-fs-overlay" class="player-fs-overlay" hidden>
-              <button id="fs-fill-btn" class="fs-pill-btn" type="button" title="Fill screen (remove black bars)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-                <span>Fill</span>
-              </button>
-              <button id="fs-exit-btn" class="fs-pill-btn" type="button" title="Exit fullscreen" aria-label="Exit fullscreen">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
-                <span>Exit</span>
-              </button>
-            </div>
           </div>
           <div id="fs-tap-shield" class="fs-tap-shield" aria-hidden="true"></div>
+          <div id="fs-top-overlay" class="fs-top-overlay" hidden>
+            <button id="fs-autoplay-btn" class="fs-toggle-btn active" type="button" title="Autoplay is on" aria-label="Toggle autoplay">
+              <span class="fs-toggle-track">
+                <span class="fs-toggle-thumb">
+                  <svg class="fs-toggle-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>
+                  <svg class="fs-toggle-icon icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+                </span>
+              </span>
+            </button>
+            <button id="fs-settings-btn" class="fs-icon-btn" type="button" title="Settings" aria-label="Playback settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+          </div>
+          <div id="fs-seek-overlay" class="fs-seek-overlay" hidden>
+            <button id="fs-back-btn" class="fs-icon-btn" type="button" title="Rewind 10s" aria-label="Rewind 10 seconds">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+            <button id="fs-fwd-btn" class="fs-icon-btn" type="button" title="Forward 10s" aria-label="Forward 10 seconds">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            </button>
+          </div>
+          <div id="player-fs-overlay" class="player-fs-overlay" hidden>
+            <button id="fs-fill-btn" class="fs-pill-btn" type="button" title="Fill screen (remove black bars)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+              <span>Fill</span>
+            </button>
+            <button id="fs-exit-btn" class="fs-pill-btn" type="button" title="Exit fullscreen" aria-label="Exit fullscreen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+              <span>Exit</span>
+            </button>
+          </div>
+          <div id="fs-settings-sheet" class="fs-settings-sheet" hidden>
+            <div id="fss-main" class="fss-pane">
+              <div class="fss-head">
+                <span>Playback Settings</span>
+                <button id="fss-close-btn" class="fss-close-btn" type="button" aria-label="Close settings">×</button>
+              </div>
+              <div class="fss-list">
+                <button class="fss-row" data-sub="quality" type="button">
+                  <span class="fss-row-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    Quality
+                  </span>
+                  <span class="fss-row-val" id="fss-val-quality">Auto</span>
+                  <span class="fss-chevron">›</span>
+                </button>
+                <button class="fss-row" data-sub="speed" type="button">
+                  <span class="fss-row-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Playback speed
+                  </span>
+                  <span class="fss-row-val" id="fss-val-speed">Normal</span>
+                  <span class="fss-chevron">›</span>
+                </button>
+                <button class="fss-row" data-sub="captions" type="button">
+                  <span class="fss-row-label">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h4M7 9h4M15 9h2M15 15h2"/></svg>
+                    Captions
+                  </span>
+                  <span class="fss-row-val" id="fss-val-captions">Off</span>
+                  <span class="fss-chevron">›</span>
+                </button>
+              </div>
+            </div>
+            <div id="fss-quality" class="fss-pane" hidden>
+              <div class="fss-head">
+                <button class="fss-back-btn" data-back="main" type="button">‹ Back</button>
+                <span>Quality</span>
+                <button class="fss-close-btn" type="button" aria-label="Close settings">×</button>
+              </div>
+              <div class="fss-options" id="fss-quality-options">
+                <button class="fss-opt active" data-quality="auto" type="button"><span>Auto (recommended)</span><span class="fss-check">✓</span></button>
+                <button class="fss-opt" data-quality="hd1080" type="button"><span>1080p HD</span><span class="fss-check">✓</span></button>
+                <button class="fss-opt" data-quality="hd720" type="button"><span>720p HD</span><span class="fss-check">✓</span></button>
+                <button class="fss-opt" data-quality="large" type="button"><span>480p</span><span class="fss-check">✓</span></button>
+                <button class="fss-opt" data-quality="medium" type="button"><span>360p</span><span class="fss-check">✓</span></button>
+              </div>
+            </div>
+            <div id="fss-speed" class="fss-pane" hidden>
+              <div class="fss-head">
+                <button class="fss-back-btn" data-back="main" type="button">‹ Back</button>
+                <span>Playback speed</span>
+                <button class="fss-close-btn" type="button" aria-label="Close settings">×</button>
+              </div>
+              <div class="fss-speed-hero">
+                <span id="fss-speed-display" class="fss-speed-big">1.00x</span>
+                <div class="fss-speed-slider-row">
+                  <button id="fss-speed-minus" class="fss-step-btn" type="button" aria-label="Decrease speed">−</button>
+                  <input id="fss-speed-range" class="fss-speed-range" type="range" min="0.25" max="2" step="0.05" value="1" aria-label="Playback speed slider">
+                  <button id="fss-speed-plus" class="fss-step-btn" type="button" aria-label="Increase speed">+</button>
+                </div>
+              </div>
+              <div class="fss-presets">
+                <button class="fss-preset" data-rate="0.5" type="button">0.5x</button>
+                <button class="fss-preset" data-rate="0.75" type="button">0.75x</button>
+                <button class="fss-preset active" data-rate="1" type="button">Normal</button>
+                <button class="fss-preset" data-rate="1.25" type="button">1.25x</button>
+                <button class="fss-preset" data-rate="1.5" type="button">1.5x</button>
+                <button class="fss-preset" data-rate="1.75" type="button">1.75x</button>
+                <button class="fss-preset" data-rate="2" type="button">2x</button>
+              </div>
+            </div>
+            <div id="fss-captions" class="fss-pane" hidden>
+              <div class="fss-head">
+                <button class="fss-back-btn" data-back="main" type="button">‹ Back</button>
+                <span>Captions</span>
+                <button class="fss-close-btn" type="button" aria-label="Close settings">×</button>
+              </div>
+              <div class="fss-options" id="fss-captions-options">
+                <button class="fss-opt active" data-lang="" type="button"><span>Off</span><span class="fss-check">✓</span></button>
+                <button class="fss-opt" data-lang="en" type="button"><span>English (auto-generated)</span><span class="fss-check">✓</span></button>
+              </div>
+            </div>
+          </div>
           <div id="player-bar" class="player-bar">
             <button id="vp-play-btn" class="vp-btn vp-play" type="button" title="Play / Pause" aria-label="Play">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>
@@ -2567,9 +2869,24 @@
     const vpSeek = document.querySelector('#vp-seek');
     const vpMuteBtn = document.querySelector('#vp-mute-btn');
     const playerEmbedSlot = document.querySelector('#player-embed-slot');
+    const fsTopOverlay = document.querySelector('#fs-top-overlay');
+    const fsAutoplayBtn = document.querySelector('#fs-autoplay-btn');
+    const fsSettingsBtn = document.querySelector('#fs-settings-btn');
+    const fsSeekOverlay = document.querySelector('#fs-seek-overlay');
+    const fsBackBtn = document.querySelector('#fs-back-btn');
+    const fsFwdBtn = document.querySelector('#fs-fwd-btn');
     const playerFsOverlay = document.querySelector('#player-fs-overlay');
     const fsFillBtn = document.querySelector('#fs-fill-btn');
     const fsExitBtn = document.querySelector('#fs-exit-btn');
+    const fsSettingsSheet = document.querySelector('#fs-settings-sheet');
+    const fssCloseBtn = document.querySelector('#fss-close-btn');
+    const fssValQuality = document.querySelector('#fss-val-quality');
+    const fssValSpeed = document.querySelector('#fss-val-speed');
+    const fssValCaptions = document.querySelector('#fss-val-captions');
+    const fssSpeedDisplay = document.querySelector('#fss-speed-display');
+    const fssSpeedRange = document.querySelector('#fss-speed-range');
+    const fssSpeedMinus = document.querySelector('#fss-speed-minus');
+    const fssSpeedPlus = document.querySelector('#fss-speed-plus');
     const fillBtn = document.querySelector('#fill-btn');
     const pipBtn = document.querySelector('#pip-btn');
     const fullscreenBtn = document.querySelector('#fullscreen-btn');
@@ -2644,6 +2961,11 @@
     let segments = [];
     let handled = new Set();
     let askSegment = null;
+    let currentRelatedList = [];
+    let autoplayEnabled = localStorage.getItem('clearplay_autoplay') !== '0';
+    let currentQuality = localStorage.getItem('clearplay_quality') || 'auto';
+    let currentCaptions = localStorage.getItem('clearplay_captions') || '';
+    let currentRate = 1;
     let poll = null;
     let currentQuery = '';
     let searchOffset = 0;
@@ -4034,7 +4356,8 @@
           fs: 0,
           controls: 0,
           iv_load_policy: 3,
-          disablekb: 1
+          disablekb: 1,
+          cc_load_policy: currentCaptions ? 1 : 0
         };
         if (startSec >= 2) playerVars.start = startSec;
         player = new YT.Player(mountPoint, {
@@ -4047,6 +4370,18 @@
                   if ((player.getCurrentTime?.() || 0) < startSec - 5) player.seekTo(startSec, true);
                 } catch (_) {}
                 if (typeof overrideStart !== 'number') showToast(`Resuming from ${formatDuration(startSec)}`);
+              }
+              if (currentCaptions) {
+                try {
+                  player.loadModule?.('captions');
+                  player.setOption?.('captions', 'track', { languageCode: currentCaptions });
+                } catch (_) {}
+              }
+              if (currentQuality && currentQuality !== 'auto') {
+                try { player.setPlaybackQuality?.(currentQuality); } catch (_) {}
+              }
+              if (currentRate && currentRate !== 1) {
+                try { player.setPlaybackRate?.(currentRate); } catch (_) {}
               }
               poll = setInterval(() => {
                 processSegments();
@@ -4074,7 +4409,7 @@
               if (event.data === YT.PlayerState.ENDED) {
                 flushVideoProgress(true);
                 bumpFsOverlay(false);
-                playNext();
+                if (autoplayEnabled) playNext();
               }
             }
           }
@@ -4097,6 +4432,7 @@
       try {
         let list = [];
         if (item.playlistId) {
+          currentRelatedList = [];
           const response = await fetch(`${API_BASE}/api/playlist/${encodeURIComponent(item.playlistId)}`);
           const data = await response.json();
           if (!response.ok) throw new Error();
@@ -4118,6 +4454,7 @@
           const data = await response.json();
           if (!response.ok) throw new Error();
           list = data.results || [];
+          currentRelatedList = list;
           suggestionTitle.textContent = 'Related picks';
         }
         for (const row of list) {
@@ -4242,7 +4579,12 @@
     }
 
     function playNext() {
-      if (queueIndex >= 0 && queueIndex + 1 < playQueue.length) navigateQueue(queueIndex + 1, audioModeActive);
+      if (queueIndex >= 0 && queueIndex + 1 < playQueue.length) {
+        navigateQueue(queueIndex + 1, audioModeActive);
+      } else if (autoplayEnabled && currentRelatedList.length > 0) {
+        const nextItem = currentRelatedList[0];
+        if (nextItem?.id) loadPlayer(nextItem, { preserveAudio: audioModeActive });
+      }
     }
 
     function playPrev() {
@@ -4591,10 +4933,7 @@
       seekActivePlayer(getActiveTime() + 10);
     });
     speedSelect.addEventListener('change', event => {
-      const rate = Number(event.target.value || 1);
-      audioPlayer.playbackRate = rate;
-      player?.setPlaybackRate?.(rate);
-      updateMediaPositionState();
+      applyPlaybackRate(Number(event.target.value || 1));
     });
     document.querySelector('#open-settings').addEventListener('click', () => { renderSettings(); modal.hidden = false; });
     document.querySelector('#close-settings').addEventListener('click', () => modal.hidden = true);
@@ -4660,9 +4999,141 @@
           && window.matchMedia('(max-height: 540px) and (orientation: landscape)').matches);
     }
 
+    function isFsSettingsOpen() {
+      return Boolean(fsSettingsSheet && !fsSettingsSheet.hidden);
+    }
+
+    function openFsSettingsPane(paneName = 'main') {
+      document.querySelectorAll('.fss-pane').forEach(p => { p.hidden = true; });
+      const target = document.querySelector(`#fss-${paneName}`);
+      if (target) target.hidden = false;
+    }
+
+    function syncAutoplayUi() {
+      fsAutoplayBtn.classList.toggle('active', autoplayEnabled);
+      fsAutoplayBtn.title = autoplayEnabled ? 'Autoplay is on' : 'Autoplay is off';
+      fsAutoplayBtn.setAttribute('aria-label', autoplayEnabled ? 'Autoplay is on' : 'Autoplay is off');
+    }
+
+    function toggleAutoplay() {
+      autoplayEnabled = !autoplayEnabled;
+      localStorage.setItem('clearplay_autoplay', autoplayEnabled ? '1' : '0');
+      syncAutoplayUi();
+      showToast(autoplayEnabled ? 'Autoplay is on' : 'Autoplay is off');
+    }
+
+    function applyPlaybackRate(rate) {
+      const r = Math.min(2, Math.max(0.25, Math.round(Number(rate || 1) * 20) / 20));
+      currentRate = r;
+      audioPlayer.playbackRate = r;
+      player?.setPlaybackRate?.(r);
+      const exactOpt = Array.from(speedSelect.options).find(o => Number(o.value || o.textContent) === r);
+      if (exactOpt) speedSelect.value = exactOpt.value;
+      updateMediaPositionState();
+      fssSpeedDisplay.textContent = `${r.toFixed(2)}x`;
+      fssSpeedRange.value = String(r);
+      fssValSpeed.textContent = r === 1 ? 'Normal' : `${r}x`;
+      document.querySelectorAll('.fss-preset').forEach(btn => {
+        btn.classList.toggle('active', Number(btn.getAttribute('data-rate')) === r);
+      });
+    }
+
+    function applyQuality(q, silent = false) {
+      currentQuality = q || 'auto';
+      localStorage.setItem('clearplay_quality', currentQuality);
+      try { player?.setPlaybackQuality?.(currentQuality); } catch (_) {}
+      const labels = {
+        auto: 'Auto',
+        hd1080: '1080p HD',
+        hd720: '720p HD',
+        large: '480p',
+        medium: '360p'
+      };
+      fssValQuality.textContent = labels[currentQuality] || 'Auto';
+      document.querySelectorAll('#fss-quality-options .fss-opt').forEach(opt => {
+        opt.classList.toggle('active', opt.getAttribute('data-quality') === currentQuality);
+      });
+      if (!silent) showToast(`Quality: ${labels[currentQuality] || currentQuality}`);
+    }
+
+    function refreshCaptionTracks() {
+      const container = document.querySelector('#fss-captions-options');
+      if (!container) return;
+      let tracks = [];
+      try {
+        const raw = player?.getOption?.('captions', 'tracklist');
+        if (Array.isArray(raw) && raw.length) tracks = raw;
+      } catch (_) {}
+      container.replaceChildren();
+      const makeOpt = (lang, label) => {
+        const btn = document.createElement('button');
+        btn.className = `fss-opt${currentCaptions === lang ? ' active' : ''}`;
+        btn.type = 'button';
+        btn.setAttribute('data-lang', lang);
+        const text = document.createElement('span');
+        text.textContent = label;
+        const check = document.createElement('span');
+        check.className = 'fss-check';
+        check.textContent = '✓';
+        btn.append(text, check);
+        return btn;
+      };
+      container.append(makeOpt('', 'Off'));
+      if (tracks.length) {
+        for (const t of tracks) {
+          const code = t.languageCode || '';
+          if (!code) continue;
+          const label = t.displayName || t.languageName || code.toUpperCase();
+          container.append(makeOpt(code, label));
+        }
+      } else {
+        container.append(makeOpt('en', 'English (auto-generated)'));
+      }
+    }
+
+    function applyCaptions(lang, silent = false) {
+      currentCaptions = lang || '';
+      localStorage.setItem('clearplay_captions', currentCaptions);
+      try {
+        if (currentCaptions) {
+          player?.loadModule?.('captions');
+          player?.setOption?.('captions', 'track', { languageCode: currentCaptions });
+        } else {
+          player?.setOption?.('captions', 'track', {});
+          player?.unloadModule?.('captions');
+        }
+      } catch (_) {}
+      const activeLabel = document.querySelector(`#fss-captions-options .fss-opt[data-lang="${CSS.escape(currentCaptions)}"] span`)?.textContent;
+      fssValCaptions.textContent = currentCaptions ? (activeLabel || currentCaptions.toUpperCase()) : 'Off';
+      document.querySelectorAll('#fss-captions-options .fss-opt').forEach(opt => {
+        opt.classList.toggle('active', opt.getAttribute('data-lang') === currentCaptions);
+      });
+      if (!silent) showToast(currentCaptions ? 'Captions on' : 'Captions off');
+    }
+
+    function openFsSettingsSheet() {
+      refreshCaptionTracks();
+      openFsSettingsPane('main');
+      fsSettingsSheet.hidden = false;
+      playerStage.classList.remove('hud-hidden');
+      clearTimeout(fsDimTimer);
+    }
+
+    function closeFsSettingsSheet() {
+      if (!fsSettingsSheet || fsSettingsSheet.hidden) return;
+      fsSettingsSheet.hidden = true;
+      openFsSettingsPane('main');
+      bumpFsOverlay();
+    }
+
+    function toggleFsSettingsSheet() {
+      if (isFsSettingsOpen()) closeFsSettingsSheet();
+      else openFsSettingsSheet();
+    }
+
     function hideFsHud() {
       clearTimeout(fsDimTimer);
-      if (isOverlayHudMode() && isAnyPlaying() && !vpSeekingDrag) {
+      if (isOverlayHudMode() && isAnyPlaying() && !vpSeekingDrag && !isFsSettingsOpen()) {
         playerStage.classList.add('hud-hidden');
       }
     }
@@ -4670,7 +5141,7 @@
     function bumpFsOverlay(autoHide = true) {
       playerStage.classList.remove('hud-hidden');
       clearTimeout(fsDimTimer);
-      if (autoHide && isOverlayHudMode() && isAnyPlaying() && !vpSeekingDrag) {
+      if (autoHide && isOverlayHudMode() && isAnyPlaying() && !vpSeekingDrag && !isFsSettingsOpen()) {
         fsDimTimer = setTimeout(hideFsHud, 3000);
       }
     }
@@ -4685,8 +5156,13 @@
         || document.fullscreenElement === frame
         || document.webkitFullscreenElement === frame;
 
-      playerFsOverlay.hidden = !ownFrameFs;
-      if (!isOverlayHudMode()) {
+      const showHudOverlays = ownFrameFs || isOverlayHudMode();
+      playerFsOverlay.hidden = !showHudOverlays;
+      fsTopOverlay.hidden = !showHudOverlays;
+      fsSeekOverlay.hidden = !showHudOverlays;
+      syncAutoplayUi();
+      if (!showHudOverlays) {
+        closeFsSettingsSheet();
         clearTimeout(fsDimTimer);
         playerStage.classList.remove('hud-hidden');
       }
@@ -5131,6 +5607,10 @@
     });
     fsTapShield.addEventListener('click', () => {
       if (!isOverlayHudMode()) return;
+      if (isFsSettingsOpen()) {
+        closeFsSettingsSheet();
+        return;
+      }
       if (playerStage.classList.contains('hud-hidden')) {
         bumpFsOverlay();
         if (!playerHasPlayed && !isAnyPlaying()) player?.playVideo?.();
@@ -5147,14 +5627,66 @@
     const bumpControlActivity = () => {
       if (isOverlayHudMode()) bumpFsOverlay();
     };
-    playerBar.addEventListener('pointerdown', bumpControlActivity);
-    playerBar.addEventListener('pointermove', event => {
-      if (event.pointerType === 'mouse') bumpControlActivity();
+    [playerBar, playerFsOverlay, fsTopOverlay, fsSeekOverlay].forEach(el => {
+      el.addEventListener('pointerdown', bumpControlActivity);
+      el.addEventListener('pointermove', event => {
+        if (event.pointerType === 'mouse') bumpControlActivity();
+      });
     });
-    playerFsOverlay.addEventListener('pointerdown', bumpControlActivity);
-    playerFsOverlay.addEventListener('pointermove', event => {
-      if (event.pointerType === 'mouse') bumpControlActivity();
+
+    fsAutoplayBtn.addEventListener('click', () => {
+      fsAutoplayBtn.blur();
+      toggleAutoplay();
+      bumpControlActivity();
     });
+    fsSettingsBtn.addEventListener('click', event => {
+      event.stopPropagation();
+      fsSettingsBtn.blur();
+      toggleFsSettingsSheet();
+    });
+    fsBackBtn.addEventListener('click', () => {
+      fsBackBtn.blur();
+      seekActivePlayer(Math.max(0, getActiveTime() - 10));
+      bumpControlActivity();
+    });
+    fsFwdBtn.addEventListener('click', () => {
+      fsFwdBtn.blur();
+      seekActivePlayer(getActiveTime() + 10);
+      bumpControlActivity();
+    });
+
+    fsSettingsSheet.addEventListener('pointerdown', event => event.stopPropagation());
+    fsSettingsSheet.addEventListener('click', event => event.stopPropagation());
+    document.querySelectorAll('.fss-close-btn').forEach(btn => btn.addEventListener('click', closeFsSettingsSheet));
+    document.querySelectorAll('.fss-row').forEach(row => {
+      row.addEventListener('click', () => openFsSettingsPane(row.getAttribute('data-sub')));
+    });
+    document.querySelectorAll('.fss-back-btn').forEach(btn => {
+      btn.addEventListener('click', () => openFsSettingsPane(btn.getAttribute('data-back') || 'main'));
+    });
+    document.querySelectorAll('#fss-quality-options .fss-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        applyQuality(opt.getAttribute('data-quality'));
+        openFsSettingsPane('main');
+      });
+    });
+    document.querySelector('#fss-captions-options').addEventListener('click', event => {
+      const opt = event.target.closest('.fss-opt');
+      if (!opt) return;
+      applyCaptions(opt.getAttribute('data-lang') || '');
+      openFsSettingsPane('main');
+    });
+    fssSpeedRange.addEventListener('input', () => applyPlaybackRate(Number(fssSpeedRange.value || 1)));
+    fssSpeedMinus.addEventListener('click', () => applyPlaybackRate(Number(fssSpeedRange.value || 1) - 0.25));
+    fssSpeedPlus.addEventListener('click', () => applyPlaybackRate(Number(fssSpeedRange.value || 1) + 0.25));
+    document.querySelectorAll('.fss-preset').forEach(btn => {
+      btn.addEventListener('click', () => applyPlaybackRate(Number(btn.getAttribute('data-rate') || 1)));
+    });
+
+    syncAutoplayUi();
+    applyQuality(currentQuality, true);
+    applyCaptions(currentCaptions, true);
+    applyPlaybackRate(Number(speedSelect.value || 1));
 
     vpPlayBtn.addEventListener('click', () => {
       vpPlayBtn.blur();
@@ -5194,7 +5726,8 @@
 
     window.addEventListener('keydown', event => {
       if (event.key !== 'Escape') return;
-      if (!modal.hidden) modal.hidden = true;
+      if (isFsSettingsOpen()) closeFsSettingsSheet();
+      else if (!modal.hidden) modal.hidden = true;
       else if (authModal && !authModal.hidden) closeAuthPrompt();
       else if (document.body.classList.contains('pseudo-fs')) exitFullscreen();
     });
