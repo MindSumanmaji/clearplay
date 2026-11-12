@@ -12,6 +12,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import threading
 import time
 from urllib.parse import parse_qs, quote_plus, urlparse
@@ -777,9 +778,10 @@ def _resolve_audio_stream(video_id, force_refresh=False):
                 return cached
 
     client_profiles = [
-        None,
-        {"youtube": {"player_client": ["android_vr", "ios", "tv"]}},
+        {"youtube": {"player_client": ["android"]}},
     ]
+    if shutil.which("node") or shutil.which("deno"):
+        client_profiles.append(None)
     last_err = None
     for profile in client_profiles:
         opts = {
@@ -787,7 +789,9 @@ def _resolve_audio_stream(video_id, force_refresh=False):
             "no_warnings": True,
             "skip_download": True,
             "format": "bestaudio[ext=m4a]/bestaudio[acodec^=mp4a]/bestaudio/best",
-            "socket_timeout": 10,
+            "socket_timeout": 5,
+            "retries": 0,
+            "extractor_retries": 0,
             "noplaylist": True,
         }
         if profile:
