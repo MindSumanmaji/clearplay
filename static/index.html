@@ -863,7 +863,16 @@
       transform: scale(var(--player-fill-scale, 1.34));
     }
 
+    .player-stage {
+      position: relative;
+      width: 100%;
+      background: #000;
+    }
+
     /* Fullscreen sizing (native Fullscreen API + YouTube iframe fullscreen + iOS/PWA viewport fallback) */
+    .player-stage:fullscreen,
+    .player-stage:-webkit-full-screen,
+    body.pseudo-fs .player-stage,
     .player-frame:fullscreen,
     .player-frame:-webkit-full-screen,
     body.pseudo-fs .player-frame {
@@ -878,6 +887,16 @@
       z-index: 9999 !important;
       background: #000;
     }
+    .player-stage:fullscreen .player-frame,
+    .player-stage:-webkit-full-screen .player-frame,
+    body.pseudo-fs .player-stage .player-frame {
+      position: absolute !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      aspect-ratio: auto !important;
+      border-radius: 0 !important;
+    }
     .player-frame iframe:fullscreen,
     .player-frame iframe:-webkit-full-screen {
       inset: 0 !important;
@@ -889,6 +908,112 @@
     body.pseudo-fs { overflow: hidden !important; }
     body.pseudo-fs .topbar,
     body.pseudo-fs .mobile-nav { display: none !important; }
+
+    /* Custom Video Playback Bar (replaces YouTube native bottom bar) */
+    .player-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      background: #0d1017;
+      border-bottom: 1px solid var(--line);
+      transition: opacity 0.25s ease;
+    }
+    body.pip-mode .player-bar,
+    .player-frame.audio-mode + .player-bar {
+      display: none !important;
+    }
+    .player-stage:fullscreen .player-bar,
+    .player-stage:-webkit-full-screen .player-bar,
+    body.pseudo-fs .player-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
+      border-bottom: 0;
+      padding: 20px max(16px, env(safe-area-inset-right, 16px)) max(14px, env(safe-area-inset-bottom, 14px)) max(16px, env(safe-area-inset-left, 16px));
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.45) 62%, transparent);
+    }
+    .player-bar.dimmed { opacity: 0.22; }
+    .player-bar:hover, .player-bar:focus-within { opacity: 1 !important; }
+    .vp-btn {
+      width: 32px;
+      height: 32px;
+      min-height: 32px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: var(--bg-elev);
+      color: var(--text);
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.12s, background 0.15s;
+    }
+    .vp-btn:hover { background: var(--panel-hover); }
+    .vp-btn:active { transform: scale(0.94); }
+    .vp-btn.vp-play {
+      background: var(--accent);
+      color: var(--accent-dark);
+      border-color: transparent;
+    }
+    .vp-btn.vp-play:hover { background: var(--accent-strong); }
+    .vp-btn svg { width: 15px; height: 15px; display: block; }
+    .vp-time {
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      min-width: 34px;
+      flex-shrink: 0;
+    }
+    .vp-time.end { text-align: right; }
+    .vp-seek {
+      flex: 1;
+      min-width: 0;
+      height: 22px;
+      margin: 0;
+      background: transparent;
+      cursor: pointer;
+      touch-action: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .vp-seek::-webkit-slider-runnable-track {
+      height: 5px;
+      border-radius: 999px;
+      background: linear-gradient(to right, var(--accent) var(--vp-pct, 0%), rgba(255, 255, 255, 0.22) var(--vp-pct, 0%));
+    }
+    .vp-seek::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 13px;
+      height: 13px;
+      margin-top: -4px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid #0d1017;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+    .vp-seek::-moz-range-track {
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.22);
+    }
+    .vp-seek::-moz-range-progress {
+      height: 5px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+    .vp-seek::-moz-range-thumb {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid #0d1017;
+    }
+    @media (max-width: 600px) {
+      .player-bar { padding: 8px 12px; gap: 8px; }
+    }
 
     /* Subtle floating controls visible inside fullscreen */
     .player-fs-overlay {
@@ -1957,10 +2082,25 @@
       body.watch-mode:not(.pip-mode):not(.pseudo-fs) main { padding: 0; }
       body.watch-mode:not(.pip-mode):not(.pseudo-fs) .shell { width: 100%; padding: 0; }
       body.watch-mode:not(.pip-mode):not(.pseudo-fs) .player-column { border-radius: 0; border: 0; }
-      body.watch-mode:not(.pip-mode):not(.pseudo-fs) .player-frame {
+      body.watch-mode:not(.pip-mode):not(.pseudo-fs) .player-stage {
+        position: relative;
         width: 100%;
         height: 100dvh;
+      }
+      body.watch-mode:not(.pip-mode):not(.pseudo-fs) .player-frame {
+        width: 100%;
+        height: 100%;
         aspect-ratio: auto;
+      }
+      body.watch-mode:not(.pip-mode):not(.pseudo-fs) .player-bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10;
+        border-bottom: 0;
+        padding: 16px max(16px, env(safe-area-inset-right, 16px)) max(12px, env(safe-area-inset-bottom, 12px)) max(16px, env(safe-area-inset-left, 16px));
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.42) 60%, transparent);
       }
     }
   </style>
@@ -2156,6 +2296,7 @@
               </button>
             </div>
           </div>
+          <div id="player-stage" class="player-stage">
           <div id="player-frame" class="player-frame">
             <div id="player-embed-slot" class="player-embed-slot"></div>
             <div id="audio-stage" class="audio-stage" hidden>
@@ -2206,6 +2347,18 @@
                 <span>Exit</span>
               </button>
             </div>
+          </div>
+          <div id="player-bar" class="player-bar">
+            <button id="vp-play-btn" class="vp-btn vp-play" type="button" title="Play / Pause" aria-label="Play">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>
+            </button>
+            <span id="vp-time-cur" class="vp-time">0:00</span>
+            <input id="vp-seek" class="vp-seek" type="range" min="0" max="100" step="1" value="0" aria-label="Seek video">
+            <span id="vp-time-dur" class="vp-time end">0:00</span>
+            <button id="vp-mute-btn" class="vp-btn" type="button" title="Mute / Unmute" aria-label="Mute">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            </button>
+          </div>
           </div>
           <div class="controls">
             <button id="back" class="control" type="button">
@@ -2376,7 +2529,14 @@
     const viewMore = document.querySelector('#view-more');
     const watch = document.querySelector('#watch');
     const playerColumn = document.querySelector('#player-column');
+    const playerStage = document.querySelector('#player-stage');
     const frame = document.querySelector('#player-frame');
+    const playerBar = document.querySelector('#player-bar');
+    const vpPlayBtn = document.querySelector('#vp-play-btn');
+    const vpTimeCur = document.querySelector('#vp-time-cur');
+    const vpTimeDur = document.querySelector('#vp-time-dur');
+    const vpSeek = document.querySelector('#vp-seek');
+    const vpMuteBtn = document.querySelector('#vp-mute-btn');
     const playerEmbedSlot = document.querySelector('#player-embed-slot');
     const playerFsOverlay = document.querySelector('#player-fs-overlay');
     const fsFillBtn = document.querySelector('#fs-fill-btn');
@@ -2596,6 +2756,53 @@
     let audioResumeAt = 0;
     let pendingVideoMount = null;
     let audioSeekingDrag = false;
+    let vpSeekingDrag = false;
+
+    const PLAY_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>';
+    const PAUSE_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+    const VOL_ON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+    const VOL_OFF_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+
+    function setPlayButtonVisual(btn, playing, playLabel = 'Play', pauseLabel = 'Pause') {
+      if (!btn) return;
+      btn.innerHTML = playing ? PAUSE_SVG : PLAY_SVG;
+      btn.setAttribute('aria-label', playing ? pauseLabel : playLabel);
+    }
+
+    function updateVpSeekVisual(cur, dur) {
+      const pct = dur > 0 ? Math.min(100, Math.max(0, (cur / dur) * 100)) : 0;
+      vpSeek.style.setProperty('--vp-pct', `${pct.toFixed(2)}%`);
+    }
+
+    function syncVideoBarUi(stateOverride, curOverride = null) {
+      const playing = typeof stateOverride === 'number'
+        ? stateOverride === window.YT?.PlayerState?.PLAYING
+        : isAnyPlaying();
+      setPlayButtonVisual(vpPlayBtn, playing, 'Play video', 'Pause video');
+
+      const muted = Boolean(player?.isMuted?.());
+      vpMuteBtn.innerHTML = muted ? VOL_OFF_SVG : VOL_ON_SVG;
+      vpMuteBtn.setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
+
+      const cur = typeof curOverride === 'number' ? Math.max(0, curOverride) : getActiveTime();
+      const dur = getActiveDuration();
+      vpTimeDur.textContent = dur > 0 ? (formatDuration(dur) || '0:00') : '0:00';
+      if (!vpSeekingDrag) {
+        const maxVal = dur > 0 ? Math.max(1, Math.floor(dur)) : 100;
+        const val = dur > 0 ? Math.min(Math.floor(cur), maxVal) : 0;
+        vpSeek.max = String(maxVal);
+        vpSeek.value = String(val);
+        vpTimeCur.textContent = formatDuration(cur) || '0:00';
+        updateVpSeekVisual(cur, dur);
+      }
+    }
+
+    function toggleVideoMute() {
+      if (!player) return;
+      if (player.isMuted?.()) player.unMute?.();
+      else player.mute?.();
+      syncVideoBarUi();
+    }
 
     function getActiveTime() {
       if (audioModeActive) return Number(audioPlayer?.currentTime || 0);
@@ -2622,6 +2829,7 @@
         syncAudioProgressUi();
       } else if (player?.seekTo) {
         player.seekTo(target, true);
+        syncVideoBarUi(null, target);
       }
     }
 
@@ -3769,12 +3977,14 @@
       document.querySelector('#video-stats').textContent = formatVideoStats(item);
       updatePlayerActionButtons();
       syncFullscreenUi();
+      syncVideoBarUi(null, resumeAt);
 
       fetchSegments(item.id);
       if (item.playlistId) loadSuggestions(item);
       hydrateMissingVideoMeta(video).then(hydrated => {
         if (video?.id === item.id) {
           pipTitle.textContent = hydrated.title || item.title || 'Playing video';
+          syncVideoBarUi();
           syncAudioStageMeta();
           syncMediaSession();
         }
@@ -3787,7 +3997,16 @@
         const mountPoint = document.createElement('div');
         playerEmbedSlot.replaceChildren(mountPoint);
         const startSec = typeof overrideStart === 'number' ? Math.max(0, Math.floor(overrideStart)) : resumeAt;
-        const playerVars = { enablejsapi: 1, origin: location.origin, rel: 0, playsinline: 1, fs: 0 };
+        const playerVars = {
+          enablejsapi: 1,
+          origin: location.origin,
+          rel: 0,
+          playsinline: 1,
+          fs: 0,
+          controls: 0,
+          iv_load_policy: 3,
+          disablekb: 1
+        };
         if (startSec >= 2) playerVars.start = startSec;
         player = new YT.Player(mountPoint, {
           videoId: item.id,
@@ -3800,14 +4019,19 @@
                 } catch (_) {}
                 if (typeof overrideStart !== 'number') showToast(`Resuming from ${formatDuration(startSec)}`);
               }
-              poll = setInterval(processSegments, 500);
+              poll = setInterval(() => {
+                processSegments();
+                syncVideoBarUi();
+              }, 250);
               drawSegments();
               syncPipPlayIcon();
+              syncVideoBarUi();
               syncMediaSession();
               updatePlayerFillScale();
             },
             onStateChange: event => {
               syncPipPlayIcon(event.data);
+              syncVideoBarUi(event.data);
               syncMediaSession();
               if (event.data === YT.PlayerState.PLAYING) {
                 playerHasPlayed = true;
@@ -4398,9 +4622,13 @@
 
     function bumpFsOverlay() {
       playerFsOverlay.classList.remove('dimmed');
+      playerBar.classList.remove('dimmed');
       clearTimeout(fsDimTimer);
       if (isFullscreenActive()) {
-        fsDimTimer = setTimeout(() => playerFsOverlay.classList.add('dimmed'), 3000);
+        fsDimTimer = setTimeout(() => {
+          playerFsOverlay.classList.add('dimmed');
+          playerBar.classList.add('dimmed');
+        }, 3000);
       }
     }
 
@@ -4409,10 +4637,13 @@
       const fillActive = fillModeLevel > 0;
       const fillLabel = fillModeLevel === 1 ? 'Screen' : (fillModeLevel === 2 ? 'Cinema' : 'Fill');
       const ownFrameFs = document.body.classList.contains('pseudo-fs')
+        || document.fullscreenElement === playerStage
+        || document.webkitFullscreenElement === playerStage
         || document.fullscreenElement === frame
         || document.webkitFullscreenElement === frame;
 
       playerFsOverlay.hidden = !ownFrameFs;
+      if (!fsActive) playerBar.classList.remove('dimmed');
       fullscreenBtn.classList.toggle('active', fsActive);
       fullscreenBtn.querySelector('span').textContent = fsActive ? 'Exit' : 'Full';
 
@@ -4429,11 +4660,11 @@
       if (isPipActive()) exitPipMode(false);
       let nativeOk = false;
       try {
-        if (frame.requestFullscreen) {
-          await frame.requestFullscreen({ navigationUI: 'hide' });
+        if (playerStage.requestFullscreen) {
+          await playerStage.requestFullscreen({ navigationUI: 'hide' });
           nativeOk = true;
-        } else if (frame.webkitRequestFullscreen) {
-          frame.webkitRequestFullscreen();
+        } else if (playerStage.webkitRequestFullscreen) {
+          playerStage.webkitRequestFullscreen();
           nativeOk = true;
         }
       } catch (_) {
@@ -4496,10 +4727,7 @@
       const playing = audioModeActive
         ? Boolean(audioPlayer && !audioPlayer.paused && !audioPlayer.ended)
         : (typeof stateOverride === 'number' ? stateOverride : player?.getPlayerState?.()) === window.YT?.PlayerState?.PLAYING;
-      pipPlayBtn.innerHTML = playing
-        ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>'
-        : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>';
-      pipPlayBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+      setPlayButtonVisual(pipPlayBtn, playing, 'Play', 'Pause');
     }
 
     function enterPipMode() {
@@ -4570,10 +4798,7 @@
     function syncAudioPlayBtn() {
       const playing = Boolean(audioModeActive && !audioPlayer.paused && !audioPlayer.ended);
       audioCoverWrap.classList.toggle('playing', playing);
-      audioPlayBtn.innerHTML = playing
-        ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>'
-        : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>';
-      audioPlayBtn.setAttribute('aria-label', playing ? 'Pause audio' : 'Play audio');
+      setPlayButtonVisual(audioPlayBtn, playing, 'Play audio', 'Pause audio');
       syncPipPlayIcon();
     }
 
@@ -4851,8 +5076,30 @@
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    frame.addEventListener('pointerdown', () => { if (isFullscreenActive()) bumpFsOverlay(); });
-    frame.addEventListener('mousemove', () => { if (isFullscreenActive()) bumpFsOverlay(); });
+    playerStage.addEventListener('pointerdown', () => { if (isFullscreenActive()) bumpFsOverlay(); });
+    playerStage.addEventListener('mousemove', () => { if (isFullscreenActive()) bumpFsOverlay(); });
+
+    vpPlayBtn.addEventListener('click', () => {
+      toggleActivePlayPause();
+      if (isFullscreenActive()) bumpFsOverlay();
+    });
+    vpMuteBtn.addEventListener('click', () => {
+      toggleVideoMute();
+      if (isFullscreenActive()) bumpFsOverlay();
+    });
+    vpSeek.addEventListener('input', () => {
+      vpSeekingDrag = true;
+      const val = Number(vpSeek.value || 0);
+      const dur = getActiveDuration() || Number(vpSeek.max || 0);
+      vpTimeCur.textContent = formatDuration(val) || '0:00';
+      updateVpSeekVisual(val, dur);
+      if (isFullscreenActive()) bumpFsOverlay();
+    });
+    vpSeek.addEventListener('change', () => {
+      vpSeekingDrag = false;
+      seekActivePlayer(Number(vpSeek.value || 0));
+      if (isFullscreenActive()) bumpFsOverlay();
+    });
 
     const handleViewportResize = () => {
       updatePlayerFillScale();
