@@ -869,8 +869,8 @@
     body.pseudo-fs .player-frame {
       position: fixed !important;
       inset: 0 !important;
-      width: 100vw !important;
-      height: 100dvh !important;
+      width: 100% !important;
+      height: 100% !important;
       max-width: none !important;
       max-height: none !important;
       aspect-ratio: auto !important;
@@ -880,8 +880,9 @@
     }
     .player-frame iframe:fullscreen,
     .player-frame iframe:-webkit-full-screen {
-      width: 100vw !important;
-      height: 100dvh !important;
+      inset: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
       max-width: none !important;
       max-height: none !important;
     }
@@ -3720,7 +3721,7 @@
         const mountPoint = document.createElement('div');
         playerEmbedSlot.replaceChildren(mountPoint);
         const startSec = typeof overrideStart === 'number' ? Math.max(0, Math.floor(overrideStart)) : resumeAt;
-        const playerVars = { enablejsapi: 1, origin: location.origin, rel: 0, playsinline: 1, fs: 1 };
+        const playerVars = { enablejsapi: 1, origin: location.origin, rel: 0, fs: 1 };
         if (startSec >= 2) playerVars.start = startSec;
         player = new YT.Player(mountPoint, {
           videoId: item.id,
