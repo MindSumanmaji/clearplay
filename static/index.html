@@ -1830,10 +1830,13 @@
     }
 
     @media (max-width: 600px) {
-      .topbar-inner { width: calc(100% - 24px); height: 56px; gap: 8px; }
-      .brand { font-size: 18px; }
-      .brand-mark { width: 28px; height: 28px; border-radius: 8px; }
-      .auth-btn { padding: 6px 11px; font-size: 12px; }
+      .topbar-inner { width: calc(100% - 20px); height: 54px; gap: 6px; }
+      .brand { font-size: 16px; gap: 7px; min-width: 0; }
+      .brand-mark { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0; }
+      body.watch-mode #back-results { padding: 5px 9px; font-size: 12px; gap: 4px; border-radius: 999px; }
+      .header-right { gap: 6px; }
+      #install-btn { padding: 5px 9px; font-size: 11.5px; border-radius: 999px; white-space: nowrap; }
+      .auth-btn { padding: 5px 10px; font-size: 12px; gap: 5px; white-space: nowrap; }
       .user-chip span { display: none; }
       .user-chip { padding: 3px; }
       .signout-btn { padding: 5px 10px; font-size: 11.5px; }
@@ -1858,9 +1861,72 @@
       body.watch-mode .player-column { border-radius: 0; border-left: 0; border-right: 0; border-top: 0; }
       body.watch-mode .suggestions { padding: 0 12px; }
 
-      .controls { padding: 10px 12px; gap: 6px; }
-      .control { padding: 7px 10px; font-size: 12px; flex: 1 1 auto; justify-content: center; }
-      .settings { margin-left: 0; width: 100%; justify-content: space-between; padding-top: 6px; border-top: 1px solid var(--line); }
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(20, minmax(0, 1fr));
+        gap: 7px 6px;
+        padding: 10px 12px;
+      }
+      .control {
+        padding: 0 8px;
+        font-size: 12px;
+        min-height: 36px;
+        height: 36px;
+        border-radius: 999px;
+        justify-content: center;
+        white-space: nowrap;
+        min-width: 0;
+        gap: 5px;
+      }
+      #back { grid-row: 1; grid-column: 1 / 6; }
+      #forward { grid-row: 1; grid-column: 6 / 11; }
+      #watch-later-btn { grid-row: 1; grid-column: 11 / 16; }
+      #fullscreen-btn { grid-row: 1; grid-column: 16 / 21; }
+      #open-settings { grid-row: 2; grid-column: 1 / 9; }
+      #fill-btn { grid-row: 2; grid-column: 9 / 14; }
+      #pip-btn { grid-row: 2; grid-column: 14 / 18; }
+      #share-btn { grid-row: 2; grid-column: 18 / 21; padding: 0; }
+      #watch-later-btn span,
+      #fullscreen-btn span,
+      #share-btn span { display: none; }
+      #audio-btn { grid-row: 3; grid-column: 1 / 10; }
+      .settings {
+        grid-row: 3;
+        grid-column: 10 / 21;
+        margin-left: 0;
+        width: 100%;
+        padding-top: 0;
+        border-top: 0;
+        padding-left: 7px;
+        border-left: 1px solid var(--line);
+        gap: 6px;
+        justify-content: stretch;
+      }
+      .settings > span {
+        flex: 1 1 0;
+        height: 36px;
+        padding: 0 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--bg-elev);
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+      }
+      .setting {
+        flex: 0 0 68px;
+        min-height: 36px;
+        height: 36px;
+        padding: 0 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: center;
+      }
 
       .sb-panel { padding: 10px 12px; }
       .details { padding: 14px 12px 16px; }
