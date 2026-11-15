@@ -863,16 +863,10 @@
       transform: scale(var(--player-fill-scale, 1.34));
     }
 
-    .player-stage {
-      position: relative;
-      width: 100%;
-      background: #000;
-    }
-
     /* Fullscreen sizing (native Fullscreen API + YouTube iframe fullscreen + iOS/PWA viewport fallback) */
-    .player-stage:fullscreen,
-    .player-stage:-webkit-full-screen,
-    body.pseudo-fs .player-stage {
+    .player-frame:fullscreen,
+    .player-frame:-webkit-full-screen,
+    body.pseudo-fs .player-frame {
       position: fixed !important;
       inset: 0 !important;
       width: 100% !important;
@@ -883,19 +877,6 @@
       border-radius: 0 !important;
       z-index: 9999 !important;
       background: #000;
-    }
-    .player-stage:fullscreen .player-frame,
-    .player-stage:-webkit-full-screen .player-frame,
-    body.pseudo-fs .player-stage .player-frame {
-      position: absolute !important;
-      inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      max-width: none !important;
-      max-height: none !important;
-      aspect-ratio: auto !important;
-      border-radius: 0 !important;
-      z-index: auto !important;
     }
     .player-frame iframe:fullscreen,
     .player-frame iframe:-webkit-full-screen {
@@ -908,215 +889,6 @@
     body.pseudo-fs { overflow: hidden !important; }
     body.pseudo-fs .topbar,
     body.pseudo-fs .mobile-nav { display: none !important; }
-
-    /* Custom Video Playback Bar (replaces YouTube native bottom bar) */
-    .player-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 14px;
-      background: #0d1017;
-      border-bottom: 1px solid var(--line);
-      transition: opacity 0.25s ease;
-    }
-    body.pip-mode .player-bar,
-    .player-frame.audio-mode + .player-bar {
-      display: none !important;
-    }
-    .player-stage:fullscreen .player-bar,
-    .player-stage:-webkit-full-screen .player-bar,
-    body.pseudo-fs .player-bar {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 10;
-      border-bottom: 0;
-      padding: 20px max(16px, env(safe-area-inset-right, 16px)) max(14px, env(safe-area-inset-bottom, 14px)) max(16px, env(safe-area-inset-left, 16px));
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.45) 62%, transparent);
-    }
-    /* Fullscreen & landscape overlay HUD tap shield + auto-hide */
-    .fs-tap-shield {
-      display: none;
-      position: absolute;
-      inset: 0;
-      z-index: 5;
-      background: transparent;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .player-stage:fullscreen .fs-tap-shield,
-    .player-stage:-webkit-full-screen .fs-tap-shield,
-    body.pseudo-fs .player-stage .fs-tap-shield {
-      display: block;
-    }
-    @media (max-height: 540px) and (orientation: landscape) {
-      body.watch-mode:not(.pip-mode):not(.pseudo-fs) .fs-tap-shield {
-        display: block;
-      }
-    }
-    .player-frame.audio-mode ~ .fs-tap-shield,
-    .player-frame.audio-mode ~ .fs-seek-overlay {
-      display: none !important;
-    }
-    .player-stage.hud-hidden {
-      cursor: none;
-    }
-    .player-stage.hud-hidden .player-bar,
-    .player-stage.hud-hidden .player-fs-overlay,
-    .player-stage.hud-hidden .fs-seek-overlay {
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-
-    /* Fullscreen Bottom-Left 10s Rewind/Forward Icons */
-    .fs-seek-overlay {
-      position: absolute;
-      bottom: max(68px, calc(60px + env(safe-area-inset-bottom, 8px)));
-      left: max(14px, env(safe-area-inset-left, 14px));
-      z-index: 12;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: opacity 0.25s ease;
-    }
-    .fs-seek-overlay[hidden] { display: none !important; }
-
-    .fs-icon-btn {
-      width: 36px;
-      height: 36px;
-      min-height: 36px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(11, 12, 16, 0.72);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      color: var(--text);
-      display: inline-grid;
-      place-items: center;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.12s;
-    }
-    .fs-icon-btn:hover { background: rgba(255, 255, 255, 0.18); }
-    .fs-icon-btn:active { transform: scale(0.94); }
-    .fs-icon-btn svg { width: 17px; height: 17px; display: block; }
-
-    /* Subtle floating controls visible inside fullscreen */
-    .player-fs-overlay {
-      position: absolute;
-      bottom: max(68px, calc(60px + env(safe-area-inset-bottom, 8px)));
-      right: max(12px, env(safe-area-inset-right, 12px));
-      z-index: 11;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 5px;
-      border-radius: 999px;
-      background: rgba(11, 12, 16, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      opacity: 1;
-      transition: opacity 0.25s ease;
-    }
-    .player-fs-overlay[hidden] { display: none !important; }
-    .fs-pill-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 34px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text);
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .fs-pill-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
-    .fs-pill-btn.active {
-      background: rgba(181, 243, 107, 0.18);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .vp-btn {
-      width: 32px;
-      height: 32px;
-      min-height: 32px;
-      border-radius: 999px;
-      border: 1px solid var(--line-strong);
-      background: var(--bg-elev);
-      color: var(--text);
-      display: inline-grid;
-      place-items: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: transform 0.12s, background 0.15s;
-    }
-    .vp-btn:hover { background: var(--panel-hover); }
-    .vp-btn:active { transform: scale(0.94); }
-    .vp-btn.vp-play {
-      background: var(--accent);
-      color: var(--accent-dark);
-      border-color: transparent;
-    }
-    .vp-btn.vp-play:hover { background: var(--accent-strong); }
-    .vp-btn svg { width: 15px; height: 15px; display: block; }
-    .vp-time {
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
-      color: var(--muted);
-      min-width: 34px;
-      flex-shrink: 0;
-    }
-    .vp-time.end { text-align: right; }
-    .vp-seek {
-      flex: 1;
-      min-width: 0;
-      height: 22px;
-      margin: 0;
-      background: transparent;
-      cursor: pointer;
-      touch-action: none;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    .vp-seek::-webkit-slider-runnable-track {
-      height: 5px;
-      border-radius: 999px;
-      background: linear-gradient(to right, var(--accent) var(--vp-pct, 0%), rgba(255, 255, 255, 0.22) var(--vp-pct, 0%));
-    }
-    .vp-seek::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 13px;
-      height: 13px;
-      margin-top: -4px;
-      border-radius: 50%;
-      background: var(--accent);
-      border: 2px solid #0d1017;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-    }
-    .vp-seek::-moz-range-track {
-      height: 5px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.22);
-    }
-    .vp-seek::-moz-range-progress {
-      height: 5px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-    .vp-seek::-moz-range-thumb {
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-      background: var(--accent);
-      border: 2px solid #0d1017;
-    }
-    @media (max-width: 600px) {
-      .player-bar { padding: 8px 12px; gap: 8px; }
-    }
 
     /* Draggable Picture-in-Picture (PiP) Mini-Player */
     .pip-bar {
@@ -2143,25 +1915,10 @@
       body.watch-mode:not(.pip-mode):not(.pseudo-fs) main { padding: 0; }
       body.watch-mode:not(.pip-mode):not(.pseudo-fs) .shell { width: 100%; padding: 0; }
       body.watch-mode:not(.pip-mode):not(.pseudo-fs) .player-column { border-radius: 0; border: 0; }
-      body.watch-mode:not(.pip-mode):not(.pseudo-fs) .player-stage {
-        position: relative;
-        width: 100%;
-        height: 100dvh;
-      }
       body.watch-mode:not(.pip-mode):not(.pseudo-fs) .player-frame {
         width: 100%;
-        height: 100%;
+        height: 100dvh;
         aspect-ratio: auto;
-      }
-      body.watch-mode:not(.pip-mode):not(.pseudo-fs) .player-bar {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 10;
-        border-bottom: 0;
-        padding: 16px max(16px, env(safe-area-inset-right, 16px)) max(12px, env(safe-area-inset-bottom, 12px)) max(16px, env(safe-area-inset-left, 16px));
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.42) 60%, transparent);
       }
     }
   </style>
@@ -2357,10 +2114,9 @@
               </button>
             </div>
           </div>
-          <div id="player-stage" class="player-stage">
-            <div id="player-frame" class="player-frame">
-              <div id="player-embed-slot" class="player-embed-slot"></div>
-              <div id="audio-stage" class="audio-stage" hidden>
+          <div id="player-frame" class="player-frame">
+            <div id="player-embed-slot" class="player-embed-slot"></div>
+            <div id="audio-stage" class="audio-stage" hidden>
               <div id="audio-stage-bg" class="audio-stage-bg"></div>
               <div class="audio-stage-inner">
                 <div class="audio-stage-top">
@@ -2398,37 +2154,6 @@
               </div>
               <audio id="audio-player" preload="auto" playsinline></audio>
             </div>
-          </div>
-          <div id="fs-tap-shield" class="fs-tap-shield" aria-hidden="true"></div>
-          <div id="fs-seek-overlay" class="fs-seek-overlay" hidden>
-            <button id="fs-back-btn" class="fs-icon-btn" type="button" title="Rewind 10s" aria-label="Rewind 10 seconds">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            </button>
-            <button id="fs-fwd-btn" class="fs-icon-btn" type="button" title="Forward 10s" aria-label="Forward 10 seconds">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-            </button>
-          </div>
-          <div id="player-fs-overlay" class="player-fs-overlay" hidden>
-            <button id="fs-fill-btn" class="fs-pill-btn" type="button" title="Fill screen (remove black bars)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-              <span>Fill</span>
-            </button>
-            <button id="fs-exit-btn" class="fs-pill-btn" type="button" title="Exit fullscreen" aria-label="Exit fullscreen">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
-              <span>Exit</span>
-            </button>
-          </div>
-          <div id="player-bar" class="player-bar">
-            <button id="vp-play-btn" class="vp-btn vp-play" type="button" title="Play / Pause" aria-label="Play">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>
-            </button>
-            <span id="vp-time-cur" class="vp-time">0:00</span>
-            <input id="vp-seek" class="vp-seek" type="range" min="0" max="100" step="1" value="0" aria-label="Seek video">
-            <span id="vp-time-dur" class="vp-time end">0:00</span>
-            <button id="vp-mute-btn" class="vp-btn" type="button" title="Mute / Unmute" aria-label="Mute">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-            </button>
-          </div>
           </div>
           <div class="controls">
             <button id="back" class="control" type="button">
@@ -2599,22 +2324,8 @@
     const viewMore = document.querySelector('#view-more');
     const watch = document.querySelector('#watch');
     const playerColumn = document.querySelector('#player-column');
-    const playerStage = document.querySelector('#player-stage');
     const frame = document.querySelector('#player-frame');
-    const fsTapShield = document.querySelector('#fs-tap-shield');
-    const playerBar = document.querySelector('#player-bar');
-    const vpPlayBtn = document.querySelector('#vp-play-btn');
-    const vpTimeCur = document.querySelector('#vp-time-cur');
-    const vpTimeDur = document.querySelector('#vp-time-dur');
-    const vpSeek = document.querySelector('#vp-seek');
-    const vpMuteBtn = document.querySelector('#vp-mute-btn');
     const playerEmbedSlot = document.querySelector('#player-embed-slot');
-    const fsSeekOverlay = document.querySelector('#fs-seek-overlay');
-    const fsBackBtn = document.querySelector('#fs-back-btn');
-    const fsFwdBtn = document.querySelector('#fs-fwd-btn');
-    const playerFsOverlay = document.querySelector('#player-fs-overlay');
-    const fsFillBtn = document.querySelector('#fs-fill-btn');
-    const fsExitBtn = document.querySelector('#fs-exit-btn');
     const fillBtn = document.querySelector('#fill-btn');
     const pipBtn = document.querySelector('#pip-btn');
     const fullscreenBtn = document.querySelector('#fullscreen-btn');
@@ -2835,52 +2546,14 @@
     let audioResumeAt = 0;
     let pendingVideoMount = null;
     let audioSeekingDrag = false;
-    let vpSeekingDrag = false;
 
     const PLAY_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>';
     const PAUSE_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
-    const VOL_ON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
-    const VOL_OFF_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
 
     function setPlayButtonVisual(btn, playing, playLabel = 'Play', pauseLabel = 'Pause') {
       if (!btn) return;
       btn.innerHTML = playing ? PAUSE_SVG : PLAY_SVG;
       btn.setAttribute('aria-label', playing ? pauseLabel : playLabel);
-    }
-
-    function updateVpSeekVisual(cur, dur) {
-      const pct = dur > 0 ? Math.min(100, Math.max(0, (cur / dur) * 100)) : 0;
-      vpSeek.style.setProperty('--vp-pct', `${pct.toFixed(2)}%`);
-    }
-
-    function syncVideoBarUi(stateOverride, curOverride = null) {
-      const playing = typeof stateOverride === 'number'
-        ? stateOverride === window.YT?.PlayerState?.PLAYING
-        : isAnyPlaying();
-      setPlayButtonVisual(vpPlayBtn, playing, 'Play video', 'Pause video');
-
-      const muted = Boolean(player?.isMuted?.());
-      vpMuteBtn.innerHTML = muted ? VOL_OFF_SVG : VOL_ON_SVG;
-      vpMuteBtn.setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
-
-      const cur = typeof curOverride === 'number' ? Math.max(0, curOverride) : getActiveTime();
-      const dur = getActiveDuration();
-      vpTimeDur.textContent = dur > 0 ? (formatDuration(dur) || '0:00') : '0:00';
-      if (!vpSeekingDrag) {
-        const maxVal = dur > 0 ? Math.max(1, Math.floor(dur)) : 100;
-        const val = dur > 0 ? Math.min(Math.floor(cur), maxVal) : 0;
-        vpSeek.max = String(maxVal);
-        vpSeek.value = String(val);
-        vpTimeCur.textContent = formatDuration(cur) || '0:00';
-        updateVpSeekVisual(cur, dur);
-      }
-    }
-
-    function toggleVideoMute() {
-      if (!player) return;
-      if (player.isMuted?.()) player.unMute?.();
-      else player.mute?.();
-      syncVideoBarUi();
     }
 
     function getActiveTime() {
@@ -2908,7 +2581,6 @@
         syncAudioProgressUi();
       } else if (player?.seekTo) {
         player.seekTo(target, true);
-        syncVideoBarUi(null, target);
       }
     }
 
@@ -4056,14 +3728,12 @@
       document.querySelector('#video-stats').textContent = formatVideoStats(item);
       updatePlayerActionButtons();
       syncFullscreenUi();
-      syncVideoBarUi(null, resumeAt);
 
       fetchSegments(item.id);
       if (item.playlistId) loadSuggestions(item);
       hydrateMissingVideoMeta(video).then(hydrated => {
         if (video?.id === item.id) {
           pipTitle.textContent = hydrated.title || item.title || 'Playing video';
-          syncVideoBarUi();
           syncAudioStageMeta();
           syncMediaSession();
         }
@@ -4081,11 +3751,9 @@
           origin: location.origin,
           rel: 0,
           playsinline: 1,
-          fs: 0,
-          controls: 0,
-          iv_load_policy: 3,
-          disablekb: 1,
-          cc_load_policy: currentCaptions ? 1 : 0
+          fs: 1,
+          controls: 1,
+          iv_load_policy: 3
         };
         if (startSec >= 2) playerVars.start = startSec;
         player = new YT.Player(mountPoint, {
@@ -4120,30 +3788,24 @@
               }
               poll = setInterval(() => {
                 processSegments();
-                syncVideoBarUi();
               }, 250);
               drawSegments();
               syncPipPlayIcon();
-              syncVideoBarUi();
               syncMediaSession();
               updatePlayerFillScale();
             },
             onStateChange: event => {
               syncPipPlayIcon(event.data);
-              syncVideoBarUi(event.data);
               syncMediaSession();
               if (event.data === YT.PlayerState.PLAYING) {
                 playerHasPlayed = true;
                 drawSegments();
-                if (isOverlayHudMode()) bumpFsOverlay();
               }
               if (event.data === YT.PlayerState.PAUSED) {
                 flushVideoProgress(true);
-                bumpFsOverlay(false);
               }
               if (event.data === YT.PlayerState.ENDED) {
                 flushVideoProgress(true);
-                bumpFsOverlay(false);
                 if (autoplayEnabled) playNext();
               }
             }
@@ -4697,7 +4359,6 @@
     });
 
     // Fullscreen, Fill/Zoom & Draggable PiP Controls
-    let fsDimTimer = null;
     let fillModeLevel = 0; // 0 = Fit (1x), 1 = Screen (cover 16:9), 2 = Cinema (21:9 crop)
 
     function isNativeFullscreen() {
@@ -4726,14 +4387,6 @@
       frame.style.setProperty('--player-fill-scale', scale.toFixed(3));
     }
 
-    function isOverlayHudMode() {
-      return isFullscreenActive()
-        || (document.body.classList.contains('watch-mode')
-          && !isPipActive()
-          && !audioModeActive
-          && window.matchMedia('(max-height: 540px) and (orientation: landscape)').matches);
-    }
-
     function applyPlaybackRate(rate) {
       const r = Math.min(2, Math.max(0.25, Math.round(Number(rate || 1) * 20) / 20));
       currentRate = r;
@@ -4744,45 +4397,16 @@
       updateMediaPositionState();
     }
 
-    function hideFsHud() {
-      clearTimeout(fsDimTimer);
-      if (isOverlayHudMode() && isAnyPlaying() && !vpSeekingDrag) {
-        playerStage.classList.add('hud-hidden');
-      }
-    }
-
-    function bumpFsOverlay(autoHide = true) {
-      playerStage.classList.remove('hud-hidden');
-      clearTimeout(fsDimTimer);
-      if (autoHide && isOverlayHudMode() && isAnyPlaying() && !vpSeekingDrag) {
-        fsDimTimer = setTimeout(hideFsHud, 3000);
-      }
-    }
-
     function syncFullscreenUi() {
       const fsActive = isFullscreenActive();
       const fillActive = fillModeLevel > 0;
       const fillLabel = fillModeLevel === 1 ? 'Screen' : (fillModeLevel === 2 ? 'Cinema' : 'Fill');
-      const ownFrameFs = document.body.classList.contains('pseudo-fs')
-        || document.fullscreenElement === playerStage
-        || document.webkitFullscreenElement === playerStage
-        || document.fullscreenElement === frame
-        || document.webkitFullscreenElement === frame;
 
-      const showHudOverlays = ownFrameFs || isOverlayHudMode();
-      playerFsOverlay.hidden = !showHudOverlays;
-      fsSeekOverlay.hidden = !showHudOverlays;
-      if (!showHudOverlays) {
-        clearTimeout(fsDimTimer);
-        playerStage.classList.remove('hud-hidden');
-      }
       fullscreenBtn.classList.toggle('active', fsActive);
       fullscreenBtn.querySelector('span').textContent = fsActive ? 'Exit' : 'Full';
 
       fillBtn.classList.toggle('active', fillActive);
       fillBtn.querySelector('span').textContent = fillLabel;
-      fsFillBtn.classList.toggle('active', fillActive);
-      fsFillBtn.querySelector('span').textContent = fillLabel;
 
       updatePlayerFillScale();
     }
@@ -4792,11 +4416,11 @@
       if (isPipActive()) exitPipMode(false);
       let nativeOk = false;
       try {
-        if (playerStage.requestFullscreen) {
-          await playerStage.requestFullscreen({ navigationUI: 'hide' });
+        if (frame.requestFullscreen) {
+          await frame.requestFullscreen({ navigationUI: 'hide' });
           nativeOk = true;
-        } else if (playerStage.webkitRequestFullscreen) {
-          playerStage.webkitRequestFullscreen();
+        } else if (frame.webkitRequestFullscreen) {
+          frame.webkitRequestFullscreen();
           nativeOk = true;
         }
       } catch (_) {
@@ -4809,7 +4433,6 @@
         await screen.orientation?.lock?.('landscape');
       } catch (_) {}
       syncFullscreenUi();
-      bumpFsOverlay();
     }
 
     async function exitFullscreen() {
@@ -4822,7 +4445,6 @@
       try {
         screen.orientation?.unlock?.();
       } catch (_) {}
-      clearTimeout(fsDimTimer);
       syncFullscreenUi();
     }
 
@@ -4834,7 +4456,6 @@
     function toggleFillMode() {
       fillModeLevel = (fillModeLevel + 1) % 3;
       syncFullscreenUi();
-      bumpFsOverlay();
     }
 
     function resetPipPosition() {
@@ -5152,9 +4773,7 @@
     });
 
     fullscreenBtn.addEventListener('click', toggleFullscreen);
-    fsExitBtn.addEventListener('click', () => { fsExitBtn.blur(); exitFullscreen(); });
     fillBtn.addEventListener('click', toggleFillMode);
-    fsFillBtn.addEventListener('click', () => { toggleFillMode(); fsFillBtn.blur(); });
     pipBtn.addEventListener('click', enterPipMode);
     pipExpandBtn.addEventListener('click', () => exitPipMode(true));
     pipCloseBtn.addEventListener('click', closePipPlayer);
@@ -5199,100 +4818,26 @@
     const handleFullscreenChange = () => {
       if (isNativeFullscreen()) {
         screen.orientation?.lock?.('landscape').catch?.(() => {});
-        bumpFsOverlay();
       } else {
         try { screen.orientation?.unlock?.(); } catch (_) {}
-        clearTimeout(fsDimTimer);
       }
       syncFullscreenUi();
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    let lastShieldPointerType = 'touch';
-    fsTapShield.addEventListener('pointerdown', event => {
-      lastShieldPointerType = event.pointerType || 'touch';
-    });
-    fsTapShield.addEventListener('pointermove', event => {
-      if (event.pointerType === 'mouse' && isOverlayHudMode()) bumpFsOverlay();
-    });
-    fsTapShield.addEventListener('click', () => {
-      if (!isOverlayHudMode()) return;
-      if (playerStage.classList.contains('hud-hidden')) {
-        bumpFsOverlay();
-        if (!playerHasPlayed && !isAnyPlaying()) player?.playVideo?.();
-        return;
-      }
-      if (lastShieldPointerType === 'touch') {
-        hideFsHud();
-      } else {
-        toggleActivePlayPause();
-        bumpFsOverlay();
-      }
-    });
-
-    const bumpControlActivity = () => {
-      if (isOverlayHudMode()) bumpFsOverlay();
-    };
-    [playerBar, playerFsOverlay, fsSeekOverlay].forEach(el => {
-      el.addEventListener('pointerdown', bumpControlActivity);
-      el.addEventListener('pointermove', event => {
-        if (event.pointerType === 'mouse') bumpControlActivity();
-      });
-    });
-
-    fsBackBtn.addEventListener('click', () => {
-      fsBackBtn.blur();
-      seekActivePlayer(Math.max(0, getActiveTime() - 10));
-      bumpControlActivity();
-    });
-    fsFwdBtn.addEventListener('click', () => {
-      fsFwdBtn.blur();
-      seekActivePlayer(getActiveTime() + 10);
-      bumpControlActivity();
-    });
 
     applyPlaybackRate(Number(speedSelect.value || 1));
-
-    vpPlayBtn.addEventListener('click', () => {
-      vpPlayBtn.blur();
-      toggleActivePlayPause();
-      bumpControlActivity();
-    });
-    vpMuteBtn.addEventListener('click', () => {
-      vpMuteBtn.blur();
-      toggleVideoMute();
-      bumpControlActivity();
-    });
-    vpSeek.addEventListener('input', () => {
-      vpSeekingDrag = true;
-      const val = Number(vpSeek.value || 0);
-      const dur = getActiveDuration() || Number(vpSeek.max || 0);
-      vpTimeCur.textContent = formatDuration(val) || '0:00';
-      updateVpSeekVisual(val, dur);
-      if (isOverlayHudMode()) bumpFsOverlay(false);
-    });
-    vpSeek.addEventListener('change', () => {
-      vpSeekingDrag = false;
-      vpSeek.blur();
-      seekActivePlayer(Number(vpSeek.value || 0));
-      bumpControlActivity();
-    });
 
     const handleViewportResize = () => {
       updatePlayerFillScale();
       clampPipPosition();
-      if (!isOverlayHudMode()) {
-        clearTimeout(fsDimTimer);
-        playerStage.classList.remove('hud-hidden');
-      }
     };
     window.addEventListener('resize', handleViewportResize);
     window.addEventListener('orientationchange', handleViewportResize);
 
     window.addEventListener('keydown', event => {
       if (event.key !== 'Escape') return;
-      if (isFsSettingsOpen()) closeFsSettingsSheet();
-      else if (!modal.hidden) modal.hidden = true;
+      if (!modal.hidden) modal.hidden = true;
       else if (authModal && !authModal.hidden) closeAuthPrompt();
       else if (document.body.classList.contains('pseudo-fs')) exitFullscreen();
     });
