@@ -2636,6 +2636,8 @@
               </div>
               <div class="fss-options" id="fss-quality-options">
                 <button class="fss-opt active" data-quality="auto" type="button"><span>Auto (recommended)</span><span class="fss-check">✓</span></button>
+                <button class="fss-opt" data-quality="hd2160" type="button"><span>2160p (4K UHD)</span><span class="fss-check">✓</span></button>
+                <button class="fss-opt" data-quality="hd1440" type="button"><span>1440p (2K QHD)</span><span class="fss-check">✓</span></button>
                 <button class="fss-opt" data-quality="hd1080" type="button"><span>1080p HD</span><span class="fss-check">✓</span></button>
                 <button class="fss-opt" data-quality="hd720" type="button"><span>720p HD</span><span class="fss-check">✓</span></button>
                 <button class="fss-opt" data-quality="large" type="button"><span>480p</span><span class="fss-check">✓</span></button>
@@ -4378,7 +4380,14 @@
                 } catch (_) {}
               }
               if (currentQuality && currentQuality !== 'auto') {
-                try { player.setPlaybackQuality?.(currentQuality); } catch (_) {}
+                try {
+                  if (currentQuality === 'hd2160') {
+                    player.setPlaybackQuality?.('hd2160');
+                    player.setPlaybackQuality?.('highres');
+                  } else {
+                    player.setPlaybackQuality?.(currentQuality);
+                  }
+                } catch (_) {}
               }
               if (currentRate && currentRate !== 1) {
                 try { player.setPlaybackRate?.(currentRate); } catch (_) {}
@@ -5041,9 +5050,18 @@
     function applyQuality(q, silent = false) {
       currentQuality = q || 'auto';
       localStorage.setItem('clearplay_quality', currentQuality);
-      try { player?.setPlaybackQuality?.(currentQuality); } catch (_) {}
+      try {
+        if (currentQuality === 'hd2160') {
+          player?.setPlaybackQuality?.('hd2160');
+          player?.setPlaybackQuality?.('highres');
+        } else {
+          player?.setPlaybackQuality?.(currentQuality);
+        }
+      } catch (_) {}
       const labels = {
         auto: 'Auto',
+        hd2160: '2160p (4K)',
+        hd1440: '1440p (2K)',
         hd1080: '1080p HD',
         hd720: '720p HD',
         large: '480p',
