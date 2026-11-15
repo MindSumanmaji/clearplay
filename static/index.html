@@ -446,7 +446,7 @@
     .clear-btn.visible { display: inline-flex; }
     .clear-btn:hover { background: rgba(255, 255, 255, 0.15); color: var(--text); }
 
-    .primary, .secondary, .setting {
+    .primary, .secondary {
       border: 1px solid var(--line-strong);
       border-radius: 11px;
       background: var(--bg-elev);
@@ -1193,23 +1193,6 @@
     #fill-btn.active svg, #fullscreen-btn.active svg, #pip-btn.active svg { fill: none; }
     .control svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-    .settings {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
-      color: var(--muted);
-      font-size: 12.5px;
-      font-weight: 600;
-    }
-
-    .setting {
-      padding: 7px 10px;
-      font-size: 13px;
-      border-radius: 9px;
-      min-height: 38px;
-      background: var(--bg-elev);
-    }
 
     .sb-panel {
       padding: 12px 16px 14px;
@@ -1847,44 +1830,7 @@
       #watch-later-btn span,
       #fullscreen-btn span,
       #share-btn span { display: none; }
-      #audio-btn { grid-row: 3; grid-column: 1 / 10; }
-      .settings {
-        grid-row: 3;
-        grid-column: 10 / 21;
-        margin-left: 0;
-        width: 100%;
-        padding-top: 0;
-        border-top: 0;
-        padding-left: 7px;
-        border-left: 1px solid var(--line);
-        gap: 6px;
-        justify-content: stretch;
-      }
-      .settings > span {
-        flex: 1 1 0;
-        height: 36px;
-        padding: 0 10px;
-        border: 1px solid var(--line-strong);
-        border-radius: 999px;
-        background: var(--bg-elev);
-        color: var(--text);
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        white-space: nowrap;
-      }
-      .setting {
-        flex: 0 0 68px;
-        min-height: 36px;
-        height: 36px;
-        padding: 0 10px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 600;
-        text-align: center;
-      }
+      #audio-btn { grid-row: 3; grid-column: 1 / 21; }
 
       .sb-panel { padding: 10px 12px; }
       .details { padding: 14px 12px 16px; }
@@ -2192,12 +2138,6 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
               <span>Audio Only</span>
             </button>
-            <label class="settings">
-              <span>Speed</span>
-              <select id="speed" class="setting">
-                <option>0.5</option><option>0.75</option><option selected>1</option><option>1.25</option><option>1.5</option><option>1.75</option><option>2</option>
-              </select>
-            </label>
           </div>
           <div class="sb-panel">
             <div id="track" class="track" aria-label="SponsorBlock segment markers"></div>
@@ -2345,7 +2285,6 @@
     const audioNextBtn = document.querySelector('#audio-next-btn');
     const audioToVideoBtn = document.querySelector('#audio-to-video-btn');
     const audioPlayer = document.querySelector('#audio-player');
-    const speedSelect = document.querySelector('#speed');
     const pipBar = document.querySelector('#pip-bar');
     const pipTitle = document.querySelector('#pip-title');
     const pipPlayBtn = document.querySelector('#pip-play-btn');
@@ -4330,9 +4269,6 @@
     document.querySelector('#forward').addEventListener('click', () => {
       seekActivePlayer(getActiveTime() + 10);
     });
-    speedSelect.addEventListener('change', event => {
-      applyPlaybackRate(Number(event.target.value || 1));
-    });
     document.querySelector('#open-settings').addEventListener('click', () => { renderSettings(); modal.hidden = false; });
     document.querySelector('#close-settings').addEventListener('click', () => modal.hidden = true);
     modal.addEventListener('click', event => { if (event.target === modal) modal.hidden = true; });
@@ -4393,8 +4329,6 @@
       currentRate = r;
       audioPlayer.playbackRate = r;
       player?.setPlaybackRate?.(r);
-      const exactOpt = Array.from(speedSelect.options).find(o => Number(o.value || o.textContent) === r);
-      if (exactOpt) speedSelect.value = exactOpt.value;
       updateMediaPositionState();
     }
 
@@ -4574,7 +4508,7 @@
       try {
         const dur = getActiveDuration();
         const pos = Math.min(Math.max(0, getActiveTime()), dur || 0);
-        const rate = Number(speedSelect.value || 1) || 1;
+        const rate = currentRate || 1;
         if (Number.isFinite(dur) && dur > 0) {
           navigator.mediaSession.setPositionState({ duration: dur, playbackRate: rate, position: pos });
         }
@@ -4635,7 +4569,7 @@
       syncAudioPlayBtn();
       syncMediaSession();
 
-      audioPlayer.playbackRate = Number(speedSelect.value || 1) || 1;
+      audioPlayer.playbackRate = currentRate || 1;
       audioPlayer.src = `${API_BASE}/api/audio/${encodeURIComponent(video.id)}`;
       audioPlayer.load();
       clearInterval(poll);
@@ -4826,8 +4760,6 @@
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-
-    applyPlaybackRate(Number(speedSelect.value || 1));
 
     const handleViewportResize = () => {
       updatePlayerFillScale();
