@@ -2103,6 +2103,34 @@
       width: 100%;
     }
 
+    .remote-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .remote-gear-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .remote-gear-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: var(--line-strong);
+      transform: rotate(35deg);
+    }
+    .remote-gear-btn:active {
+      transform: scale(0.92);
+    }
+
     .remote-device-tag {
       display: flex;
       align-items: center;
@@ -2316,122 +2344,209 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* TV Remote Settings (Speed, Quality, CC, Fullscreen) */
-    .remote-quick-actions {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .remote-action-pill {
+    /* YouTube-style Settings Bottom Sheet & Submenus */
+    .yt-settings-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1100;
+      background: rgba(0, 0, 0, 0.68);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;
       align-items: center;
-      justify-content: center;
-      gap: 5px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 8px 4px;
-      color: var(--text);
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
-      user-select: none;
+      width: 100vw;
+      max-width: 100vw;
+      box-sizing: border-box;
+      animation: fadeIn 0.18s ease;
     }
-    .remote-action-pill:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--line-strong);
-    }
-    .remote-action-pill.active {
-      background: rgba(181, 243, 107, 0.12);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .remote-pill-icon {
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .remote-pill-icon svg { width: 17px; height: 17px; }
-    .remote-pill-val {
-      font-size: 10.5px;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
-    }
-
-    /* Quick Selector Popover for Speed / Quality */
-    .remote-picker-popover {
-      position: absolute;
-      left: 18px;
-      right: 18px;
-      bottom: 100px;
+    .yt-settings-sheet {
+      position: relative;
       background: #1c1f26;
       border: 1px solid var(--line-strong);
-      border-radius: 16px;
-      box-shadow: 0 8px 36px rgba(0, 0, 0, 0.85);
-      padding: 12px;
-      z-index: 10;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 8px 0 calc(20px + env(safe-area-inset-bottom, 0px));
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      animation: fadeIn 0.15s ease;
+      box-sizing: border-box;
+      box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.85);
+      animation: remoteSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 84vh;
+      overflow: hidden;
     }
-    .remote-popover-head {
+    .yt-sheet-drag-handle {
+      width: 40px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.22);
+      margin: 4px auto 8px;
+    }
+    .yt-sheet-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-      padding-bottom: 6px;
+      padding: 6px 18px 12px;
       border-bottom: 1px solid var(--line);
+      gap: 12px;
     }
-    .remote-popover-close {
+    .yt-sheet-back-btn, .yt-sheet-close-btn {
       background: none;
       border: none;
       color: var(--muted);
-      font-size: 20px;
-      line-height: 1;
       cursor: pointer;
-      padding: 0 4px;
-    }
-    .remote-popover-options {
+      padding: 6px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      max-height: 160px;
-      overflow-y: auto;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: color 0.15s, background 0.15s;
     }
-    .remote-option-btn {
-      flex: 1 1 calc(33.333% - 6px);
-      min-width: 65px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 8px 4px;
-      font-size: 12px;
+    .yt-sheet-back-btn:hover, .yt-sheet-close-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .yt-sheet-title {
+      margin: 0;
+      font-size: 16px;
       font-weight: 700;
       color: var(--text);
+      flex: 1;
+    }
+    .yt-sheet-content {
+      overflow-y: auto;
+      max-height: 65vh;
+      padding: 4px 0;
+    }
+    .yt-menu-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 18px;
+      background: none;
+      border: none;
+      color: var(--text);
       cursor: pointer;
-      text-align: center;
-      transition: all 0.12s;
+      text-align: left;
+      box-sizing: border-box;
+      transition: background 0.12s;
     }
-    .remote-option-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--line-strong);
+    .yt-menu-row:hover {
+      background: rgba(255, 255, 255, 0.06);
     }
-    .remote-option-btn.selected {
-      background: var(--accent);
-      color: var(--accent-dark);
-      border-color: var(--accent);
+    .yt-menu-icon {
+      width: 22px;
+      height: 22px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .yt-menu-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+    .yt-menu-text {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .yt-menu-label {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .yt-menu-sub {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .yt-menu-chevron {
+      width: 18px;
+      height: 18px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .yt-submenu-note {
+      padding: 8px 18px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+    }
+    .yt-sub-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 18px;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      box-sizing: border-box;
+      font-size: 14.5px;
+      font-weight: 500;
+      transition: background 0.12s;
+    }
+    .yt-sub-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .yt-sub-item.active {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .yt-check-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .yt-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .yt-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .yt-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: rgba(255, 255, 255, 0.2);
+      transition: 0.2s;
+      border-radius: 24px;
+    }
+    .yt-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #fff;
+      transition: 0.2s;
+      border-radius: 50%;
+    }
+    .yt-switch input:checked + .yt-slider {
+      background-color: var(--accent);
+    }
+    .yt-switch input:checked + .yt-slider:before {
+      transform: translateX(20px);
+      background-color: var(--accent-dark);
     }
 
     .remote-handoff-action {
@@ -3368,7 +3483,7 @@
             </button>
             <button id="open-settings" class="control" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              <span>SponsorBlock</span>
+              <span>Settings</span>
             </button>
             <button id="share-btn" class="control" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
@@ -3528,7 +3643,15 @@
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
           <span id="remote-modal-title">Samsung Smart TV</span>
         </div>
-        <span class="remote-cast-status">Connected</span>
+        <div class="remote-header-actions">
+          <span class="remote-cast-status">Connected</span>
+          <button id="remote-yt-settings-btn" class="remote-gear-btn" type="button" aria-label="YouTube Settings" title="YouTube Settings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+        </div>
       </div>
       <div class="remote-now-playing">
         <img id="remote-thumb" src="" alt="">
@@ -3569,45 +3692,7 @@
         <span id="remote-vol-txt" class="remote-vol-txt">100%</span>
       </div>
 
-      <!-- TV Full Settings Row: Speed, Quality, Captions, Fullscreen -->
-      <div class="remote-quick-actions">
-        <button id="remote-speed-btn" class="remote-action-pill" type="button" title="Playback Speed on TV">
-          <span class="remote-pill-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </span>
-          <span id="remote-speed-txt" class="remote-pill-val">Speed: 1x</span>
-        </button>
 
-        <button id="remote-quality-btn" class="remote-action-pill" type="button" title="Video Quality on TV">
-          <span class="remote-pill-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </span>
-          <span id="remote-quality-txt" class="remote-pill-val">Auto</span>
-        </button>
-
-        <button id="remote-captions-btn" class="remote-action-pill" type="button" title="Subtitles / Captions on TV">
-          <span class="remote-pill-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h3m-3-4h3m4 4h3m-3-4h3"/></svg>
-          </span>
-          <span id="remote-captions-txt" class="remote-pill-val">CC: Off</span>
-        </button>
-
-        <button id="remote-fs-btn" class="remote-action-pill" type="button" title="Toggle Fullscreen on TV">
-          <span class="remote-pill-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-          </span>
-          <span id="remote-fs-txt" class="remote-pill-val">Full</span>
-        </button>
-      </div>
-
-      <!-- Quick Popover for Speed / Quality Options -->
-      <div id="remote-popover" class="remote-picker-popover" hidden>
-        <div class="remote-popover-head">
-          <span id="remote-popover-title">Choose Option</span>
-          <button id="close-remote-popover" class="remote-popover-close" type="button">×</button>
-        </div>
-        <div id="remote-popover-options" class="remote-popover-options"></div>
-      </div>
       <div class="remote-handoff-action">
         <button id="remote-transfer-btn" class="remote-transfer-btn" type="button">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
@@ -3621,7 +3706,142 @@
     </section>
   </div>
 
-  <!-- DEVICE PICKER MODAL (YOUTUBE-STYLE CAST DIALOG) -->
+  <!-- YouTube-Style Settings Bottom Sheet Modal -->
+  <div id="yt-settings-modal" class="yt-settings-backdrop" hidden>
+    <div class="yt-settings-sheet" role="dialog" aria-modal="true" aria-labelledby="yt-settings-heading">
+      <div class="yt-sheet-drag-handle"></div>
+      <div class="yt-sheet-header">
+        <button id="yt-settings-back" class="yt-sheet-back-btn" type="button" aria-label="Back" hidden>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h3 id="yt-settings-heading" class="yt-sheet-title">Settings</h3>
+        <button id="close-yt-settings" class="yt-sheet-close-btn" type="button" aria-label="Close settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Main Menu List -->
+      <div id="yt-settings-main-view" class="yt-sheet-content">
+        <!-- Quality -->
+        <button id="yt-row-quality" class="yt-menu-row" type="button">
+          <div class="yt-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <div class="yt-menu-text">
+            <span class="yt-menu-label">Quality</span>
+            <span id="yt-val-quality" class="yt-menu-sub">Auto (1080p)</span>
+          </div>
+          <svg class="yt-menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <!-- Playback Speed -->
+        <button id="yt-row-speed" class="yt-menu-row" type="button">
+          <div class="yt-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="yt-menu-text">
+            <span class="yt-menu-label">Playback speed</span>
+            <span id="yt-val-speed" class="yt-menu-sub">Normal</span>
+          </div>
+          <svg class="yt-menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <!-- Captions -->
+        <button id="yt-row-captions" class="yt-menu-row" type="button">
+          <div class="yt-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h3m-3-4h3m4 4h3m-3-4h3"/></svg>
+          </div>
+          <div class="yt-menu-text">
+            <span class="yt-menu-label">Captions</span>
+            <span id="yt-val-captions" class="yt-menu-sub">Off</span>
+          </div>
+          <svg class="yt-menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <!-- Loop Video -->
+        <div class="yt-menu-row">
+          <div class="yt-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          <div class="yt-menu-text">
+            <span class="yt-menu-label">Loop video</span>
+            <span id="yt-val-loop" class="yt-menu-sub">Off</span>
+          </div>
+          <label class="yt-switch" aria-label="Toggle loop video">
+            <input id="yt-switch-loop" type="checkbox">
+            <span class="yt-slider"></span>
+          </label>
+        </div>
+
+        <!-- Stable Volume -->
+        <div class="yt-menu-row">
+          <div class="yt-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </div>
+          <div class="yt-menu-text">
+            <span class="yt-menu-label">Stable volume</span>
+            <span class="yt-menu-sub">Balances volume evenly</span>
+          </div>
+          <label class="yt-switch" aria-label="Toggle stable volume">
+            <input id="yt-switch-stable-vol" type="checkbox" checked>
+            <span class="yt-slider"></span>
+          </label>
+        </div>
+
+        <!-- Sleep Timer -->
+        <button id="yt-row-sleep" class="yt-menu-row" type="button">
+          <div class="yt-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </div>
+          <div class="yt-menu-text">
+            <span class="yt-menu-label">Sleep timer</span>
+            <span id="yt-val-sleep" class="yt-menu-sub">Off</span>
+          </div>
+          <svg class="yt-menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <!-- Fullscreen on TV -->
+        <button id="yt-row-fullscreen" class="yt-menu-row" type="button">
+          <div class="yt-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </div>
+          <div class="yt-menu-text">
+            <span class="yt-menu-label">TV Fullscreen</span>
+            <span class="yt-menu-sub">Toggle fullscreen mode</span>
+          </div>
+        </button>
+
+        <!-- Copy Video Link -->
+        <button id="yt-row-copy" class="yt-menu-row" type="button">
+          <div class="yt-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <div class="yt-menu-text">
+            <span class="yt-menu-label">Copy link</span>
+            <span class="yt-menu-sub">Share current video</span>
+          </div>
+        </button>
+
+        <!-- SponsorBlock Preferences -->
+        <button id="yt-row-sponsorblock" class="yt-menu-row" type="button">
+          <div class="yt-menu-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="yt-menu-text">
+            <span class="yt-menu-label">SponsorBlock Preferences</span>
+            <span class="yt-menu-sub">Skip sponsors and intros</span>
+          </div>
+          <svg class="yt-menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <!-- Submenu View (Quality, Speed, Captions, Sleep Timer) -->
+      <div id="yt-settings-sub-view" class="yt-sheet-content" hidden>
+        <div id="yt-submenu-header-note" class="yt-submenu-note" hidden></div>
+        <div id="yt-submenu-list" class="yt-submenu-list"></div>
+      </div>
+    </div>
+  </div>
   <div id="device-picker-modal" class="device-modal-backdrop" hidden>
     <div class="device-dialog" role="dialog" aria-modal="true" aria-labelledby="device-modal-title">
       <div class="device-modal-head">
@@ -3831,23 +4051,41 @@
     const remoteTransferBtn = document.querySelector('#remote-transfer-btn');
     const remoteDisconnectBtn = document.querySelector('#remote-disconnect-btn');
 
-    // Remote Volume & Settings Controls
+    // Remote Volume & YouTube Settings Elements
     const remoteMuteBtn = document.querySelector('#remote-mute-btn');
     const remoteVolIcon = document.querySelector('#remote-vol-icon');
     const remoteVolSlider = document.querySelector('#remote-vol-slider');
     const remoteVolTxt = document.querySelector('#remote-vol-txt');
-    const remoteSpeedBtn = document.querySelector('#remote-speed-btn');
-    const remoteSpeedTxt = document.querySelector('#remote-speed-txt');
-    const remoteQualityBtn = document.querySelector('#remote-quality-btn');
-    const remoteQualityTxt = document.querySelector('#remote-quality-txt');
-    const remoteCaptionsBtn = document.querySelector('#remote-captions-btn');
-    const remoteCaptionsTxt = document.querySelector('#remote-captions-txt');
-    const remoteFsBtn = document.querySelector('#remote-fs-btn');
-    const remotePopover = document.querySelector('#remote-popover');
-    const remotePopoverTitle = document.querySelector('#remote-popover-title');
-    const closeRemotePopover = document.querySelector('#close-remote-popover');
-    const remotePopoverOptions = document.querySelector('#remote-popover-options');
+    const remoteYtSettingsBtn = document.querySelector('#remote-yt-settings-btn');
     let isAdjustingVolume = false;
+
+    // YouTube Native-Style Settings Sheet Elements
+    const ytSettingsModal = document.querySelector('#yt-settings-modal');
+    const closeYtSettings = document.querySelector('#close-yt-settings');
+    const ytSettingsBack = document.querySelector('#yt-settings-back');
+    const ytSettingsHeading = document.querySelector('#yt-settings-heading');
+    const ytSettingsMainView = document.querySelector('#yt-settings-main-view');
+    const ytSettingsSubView = document.querySelector('#yt-settings-sub-view');
+    const ytSubmenuHeaderNote = document.querySelector('#yt-submenu-header-note');
+    const ytSubmenuList = document.querySelector('#yt-submenu-list');
+
+    const ytRowQuality = document.querySelector('#yt-row-quality');
+    const ytValQuality = document.querySelector('#yt-val-quality');
+    const ytRowSpeed = document.querySelector('#yt-row-speed');
+    const ytValSpeed = document.querySelector('#yt-val-speed');
+    const ytRowCaptions = document.querySelector('#yt-row-captions');
+    const ytValCaptions = document.querySelector('#yt-val-captions');
+    const ytSwitchLoop = document.querySelector('#yt-switch-loop');
+    const ytValLoop = document.querySelector('#yt-val-loop');
+    const ytSwitchStableVol = document.querySelector('#yt-switch-stable-vol');
+    const ytRowSleep = document.querySelector('#yt-row-sleep');
+    const ytValSleep = document.querySelector('#yt-val-sleep');
+    const ytRowFullscreen = document.querySelector('#yt-row-fullscreen');
+    const ytRowCopy = document.querySelector('#yt-row-copy');
+    const ytRowSponsorBlock = document.querySelector('#yt-row-sponsorblock');
+
+    let sleepTimerTimeout = null;
+    let sleepTimerTargetTime = null;
 
     // Device Picker & Cast Header Elements
     const castPickerBtn = document.querySelector('#cast-picker-btn');
@@ -4448,24 +4686,84 @@
       }
     }
 
-    function showRemotePopover(title, options, currentVal, onSelect) {
-      if (!remotePopover || !remotePopoverOptions) return;
-      if (remotePopoverTitle) remotePopoverTitle.textContent = title;
-      remotePopoverOptions.innerHTML = '';
+    function syncYtSettingsUi(data) {
+      if (!data) data = activeRemoteSession || {};
+      // Quality
+      if (ytValQuality) {
+        let q = data.quality || currentQuality || 'auto';
+        if (q === 'hd1080') q = '1080p';
+        else if (q === 'hd720') q = '720p';
+        else if (q === 'large') q = '480p';
+        else if (q === 'medium') q = '360p';
+        else if (q !== 'auto' && !q.endsWith('p')) q = `${q}p`;
+        ytValQuality.textContent = q === 'auto' ? 'Auto (1080p)' : q;
+      }
+      // Speed
+      if (ytValSpeed) {
+        const rate = data.rate || currentRate || 1;
+        ytValSpeed.textContent = rate === 1 ? 'Normal' : `${rate}x`;
+      }
+      // Captions
+      if (ytValCaptions) {
+        const hasCc = data.captions === 'on' || (Boolean(data.captions) && data.captions !== 'off');
+        ytValCaptions.textContent = hasCc ? 'English' : 'Off';
+      }
+      // Loop
+      if (ytSwitchLoop && ytValLoop) {
+        const isLoop = Boolean(data.loop);
+        ytSwitchLoop.checked = isLoop;
+        ytValLoop.textContent = isLoop ? 'On' : 'Off';
+      }
+      // Sleep timer
+      if (ytValSleep) {
+        if (sleepTimerTimeout && sleepTimerTargetTime) {
+          const minsLeft = Math.max(1, Math.ceil((sleepTimerTargetTime - Date.now()) / 60000));
+          ytValSleep.textContent = `${minsLeft}m left`;
+        } else {
+          ytValSleep.textContent = 'Off';
+        }
+      }
+    }
 
-      options.forEach(opt => {
+    function openYtSubmenu(title, noteText, items, activeVal, onSelect) {
+      if (!ytSettingsHeading || !ytSettingsBack || !ytSettingsMainView || !ytSettingsSubView || !ytSubmenuList) return;
+      ytSettingsHeading.textContent = title;
+      ytSettingsBack.hidden = false;
+      ytSettingsMainView.hidden = true;
+      ytSettingsSubView.hidden = false;
+
+      if (ytSubmenuHeaderNote) {
+        if (noteText) {
+          ytSubmenuHeaderNote.textContent = noteText;
+          ytSubmenuHeaderNote.hidden = false;
+        } else {
+          ytSubmenuHeaderNote.hidden = true;
+        }
+      }
+
+      ytSubmenuList.innerHTML = '';
+      items.forEach(item => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = `remote-option-btn${opt.value === currentVal ? ' selected' : ''}`;
-        btn.textContent = opt.label;
+        btn.className = `yt-sub-item${item.value === activeVal ? ' active' : ''}`;
+        btn.innerHTML = `
+          <span>${item.label}</span>
+          ${item.value === activeVal ? '<svg class="yt-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+        `;
         btn.addEventListener('click', () => {
-          onSelect(opt.value);
-          remotePopover.hidden = true;
+          onSelect(item.value);
+          closeYtSubmenu();
         });
-        remotePopoverOptions.appendChild(btn);
+        ytSubmenuList.appendChild(btn);
       });
+    }
 
-      remotePopover.hidden = false;
+    function closeYtSubmenu() {
+      if (!ytSettingsHeading || !ytSettingsBack || !ytSettingsMainView || !ytSettingsSubView) return;
+      ytSettingsHeading.textContent = 'Settings';
+      ytSettingsBack.hidden = true;
+      ytSettingsSubView.hidden = true;
+      ytSettingsMainView.hidden = false;
     }
 
     function updateRemoteModalUi(data) {
@@ -4504,29 +4802,8 @@
         syncVolIcon(isMuted || vol === 0 ? 0 : vol);
       }
 
-      // Sync Speed UI
-      if (remoteSpeedTxt) {
-        const rate = data.rate || 1;
-        remoteSpeedTxt.textContent = `Speed: ${rate}x`;
-      }
-
-      // Sync Quality UI
-      if (remoteQualityTxt) {
-        let q = data.quality || 'auto';
-        if (q === 'hd1080') q = '1080p';
-        else if (q === 'hd720') q = '720p';
-        else if (q === 'large') q = '480p';
-        else if (q === 'medium') q = '360p';
-        else if (q !== 'auto' && !q.endsWith('p')) q = `${q}p`;
-        remoteQualityTxt.textContent = q === 'auto' ? 'Auto' : q;
-      }
-
-      // Sync Captions UI
-      if (remoteCaptionsBtn && remoteCaptionsTxt) {
-        const hasCc = data.captions === 'on' || (Boolean(data.captions) && data.captions !== 'off');
-        remoteCaptionsBtn.classList.toggle('active', hasCc);
-        remoteCaptionsTxt.textContent = hasCc ? 'CC: On' : 'CC: Off';
-      }
+      // Sync YouTube Settings Sheet UI
+      syncYtSettingsUi(data);
     }
 
     async function resolveNetworkHash() {
@@ -4844,6 +5121,15 @@
               try { localStorage.setItem('clearplay_captions', currentCaptions); } catch (_) {}
             } catch (_) {}
             broadcastTvPlaybackState(true, { captions: currentCaptions ? 'on' : 'off' });
+          }
+          break;
+        case 'loop':
+          if (typeof cmd.loop === 'boolean') {
+            try {
+              player?.setLoop?.(cmd.loop);
+            } catch (_) {}
+            showToast(cmd.loop ? 'Video Loop enabled on TV' : 'Video Loop disabled on TV');
+            broadcastTvPlaybackState(true, { loop: cmd.loop });
           }
           break;
         case 'fullscreen':
@@ -5520,11 +5806,78 @@
       });
     }
 
-    // Remote Settings: Speed, Quality, CC, Fullscreen
-    if (remoteSpeedBtn) {
-      remoteSpeedBtn.addEventListener('click', e => {
+    // YouTube-Style Settings Sheet Event Handlers
+    function openYtSettingsSheet() {
+      syncYtSettingsUi(activeRemoteSession);
+      closeYtSubmenu();
+      if (ytSettingsModal) ytSettingsModal.hidden = false;
+    }
+
+    function closeYtSettingsSheet() {
+      if (ytSettingsModal) ytSettingsModal.hidden = true;
+      closeYtSubmenu();
+    }
+
+    if (remoteYtSettingsBtn) {
+      remoteYtSettingsBtn.addEventListener('click', e => {
         e.stopPropagation();
-        const currentRate = activeRemoteSession?.rate || 1;
+        openYtSettingsSheet();
+      });
+    }
+
+    if (closeYtSettings) {
+      closeYtSettings.addEventListener('click', closeYtSettingsSheet);
+    }
+
+    if (ytSettingsBack) {
+      ytSettingsBack.addEventListener('click', closeYtSubmenu);
+    }
+
+    if (ytSettingsModal) {
+      ytSettingsModal.addEventListener('click', e => {
+        if (e.target === ytSettingsModal) closeYtSettingsSheet();
+      });
+    }
+
+    // Quality Submenu
+    if (ytRowQuality) {
+      ytRowQuality.addEventListener('click', () => {
+        const currentQ = activeRemoteSession?.quality || currentQuality || 'auto';
+        const qualities = [
+          { label: 'Auto (recommended)', value: 'auto' },
+          { label: '1080p (HD)', value: '1080p' },
+          { label: '720p (HD)', value: '720p' },
+          { label: '480p', value: '480p' },
+          { label: '360p', value: '360p' },
+          { label: '240p', value: '240p' },
+          { label: '144p', value: '144p' }
+        ];
+        openYtSubmenu('Quality', 'Applies to current video on TV', qualities, currentQ, val => {
+          if (isTvCastActive && connectedRoomId) {
+            sendRemoteCommand(connectedRoomId, 'quality', { quality: val });
+            if (activeRemoteSession) activeRemoteSession.quality = val;
+          } else {
+            currentQuality = val;
+            try { localStorage.setItem('clearplay_quality', currentQuality); } catch (_) {}
+            try {
+              if (val === 'auto') player?.setPlaybackQuality?.('auto');
+              else if (val === '1080p') player?.setPlaybackQuality?.('hd1080');
+              else if (val === '720p') player?.setPlaybackQuality?.('hd720');
+              else if (val === '480p') player?.setPlaybackQuality?.('large');
+              else if (val === '360p') player?.setPlaybackQuality?.('medium');
+              else player?.setPlaybackQuality?.(val);
+            } catch (_) {}
+          }
+          if (ytValQuality) ytValQuality.textContent = val === 'auto' ? 'Auto (1080p)' : val;
+          showToast(`Quality: ${val === 'auto' ? 'Auto' : val}`);
+        });
+      });
+    }
+
+    // Playback Speed Submenu
+    if (ytRowSpeed) {
+      ytRowSpeed.addEventListener('click', () => {
+        const currentRateVal = activeRemoteSession?.rate || currentRate || 1;
         const speeds = [
           { label: '0.25x', value: 0.25 },
           { label: '0.5x', value: 0.5 },
@@ -5535,57 +5888,173 @@
           { label: '1.75x', value: 1.75 },
           { label: '2x', value: 2 }
         ];
-        showRemotePopover('Playback Speed', speeds, currentRate, rate => {
-          sendRemoteCommand(connectedRoomId, 'speed', { rate });
-          if (activeRemoteSession) activeRemoteSession.rate = rate;
-          if (remoteSpeedTxt) remoteSpeedTxt.textContent = `Speed: ${rate}x`;
-          showToast(`TV Speed: ${rate}x`);
+        openYtSubmenu('Playback speed', '', speeds, currentRateVal, rate => {
+          if (isTvCastActive && connectedRoomId) {
+            sendRemoteCommand(connectedRoomId, 'speed', { rate });
+            if (activeRemoteSession) activeRemoteSession.rate = rate;
+          } else {
+            applyPlaybackRate(rate);
+          }
+          if (ytValSpeed) ytValSpeed.textContent = rate === 1 ? 'Normal' : `${rate}x`;
+          showToast(`Playback speed: ${rate}x`);
         });
       });
     }
 
-    if (remoteQualityBtn) {
-      remoteQualityBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        const currentQ = activeRemoteSession?.quality || 'auto';
-        const qualities = [
-          { label: 'Auto', value: 'auto' },
-          { label: '1080p (HD)', value: '1080p' },
-          { label: '720p (HD)', value: '720p' },
-          { label: '480p', value: '480p' },
-          { label: '360p', value: '360p' }
-        ];
-        showRemotePopover('Video Quality', qualities, currentQ, quality => {
-          sendRemoteCommand(connectedRoomId, 'quality', { quality });
-          if (activeRemoteSession) activeRemoteSession.quality = quality;
-          if (remoteQualityTxt) remoteQualityTxt.textContent = quality === 'auto' ? 'Auto' : quality;
-          showToast(`TV Quality: ${quality}`);
-        });
-      });
-    }
-
-    if (remoteCaptionsBtn) {
-      remoteCaptionsBtn.addEventListener('click', () => {
+    // Captions Submenu
+    if (ytRowCaptions) {
+      ytRowCaptions.addEventListener('click', () => {
         const hasCc = activeRemoteSession?.captions === 'on' || (Boolean(activeRemoteSession?.captions) && activeRemoteSession?.captions !== 'off');
-        const nextCc = hasCc ? 'off' : 'on';
-        sendRemoteCommand(connectedRoomId, 'captions', { captions: nextCc });
-        if (activeRemoteSession) activeRemoteSession.captions = nextCc;
-        remoteCaptionsBtn.classList.toggle('active', nextCc === 'on');
-        if (remoteCaptionsTxt) remoteCaptionsTxt.textContent = nextCc === 'on' ? 'CC: On' : 'CC: Off';
-        showToast(nextCc === 'on' ? 'TV Captions Enabled' : 'TV Captions Disabled');
+        const currentCcVal = hasCc ? 'en' : 'off';
+        const captionsOpts = [
+          { label: 'Turn off captions', value: 'off' },
+          { label: 'English', value: 'en' },
+          { label: 'Auto-generated', value: 'auto' }
+        ];
+        openYtSubmenu('Captions', '', captionsOpts, currentCcVal, val => {
+          if (isTvCastActive && connectedRoomId) {
+            sendRemoteCommand(connectedRoomId, 'captions', { captions: val });
+            if (activeRemoteSession) activeRemoteSession.captions = val === 'off' ? 'off' : 'on';
+          } else {
+            if (val === 'off') {
+              currentCaptions = '';
+              try { player?.unloadModule?.('captions'); } catch (_) {}
+            } else {
+              currentCaptions = 'en';
+              try {
+                player?.loadModule?.('captions');
+                player?.setOption?.('captions', 'track', { languageCode: 'en' });
+              } catch (_) {}
+            }
+          }
+          if (ytValCaptions) ytValCaptions.textContent = val === 'off' ? 'Off' : 'English';
+          showToast(val === 'off' ? 'Captions turned off' : 'Captions turned on');
+        });
       });
     }
 
-    if (remoteFsBtn) {
-      remoteFsBtn.addEventListener('click', () => {
-        sendRemoteCommand(connectedRoomId, 'fullscreen');
-        showToast('TV Fullscreen toggled');
+    // Loop Switch
+    if (ytSwitchLoop) {
+      ytSwitchLoop.addEventListener('change', () => {
+        const isLoop = ytSwitchLoop.checked;
+        if (ytValLoop) ytValLoop.textContent = isLoop ? 'On' : 'Off';
+        if (isTvCastActive && connectedRoomId) {
+          sendRemoteCommand(connectedRoomId, 'loop', { loop: isLoop });
+          if (activeRemoteSession) activeRemoteSession.loop = isLoop;
+        } else {
+          try { player?.setLoop?.(isLoop); } catch (_) {}
+        }
+        showToast(isLoop ? 'Loop video enabled' : 'Loop video disabled');
       });
     }
 
-    if (closeRemotePopover) {
-      closeRemotePopover.addEventListener('click', () => {
-        if (remotePopover) remotePopover.hidden = true;
+    // Stable Volume Switch
+    if (ytSwitchStableVol) {
+      ytSwitchStableVol.addEventListener('change', () => {
+        const isStable = ytSwitchStableVol.checked;
+        showToast(isStable ? 'Stable volume enabled' : 'Stable volume disabled');
+      });
+    }
+
+    // Sleep Timer Submenu
+    if (ytRowSleep) {
+      ytRowSleep.addEventListener('click', () => {
+        const sleepOpts = [
+          { label: 'Turn off timer', value: 0 },
+          { label: '10 minutes', value: 10 },
+          { label: '15 minutes', value: 15 },
+          { label: '30 minutes', value: 30 },
+          { label: '45 minutes', value: 45 },
+          { label: '60 minutes', value: 60 },
+          { label: 'End of video', value: -1 }
+        ];
+        openYtSubmenu('Sleep timer', '', sleepOpts, sleepTimerTimeout ? 1 : 0, mins => {
+          if (sleepTimerTimeout) {
+            clearTimeout(sleepTimerTimeout);
+            sleepTimerTimeout = null;
+            sleepTimerTargetTime = null;
+          }
+
+          if (mins > 0) {
+            sleepTimerTargetTime = Date.now() + mins * 60 * 1000;
+            sleepTimerTimeout = setTimeout(() => {
+              if (isTvCastActive && connectedRoomId) {
+                sendRemoteCommand(connectedRoomId, 'pause');
+              } else {
+                pauseActivePlayer();
+              }
+              showToast('😴 Sleep timer: Playback paused');
+              if (ytValSleep) ytValSleep.textContent = 'Off';
+              sleepTimerTimeout = null;
+              sleepTimerTargetTime = null;
+            }, mins * 60 * 1000);
+            if (ytValSleep) ytValSleep.textContent = `${mins} min`;
+            showToast(`Sleep timer set for ${mins} minutes`);
+          } else if (mins === -1) {
+            const cur = isTvCastActive ? (activeRemoteSession?.currentTime || 0) : getActiveTime();
+            const dur = isTvCastActive ? (activeRemoteSession?.duration || 0) : getActiveDuration();
+            const remainSec = Math.max(5, dur - cur);
+            sleepTimerTargetTime = Date.now() + remainSec * 1000;
+            sleepTimerTimeout = setTimeout(() => {
+              if (isTvCastActive && connectedRoomId) {
+                sendRemoteCommand(connectedRoomId, 'pause');
+              } else {
+                pauseActivePlayer();
+              }
+              showToast('😴 Sleep timer: End of video reached');
+              if (ytValSleep) ytValSleep.textContent = 'Off';
+              sleepTimerTimeout = null;
+              sleepTimerTargetTime = null;
+            }, remainSec * 1000);
+            if (ytValSleep) ytValSleep.textContent = 'End of video';
+            showToast('Sleep timer set to end of video');
+          } else {
+            if (ytValSleep) ytValSleep.textContent = 'Off';
+            showToast('Sleep timer turned off');
+          }
+        });
+      });
+    }
+
+    // Fullscreen on TV
+    if (ytRowFullscreen) {
+      ytRowFullscreen.addEventListener('click', () => {
+        closeYtSettingsSheet();
+        if (isTvCastActive && connectedRoomId) {
+          sendRemoteCommand(connectedRoomId, 'fullscreen');
+          showToast('TV Fullscreen toggled');
+        } else {
+          toggleFullscreen();
+        }
+      });
+    }
+
+    // Copy Video Link
+    if (ytRowCopy) {
+      ytRowCopy.addEventListener('click', async () => {
+        const vidId = (isTvCastActive && activeRemoteSession?.videoId) ? activeRemoteSession.videoId : (video?.id || '');
+        if (!vidId) {
+          showToast('No active video to share');
+          return;
+        }
+        const curTime = Math.floor(isTvCastActive ? (activeRemoteSession?.currentTime || 0) : getActiveTime());
+        const shareUrl = `${window.location.origin}/?v=${encodeURIComponent(vidId)}${curTime > 5 ? `&t=${curTime}s` : ''}`;
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          showToast('Link copied to clipboard!');
+        } catch (_) {
+          showToast(`URL: ${shareUrl}`);
+        }
+        closeYtSettingsSheet();
+      });
+    }
+
+    // SponsorBlock Preferences row inside YouTube Settings
+    if (ytRowSponsorBlock) {
+      ytRowSponsorBlock.addEventListener('click', () => {
+        closeYtSettingsSheet();
+        renderSettings();
+        if (modal) modal.hidden = false;
       });
     }
 
@@ -7218,7 +7687,7 @@
     document.querySelector('#forward').addEventListener('click', () => {
       seekActivePlayer(getActiveTime() + 10);
     });
-    document.querySelector('#open-settings').addEventListener('click', () => { renderSettings(); modal.hidden = false; });
+    document.querySelector('#open-settings').addEventListener('click', () => { openYtSettingsSheet(); });
     document.querySelector('#close-settings').addEventListener('click', () => modal.hidden = true);
     modal.addEventListener('click', event => { if (event.target === modal) modal.hidden = true; });
     sbSkip.addEventListener('click', () => {
