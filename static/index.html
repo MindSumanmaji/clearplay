@@ -2523,6 +2523,415 @@
       background: rgba(255, 255, 255, 0.16);
       color: var(--text);
     }
+
+    /* Header Cast Button & TV Code Chip */
+    .cast-header-btn {
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+      flex-shrink: 0;
+    }
+    .cast-header-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--line-strong);
+    }
+    .cast-header-btn:active {
+      transform: scale(0.95);
+    }
+    .cast-header-btn.connected {
+      background: rgba(181, 243, 107, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .cast-icon-svg {
+      width: 17px;
+      height: 17px;
+      display: block;
+    }
+    .cast-dot-indicator {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    .tv-code-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(181, 243, 107, 0.12);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+    .tv-code-badge {
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .tv-code-val {
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      font-size: 12.5px;
+    }
+
+    /* Device Picker Modal */
+    .device-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1050;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100vw;
+      max-width: 100vw;
+      animation: fadeIn 0.2s ease;
+    }
+    @media (min-width: 600px) {
+      .device-modal-backdrop {
+        justify-content: center;
+        padding: 20px;
+      }
+    }
+    .device-dialog {
+      background: #171920;
+      border: 1px solid var(--line-strong);
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 440px;
+      box-sizing: border-box;
+      box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.85);
+      animation: remoteSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      max-height: 85vh;
+      overflow: hidden;
+    }
+    @media (min-width: 600px) {
+      .device-dialog {
+        border-radius: 20px;
+        box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8);
+      }
+    }
+    .device-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .device-head-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .device-head-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+    }
+    .device-modal-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .device-close-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .device-close-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .device-modal-body {
+      padding: 16px 20px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .device-current-card {
+      background: rgba(181, 243, 107, 0.08);
+      border: 1px solid rgba(181, 243, 107, 0.25);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .device-current-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .device-item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--text);
+    }
+    .device-item-icon svg { width: 20px; height: 20px; }
+    .device-item-icon.connected {
+      background: var(--accent);
+      color: var(--accent-dark);
+    }
+    .device-item-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .device-status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .device-action-btn.disconnect {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .device-action-btn.disconnect:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+    }
+    .device-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: -4px;
+    }
+    .device-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .device-scan-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .scan-spinner {
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .device-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .device-item-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      box-sizing: border-box;
+      color: var(--text);
+    }
+    .device-item-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--line-strong);
+    }
+    .device-item-btn:active {
+      transform: scale(0.99);
+    }
+    .device-item-btn.is-active-device {
+      border-color: var(--accent);
+      background: rgba(181, 243, 107, 0.06);
+    }
+    .device-item-meta {
+      flex: 1;
+      min-width: 0;
+    }
+    .device-item-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin: 2px 0 0;
+    }
+    .device-item-action-icon {
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .device-empty-msg {
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      border: 1px dashed var(--line);
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .device-empty-msg p { margin: 0 0 4px; }
+    .device-sub-tip { font-size: 11.5px; opacity: 0.8; }
+    .device-code-section {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+    .device-code-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 6px 0;
+      color: var(--text);
+      font-size: 13.5px;
+      font-weight: 600;
+      user-select: none;
+    }
+    .device-code-icon-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .device-code-icon-label svg { width: 17px; height: 17px; color: var(--muted); }
+    .code-chevron {
+      font-size: 18px;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+    .code-chevron.open {
+      transform: rotate(90deg);
+    }
+    .code-input-form {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .code-form-tip {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .code-form-row {
+      display: flex;
+      gap: 8px;
+    }
+    .tv-code-input {
+      flex: 1;
+      background: #0d0e12;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: monospace;
+      letter-spacing: 0.12em;
+      color: var(--text);
+      text-transform: uppercase;
+      outline: none;
+    }
+    .tv-code-input:focus {
+      border-color: var(--accent);
+    }
+    .tv-code-submit-btn {
+      background: var(--accent);
+      color: var(--accent-dark);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .tv-code-submit-btn:hover { opacity: 0.9; }
+    .tv-code-submit-btn:active { transform: scale(0.96); }
+    .tv-code-status {
+      font-size: 12px;
+      margin: 0;
+    }
+    .tv-code-status.error { color: #ef4444; }
+    .tv-code-status.success { color: var(--accent); }
+    .device-modal-footer {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      display: flex;
+      justify-content: center;
+    }
+    .receiver-mode-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .receiver-mode-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
   </style>
 </head>
 <body>
@@ -2560,6 +2969,17 @@
       </nav>
 
       <div class="header-right" id="auth-area">
+        <div id="tv-code-chip" class="tv-code-chip" hidden title="Cast to this TV using this code">
+          <span class="tv-code-badge">📺 TV</span>
+          <span id="tv-code-val" class="tv-code-val">--- ---</span>
+        </div>
+        <button id="cast-picker-btn" class="cast-header-btn" type="button" aria-label="Connect to a device" title="Cast to TV / Connect Device">
+          <svg class="cast-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/>
+            <line x1="2" y1="20" x2="2.01" y2="20"/>
+          </svg>
+          <span id="cast-dot-indicator" class="cast-dot-indicator" hidden></span>
+        </button>
         <button id="install-btn" class="ghost-btn" type="button" hidden title="Install Clearplay app">⬇ Install</button>
         <span class="guest-tag" id="guest-tag">Guest Mode</span>
         <button id="signin-btn" class="auth-btn" type="button">
@@ -2794,6 +3214,10 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
               <span>Audio Only</span>
             </button>
+            <button id="cast-player-btn" class="control" type="button" title="Play on TV / Cast">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/><line x1="2" y1="20" x2="2.01" y2="20"/></svg>
+              <span>Cast</span>
+            </button>
           </div>
           <div class="sb-panel">
             <div id="track" class="track" aria-label="SponsorBlock segment markers"></div>
@@ -2968,6 +3392,80 @@
     </section>
   </div>
 
+  <!-- DEVICE PICKER MODAL (YOUTUBE-STYLE CAST DIALOG) -->
+  <div id="device-picker-modal" class="device-modal-backdrop" hidden>
+    <div class="device-dialog" role="dialog" aria-modal="true" aria-labelledby="device-modal-title">
+      <div class="device-modal-head">
+        <div class="device-head-title-wrap">
+          <svg class="device-head-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/>
+            <line x1="2" y1="20" x2="2.01" y2="20"/>
+          </svg>
+          <h3 id="device-modal-title" class="device-modal-title">Connect to a device</h3>
+        </div>
+        <button id="close-device-modal" class="device-close-btn" type="button" aria-label="Close" title="Close">×</button>
+      </div>
+
+      <div class="device-modal-body">
+        <!-- Currently Connected Card -->
+        <div id="device-current-card" class="device-current-card" hidden>
+          <div class="device-current-info">
+            <div class="device-item-icon connected">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+            </div>
+            <div>
+              <p id="device-current-name" class="device-item-title">Samsung Smart TV</p>
+              <span class="device-status-badge">Connected</span>
+            </div>
+          </div>
+          <button id="device-disconnect-btn" class="device-action-btn disconnect" type="button">Disconnect</button>
+        </div>
+
+        <!-- Available Devices Section -->
+        <div class="device-section-head">
+          <span class="device-section-title">Devices on same Wi-Fi</span>
+          <span id="device-scan-indicator" class="device-scan-indicator">
+            <span class="scan-spinner"></span> Scanning…
+          </span>
+        </div>
+
+        <div id="device-list" class="device-list">
+          <div id="device-list-empty" class="device-empty-msg">
+            <p>Searching for TVs on this Wi-Fi network…</p>
+            <p class="device-sub-tip">Make sure Clearplay is open on your TV (even in Guest mode) or connect with TV code below.</p>
+          </div>
+        </div>
+
+        <!-- Link with TV Code Section -->
+        <div class="device-code-section">
+          <div class="device-code-toggle" id="toggle-code-input" role="button" tabindex="0">
+            <div class="device-code-icon-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+              <span>Link with TV code</span>
+            </div>
+            <span id="code-chevron" class="code-chevron">›</span>
+          </div>
+
+          <div id="code-input-form" class="code-input-form" hidden>
+            <p class="code-form-tip">Enter the 6-digit code shown on your TV screen:</p>
+            <div class="code-form-row">
+              <input id="tv-code-input" class="tv-code-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="e.g. 482 915" autocomplete="off" />
+              <button id="tv-code-submit-btn" class="tv-code-submit-btn" type="button">Link</button>
+            </div>
+            <p id="tv-code-status" class="tv-code-status" hidden></p>
+          </div>
+        </div>
+
+        <!-- Helper: Switch to TV receiver mode -->
+        <div class="device-modal-footer">
+          <button id="toggle-tv-receiver-mode" class="receiver-mode-btn" type="button">
+            <span>📺</span> <span id="receiver-mode-txt">Switch this device to TV Mode</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Clearplay TV Continue Watching Prompt (For Smart TV / Big Screen) -->
   <div id="tv-continue-prompt" class="tv-continue-overlay" hidden>
     <div class="tv-prompt-badge">
@@ -3104,7 +3602,28 @@
     const remoteTransferBtn = document.querySelector('#remote-transfer-btn');
     const remoteDisconnectBtn = document.querySelector('#remote-disconnect-btn');
 
-    let isTvCastActive = true;
+    // Device Picker & Cast Header Elements
+    const castPickerBtn = document.querySelector('#cast-picker-btn');
+    const castDotIndicator = document.querySelector('#cast-dot-indicator');
+    const castPlayerBtn = document.querySelector('#cast-player-btn');
+    const tvCodeChip = document.querySelector('#tv-code-chip');
+    const tvCodeVal = document.querySelector('#tv-code-val');
+
+    const devicePickerModal = document.querySelector('#device-picker-modal');
+    const closeDeviceModal = document.querySelector('#close-device-modal');
+    const deviceCurrentCard = document.querySelector('#device-current-card');
+    const deviceCurrentName = document.querySelector('#device-current-name');
+    const deviceDisconnectBtn = document.querySelector('#device-disconnect-btn');
+    const deviceScanIndicator = document.querySelector('#device-scan-indicator');
+    const deviceListEl = document.querySelector('#device-list');
+    const toggleCodeInput = document.querySelector('#toggle-code-input');
+    const codeChevron = document.querySelector('#code-chevron');
+    const codeInputForm = document.querySelector('#code-input-form');
+    const tvCodeInput = document.querySelector('#tv-code-input');
+    const tvCodeSubmitBtn = document.querySelector('#tv-code-submit-btn');
+    const tvCodeStatus = document.querySelector('#tv-code-status');
+    const toggleTvReceiverMode = document.querySelector('#toggle-tv-receiver-mode');
+    const receiverModeTxt = document.querySelector('#receiver-mode-txt');
 
     const tvContinuePrompt = document.querySelector('#tv-continue-prompt');
     const tvPromptBadgeTxt = document.querySelector('#tv-prompt-badge-txt');
@@ -3131,12 +3650,14 @@
       let type = 'desktop';
       let name = 'Computer';
 
-      const isTv = /SmartTV|Tizen|Web0S|Android TV|CrKey|AFTB|Silk|GoogleTV|AppleTV|HbbTV|NETTV|POV_TV/i.test(ua);
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(ua) || (window.innerWidth <= 768 && ('ontouchstart' in window));
+      const forceTv = localStorage.getItem('clearplay_force_tv') === '1' || window.location.search.includes('tv=1');
+      const isTv = forceTv || /SmartTV|Tizen|Web0S|Android TV|CrKey|AFTB|Silk|GoogleTV|AppleTV|HbbTV|NETTV|POV_TV/i.test(ua);
+      const isMobile = !forceTv && (/Android|iPhone|iPad|iPod/i.test(ua) || (window.innerWidth <= 768 && ('ontouchstart' in window)));
 
       if (isTv) {
         type = 'tv';
         name = /Tizen/i.test(ua) ? 'Samsung Smart TV' : /Web0S/i.test(ua) ? 'LG Smart TV' : /AFTB/i.test(ua) ? 'Fire TV' : 'Smart TV';
+        if (forceTv && !/SmartTV|Tizen|Web0S/i.test(ua)) name = 'Clearplay TV Screen';
       } else if (isMobile) {
         type = 'mobile';
         if (/iPhone/i.test(ua)) name = 'iPhone';
@@ -3152,9 +3673,17 @@
       return { id, type, name };
     }
 
-    const { id: myDeviceId, type: myDeviceType, name: myDeviceName } = detectDeviceInfo();
+    let { id: myDeviceId, type: myDeviceType, name: myDeviceName } = detectDeviceInfo();
+    let myNetworkHash = 'net_local';
+    let myPairingCode = localStorage.getItem('clearplay_tv_code') || '';
+    let connectedRoomId = localStorage.getItem('clearplay_active_room_id') || null;
+    let connectedDeviceName = localStorage.getItem('clearplay_last_tv_name') || 'Smart TV';
+    let isTvCastActive = Boolean(connectedRoomId);
     let activeRemoteSession = null;
     let connectUnsubscribe = null;
+    let roomUnsubscribe = null;
+    let networkDevicesUnsubscribe = null;
+    let discoveredDevices = [];
     let lastExecutedCmdId = null;
     let dismissedSessionVideoId = null;
     let isSeekingRemote = false;
@@ -3621,12 +4150,12 @@
       initConnectSync(user);
     });
 
-    // ==================== CLEARPLAY CONNECT & REMOTE ====================
+    // ==================== CLEARPLAY CONNECT, WI-FI DISCOVERY & REMOTE ====================
 
     function showConnectBanner(data) {
       if (!connectBanner || !isTvCastActive) return;
       cbPulse.classList.toggle('paused', !data.isPlaying);
-      if (cbDeviceTxt) cbDeviceTxt.textContent = data.deviceName || 'Smart TV';
+      if (cbDeviceTxt) cbDeviceTxt.textContent = data.deviceName || connectedDeviceName || 'Smart TV';
       cbThumb.src = data.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(data.videoId)}/hqdefault.jpg`;
       cbTitle.textContent = data.title || 'YouTube Video';
 
@@ -3663,7 +4192,7 @@
 
     function updateRemoteModalUi(data) {
       if (!remoteModal || remoteModal.hidden) return;
-      remoteModalTitle.textContent = data.deviceName || 'Samsung Smart TV';
+      remoteModalTitle.textContent = data.deviceName || connectedDeviceName || 'Samsung Smart TV';
       remoteThumb.src = data.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(data.videoId)}/hqdefault.jpg`;
       remoteTitle.textContent = data.title || 'YouTube Video';
       remoteAuthor.textContent = data.author || '';
@@ -3689,15 +4218,164 @@
       }
     }
 
-    async function playOnRemoteDevice(item) {
-      const targetDeviceId = activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id') || 'tv';
-      const targetName = activeRemoteSession?.deviceName || localStorage.getItem('clearplay_last_tv_name') || 'Smart TV';
+    async function resolveNetworkHash() {
+      if (myNetworkHash && myNetworkHash !== 'net_local') return myNetworkHash;
+      try {
+        let ip = '';
+        try {
+          const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-cache' });
+          const d = await res.json();
+          ip = (d?.ip || '').trim();
+        } catch (_) {}
+
+        if (!ip) {
+          try {
+            const res2 = await fetch('https://api64.ipify.org?format=json', { cache: 'no-cache' });
+            const d2 = await res2.json();
+            ip = (d2?.ip || '').trim();
+          } catch (_) {}
+        }
+
+        if (ip && window.crypto && crypto.subtle) {
+          const msgBuffer = new TextEncoder().encode('clearplay_net_' + ip);
+          const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          myNetworkHash = 'net_' + hashArray.map(b => b.toString(16).padStart(2, '0')).slice(0, 16).join('');
+        } else {
+          myNetworkHash = 'net_default';
+        }
+      } catch (err) {
+        myNetworkHash = 'net_default';
+      }
+      return myNetworkHash;
+    }
+
+    function updateCastButtonUi(isConnected) {
+      if (castPickerBtn) {
+        castPickerBtn.classList.toggle('connected', isConnected);
+        castPickerBtn.setAttribute('title', isConnected ? `Connected to ${connectedDeviceName}` : 'Cast / Connect to TV');
+      }
+      if (castDotIndicator) {
+        castDotIndicator.hidden = !isConnected;
+      }
+      if (castPlayerBtn) {
+        castPlayerBtn.classList.toggle('active', isConnected);
+      }
+    }
+
+    function connectToRoom(roomId, deviceName) {
+      if (!roomId) return;
+      connectedRoomId = roomId;
+      connectedDeviceName = deviceName || 'Smart TV';
+      isTvCastActive = true;
+
+      try {
+        localStorage.setItem('clearplay_active_room_id', connectedRoomId);
+        localStorage.setItem('clearplay_last_tv_name', connectedDeviceName);
+        localStorage.setItem('clearplay_last_tv_id', connectedRoomId);
+      } catch (_) {}
+
+      updateCastButtonUi(true);
+
+      if (roomUnsubscribe) {
+        roomUnsubscribe();
+        roomUnsubscribe = null;
+      }
+
+      try {
+        roomUnsubscribe = onSnapshot(doc(db, 'connect_rooms', connectedRoomId), snap => {
+          if (!snap.exists()) return;
+          const data = snap.data();
+          if (data && (data.deviceId === connectedRoomId || data.deviceId !== myDeviceId)) {
+            activeRemoteSession = {
+              ...data,
+              deviceId: connectedRoomId,
+              deviceName: connectedDeviceName
+            };
+            if (data.videoId) {
+              showConnectBanner(activeRemoteSession);
+            }
+            if (remoteModal && !remoteModal.hidden) {
+              updateRemoteModalUi(activeRemoteSession);
+            }
+          }
+        }, err => console.warn('roomUnsubscribe snapshot error:', err));
+      } catch (err) {
+        console.warn('connectToRoom error:', err);
+      }
+
+      showToast(`Connected to ${connectedDeviceName}`);
+      updateDevicePickerUi();
+    }
+
+    function disconnectFromTv() {
+      const devName = connectedDeviceName || activeRemoteSession?.deviceName || 'TV';
+      connectedRoomId = null;
+      isTvCastActive = false;
+      activeRemoteSession = null;
+
+      try {
+        localStorage.removeItem('clearplay_active_room_id');
+      } catch (_) {}
+
+      if (roomUnsubscribe) {
+        roomUnsubscribe();
+        roomUnsubscribe = null;
+      }
+
+      updateCastButtonUi(false);
+      hideConnectBanner();
+      if (remoteModal) remoteModal.hidden = true;
+      showToast(`Disconnected from ${devName}`);
+      updateDevicePickerUi();
+    }
+
+    async function sendRemoteCommand(targetDeviceId, action, extra = {}) {
+      const targetRoom = targetDeviceId || connectedRoomId || localStorage.getItem('clearplay_last_tv_id');
+      if (!targetRoom) return;
 
       const cmd = {
         commandId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         fromDeviceId: myDeviceId,
         fromDeviceName: myDeviceName,
-        targetDeviceId,
+        targetDeviceId: targetRoom,
+        action,
+        ...extra
+      };
+
+      try {
+        await setDoc(doc(db, 'connect_rooms', targetRoom), {
+          command: cmd,
+          updatedAt: Date.now()
+        }, { merge: true });
+      } catch (err) {
+        console.warn('sendRemoteCommand room error:', err);
+      }
+
+      if (currentUser?.uid) {
+        try {
+          await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), {
+            command: cmd
+          }, { merge: true });
+        } catch (_) {}
+      }
+    }
+
+    async function playOnRemoteDevice(item) {
+      const targetRoom = connectedRoomId || activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
+      const targetName = connectedDeviceName || activeRemoteSession?.deviceName || 'Smart TV';
+
+      if (!targetRoom) {
+        showToast('Please connect to a TV first');
+        openDevicePicker();
+        return;
+      }
+
+      const cmd = {
+        commandId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        fromDeviceId: myDeviceId,
+        fromDeviceName: myDeviceName,
+        targetDeviceId: targetRoom,
         action: 'load',
         videoId: item.id,
         title: item.title || 'YouTube Video',
@@ -3708,7 +4386,7 @@
       };
 
       try {
-        await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), {
+        await setDoc(doc(db, 'connect_rooms', targetRoom), {
           videoId: item.id,
           title: item.title || 'YouTube Video',
           author: item.author || '',
@@ -3720,12 +4398,28 @@
           command: cmd
         }, { merge: true });
       } catch (err) {
-        console.warn('playOnRemoteDevice error:', err);
+        console.warn('playOnRemoteDevice room error:', err);
+      }
+
+      if (currentUser?.uid) {
+        try {
+          await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), {
+            videoId: item.id,
+            title: item.title || 'YouTube Video',
+            author: item.author || '',
+            thumbnail: item.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(item.id)}/hqdefault.jpg`,
+            duration: item.duration || 0,
+            currentTime: item.resumeAt || 0,
+            isPlaying: true,
+            updatedAt: Date.now(),
+            command: cmd
+          }, { merge: true });
+        } catch (_) {}
       }
 
       activeRemoteSession = {
         ...(activeRemoteSession || {}),
-        deviceId: targetDeviceId,
+        deviceId: targetRoom,
         deviceName: targetName,
         videoId: item.id,
         title: item.title || 'YouTube Video',
@@ -3738,73 +4432,10 @@
       };
 
       isTvCastActive = true;
+      updateCastButtonUi(true);
       showConnectBanner(activeRemoteSession);
-      if (!remoteModal.hidden) updateRemoteModalUi(activeRemoteSession);
+      if (remoteModal && !remoteModal.hidden) updateRemoteModalUi(activeRemoteSession);
       showToast(`▶ Playing on ${targetName}`);
-    }
-
-    function disconnectFromTv() {
-      isTvCastActive = false;
-      const devName = activeRemoteSession?.deviceName || 'TV';
-      activeRemoteSession = null;
-      hideConnectBanner();
-      if (remoteModal) remoteModal.hidden = true;
-      showToast(`Disconnected from ${devName}`);
-    }
-
-    async function broadcastConnectSession(force = false, stateOverride = {}) {
-      if (!currentUser) return;
-      const now = Date.now();
-      if (!force && now - lastBroadcastTime < 2800) return;
-      lastBroadcastTime = now;
-
-      const playing = typeof stateOverride.isPlaying === 'boolean' ? stateOverride.isPlaying : isAnyPlaying();
-      const curTime = typeof stateOverride.currentTime === 'number' ? stateOverride.currentTime : Math.floor(getActiveTime());
-      const dur = typeof stateOverride.duration === 'number' ? stateOverride.duration : Math.floor(getActiveDuration());
-
-      const payload = {
-        deviceId: myDeviceId,
-        deviceName: myDeviceName,
-        deviceType: myDeviceType,
-        isOnline: true,
-        updatedAt: now,
-        ...stateOverride
-      };
-
-      if (video?.id) {
-        payload.videoId = video.id;
-        payload.title = video.title || 'YouTube Video';
-        payload.author = video.author || '';
-        payload.thumbnail = video.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg`;
-        payload.currentTime = curTime;
-        payload.duration = dur;
-        payload.isPlaying = playing;
-      }
-
-      try {
-        await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), payload, { merge: true });
-      } catch (err) {
-        console.warn('broadcastConnectSession error:', err);
-      }
-    }
-
-    async function sendRemoteCommand(targetDeviceId, action, extra = {}) {
-      if (!currentUser) return;
-      const cmd = {
-        commandId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        fromDeviceId: myDeviceId,
-        fromDeviceName: myDeviceName,
-        targetDeviceId: targetDeviceId || 'tv',
-        action,
-        ...extra
-      };
-      try {
-        await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), {
-          command: cmd
-        }, { merge: true });
-      } catch (err) {
-        console.warn('sendRemoteCommand error:', err);
-      }
     }
 
     function executeRemoteCommand(cmd) {
@@ -3857,7 +4488,7 @@
                 });
                 try { player.playVideo?.(); } catch (_) {}
                 showToast(`Playing on TV`);
-                broadcastConnectSession(true, { isPlaying: true, videoId: cmd.videoId, currentTime: cmd.seekTo || 0 });
+                broadcastTvPlaybackState(true, { isPlaying: true, videoId: cmd.videoId, currentTime: cmd.seekTo || 0 });
                 return;
               }
             } catch (err) {
@@ -3878,10 +4509,162 @@
       }
     }
 
+    async function initTvReceiver() {
+      if (myDeviceType !== 'tv') return;
+
+      if (!myPairingCode) {
+        myPairingCode = Math.floor(100000 + Math.random() * 900000).toString();
+        try { localStorage.setItem('clearplay_tv_code', myPairingCode); } catch (_) {}
+      }
+
+      if (tvCodeChip && tvCodeVal) {
+        const formatted = `${myPairingCode.slice(0, 3)} ${myPairingCode.slice(3)}`;
+        tvCodeVal.textContent = formatted;
+        tvCodeChip.hidden = false;
+      }
+
+      await resolveNetworkHash();
+
+      // Register pairing code in Firestore
+      try {
+        await setDoc(doc(db, 'pairing_codes', myPairingCode), {
+          code: myPairingCode,
+          roomId: myDeviceId,
+          deviceName: myDeviceName,
+          deviceType: myDeviceType,
+          updatedAt: Date.now()
+        }, { merge: true });
+      } catch (err) {
+        console.warn('initTvReceiver pairing code error:', err);
+      }
+
+      // Listen for incoming commands in connect_rooms/{myDeviceId}
+      try {
+        onSnapshot(doc(db, 'connect_rooms', myDeviceId), snap => {
+          if (!snap.exists()) return;
+          const data = snap.data();
+          if (data?.command && data.command.commandId && data.command.commandId !== lastExecutedCmdId) {
+            lastExecutedCmdId = data.command.commandId;
+            executeRemoteCommand(data.command);
+          }
+        }, err => console.warn('TV room listener error:', err));
+      } catch (err) {
+        console.warn('TV room onSnapshot error:', err);
+      }
+
+      // Heartbeat for TV presence on network
+      registerTvPresence(true);
+      setInterval(() => registerTvPresence(true), 20000);
+    }
+
+    async function registerTvPresence(isOnline = true) {
+      if (myDeviceType !== 'tv') return;
+      try {
+        await setDoc(doc(db, 'networks', myNetworkHash, 'devices', myDeviceId), {
+          deviceId: myDeviceId,
+          deviceName: myDeviceName,
+          deviceType: myDeviceType,
+          pairingCode: myPairingCode,
+          roomId: myDeviceId,
+          isOnline,
+          updatedAt: Date.now(),
+          currentVideo: video?.id ? {
+            id: video.id,
+            title: video.title || 'YouTube Video',
+            author: video.author || '',
+            thumbnail: video.thumbnail || '',
+            isPlaying: isAnyPlaying(),
+            currentTime: Math.floor(getActiveTime()),
+            duration: Math.floor(getActiveDuration())
+          } : null
+        }, { merge: true });
+      } catch (err) {
+        console.warn('registerTvPresence error:', err);
+      }
+    }
+
+    async function broadcastTvPlaybackState(force = false, stateOverride = {}) {
+      if (myDeviceType !== 'tv') return;
+      const now = Date.now();
+      if (!force && now - lastBroadcastTime < 2500) return;
+      lastBroadcastTime = now;
+
+      const playing = typeof stateOverride.isPlaying === 'boolean' ? stateOverride.isPlaying : isAnyPlaying();
+      const curTime = typeof stateOverride.currentTime === 'number' ? stateOverride.currentTime : Math.floor(getActiveTime());
+      const dur = typeof stateOverride.duration === 'number' ? stateOverride.duration : Math.floor(getActiveDuration());
+
+      const payload = {
+        deviceId: myDeviceId,
+        deviceName: myDeviceName,
+        deviceType: myDeviceType,
+        isOnline: true,
+        updatedAt: now,
+        videoId: video?.id || '',
+        title: video?.title || '',
+        author: video?.author || '',
+        thumbnail: video?.thumbnail || '',
+        currentTime: curTime,
+        duration: dur,
+        isPlaying: playing,
+        ...stateOverride
+      };
+
+      try {
+        await setDoc(doc(db, 'connect_rooms', myDeviceId), payload, { merge: true });
+      } catch (err) {
+        console.warn('broadcastTvPlaybackState room error:', err);
+      }
+
+      if (currentUser?.uid) {
+        try {
+          await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), payload, { merge: true });
+        } catch (_) {}
+      }
+    }
+
+    async function broadcastConnectSession(force = false, stateOverride = {}) {
+      if (myDeviceType === 'tv') {
+        broadcastTvPlaybackState(force, stateOverride);
+        return;
+      }
+      if (!currentUser) return;
+      const now = Date.now();
+      if (!force && now - lastBroadcastTime < 2800) return;
+      lastBroadcastTime = now;
+
+      const playing = typeof stateOverride.isPlaying === 'boolean' ? stateOverride.isPlaying : isAnyPlaying();
+      const curTime = typeof stateOverride.currentTime === 'number' ? stateOverride.currentTime : Math.floor(getActiveTime());
+      const dur = typeof stateOverride.duration === 'number' ? stateOverride.duration : Math.floor(getActiveDuration());
+
+      const payload = {
+        deviceId: myDeviceId,
+        deviceName: myDeviceName,
+        deviceType: myDeviceType,
+        isOnline: true,
+        updatedAt: now,
+        ...stateOverride
+      };
+
+      if (video?.id) {
+        payload.videoId = video.id;
+        payload.title = video.title || 'YouTube Video';
+        payload.author = video.author || '';
+        payload.thumbnail = video.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg`;
+        payload.currentTime = curTime;
+        payload.duration = dur;
+        payload.isPlaying = playing;
+      }
+
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), payload, { merge: true });
+      } catch (err) {
+        console.warn('broadcastConnectSession error:', err);
+      }
+    }
+
     function handleConnectSnapshot(data) {
       if (!data) return;
 
-      // 1. Check for incoming commands directed to this device
       if (data.command) {
         const isTarget = data.command.targetDeviceId === myDeviceId ||
                          data.command.targetDeviceId === 'tv' ||
@@ -3895,7 +4678,6 @@
         }
       }
 
-      // 2. Check for active streaming session on another device
       if (data.deviceId && data.deviceId !== myDeviceId) {
         const now = Date.now();
         const age = Math.abs(now - (data.updatedAt || 0));
@@ -3939,20 +4721,13 @@
         connectUnsubscribe = null;
       }
       if (!user) {
-        hideConnectBanner();
-        hideTvPrompt();
-        if (remoteModal) remoteModal.hidden = true;
         return;
       }
 
       try {
         const sessionRef = doc(db, 'users', user.uid, 'connect', 'session');
         connectUnsubscribe = onSnapshot(sessionRef, snap => {
-          if (!snap.exists()) {
-            hideConnectBanner();
-            hideTvPrompt();
-            return;
-          }
+          if (!snap.exists()) return;
           handleConnectSnapshot(snap.data());
         }, err => {
           console.warn('Connect snapshot sync error:', err);
@@ -3978,6 +4753,231 @@
       hideConnectBanner();
       if (remoteModal) remoteModal.hidden = true;
       showToast(`Playing on this device`);
+    }
+
+    // ==================== DEVICE PICKER MODAL UI & SCANNING ====================
+
+    function openDevicePicker() {
+      if (!devicePickerModal) return;
+      devicePickerModal.hidden = false;
+      updateDevicePickerUi();
+      startDeviceScan();
+    }
+
+    function closeDevicePicker() {
+      if (!devicePickerModal) return;
+      devicePickerModal.hidden = true;
+      if (networkDevicesUnsubscribe) {
+        networkDevicesUnsubscribe();
+        networkDevicesUnsubscribe = null;
+      }
+    }
+
+    function updateDevicePickerUi() {
+      if (!devicePickerModal || devicePickerModal.hidden) return;
+      if (deviceCurrentCard) {
+        if (connectedRoomId) {
+          deviceCurrentCard.hidden = false;
+          if (deviceCurrentName) deviceCurrentName.textContent = connectedDeviceName || 'Smart TV';
+        } else {
+          deviceCurrentCard.hidden = true;
+        }
+      }
+      if (receiverModeTxt) {
+        const isTvNow = localStorage.getItem('clearplay_force_tv') === '1' || myDeviceType === 'tv';
+        receiverModeTxt.textContent = isTvNow ? 'Switch back to Mobile/PC mode' : 'Set this screen as TV Receiver';
+      }
+      renderDiscoveredDevices();
+    }
+
+    async function startDeviceScan() {
+      if (deviceScanIndicator) deviceScanIndicator.hidden = false;
+      await resolveNetworkHash();
+
+      try {
+        const q = collection(db, 'networks', myNetworkHash, 'devices');
+        if (networkDevicesUnsubscribe) {
+          networkDevicesUnsubscribe();
+          networkDevicesUnsubscribe = null;
+        }
+
+        networkDevicesUnsubscribe = onSnapshot(q, snap => {
+          if (deviceScanIndicator) deviceScanIndicator.hidden = true;
+          const devs = [];
+          const now = Date.now();
+          snap.forEach(docSnap => {
+            const d = docSnap.data();
+            if (d.deviceId !== myDeviceId && d.isOnline !== false && (now - (d.updatedAt || 0) < 120000)) {
+              devs.push(d);
+            }
+          });
+          discoveredDevices = devs;
+          renderDiscoveredDevices();
+        }, err => {
+          console.warn('Network devices snapshot error:', err);
+          if (deviceScanIndicator) deviceScanIndicator.hidden = true;
+          renderDiscoveredDevices();
+        });
+      } catch (err) {
+        console.warn('startDeviceScan error:', err);
+        if (deviceScanIndicator) deviceScanIndicator.hidden = true;
+      }
+    }
+
+    function renderDiscoveredDevices() {
+      if (!deviceListEl) return;
+
+      let pairedTvs = [];
+      try {
+        pairedTvs = JSON.parse(localStorage.getItem('clearplay_paired_tvs') || '[]');
+      } catch (_) {}
+
+      const allDevices = [];
+      const seenIds = new Set();
+
+      discoveredDevices.forEach(d => {
+        seenIds.add(d.deviceId);
+        allDevices.push({
+          id: d.deviceId,
+          name: d.deviceName || 'Smart TV',
+          type: d.deviceType || 'tv',
+          source: 'Same Wi-Fi',
+          currentVideo: d.currentVideo || null,
+          isOnline: true
+        });
+      });
+
+      pairedTvs.forEach(p => {
+        if (!seenIds.has(p.id)) {
+          allDevices.push({
+            id: p.id,
+            name: p.name || 'Smart TV',
+            type: 'tv',
+            source: 'Linked with code',
+            isOnline: true
+          });
+        }
+      });
+
+      deviceListEl.innerHTML = '';
+
+      if (allDevices.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'device-empty-msg';
+        empty.innerHTML = `
+          <p>No TVs found on this Wi-Fi network yet.</p>
+          <p class="device-sub-tip">Make sure Clearplay is open on your TV (even in Guest mode) or connect with TV code below.</p>
+        `;
+        deviceListEl.appendChild(empty);
+        return;
+      }
+
+      allDevices.forEach(dev => {
+        const isCurrent = dev.id === connectedRoomId;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `device-item-btn${isCurrent ? ' is-active-device' : ''}`;
+
+        const isTv = dev.type === 'tv' || dev.name.toLowerCase().includes('tv');
+        const iconSvg = isTv ?
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>' :
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+
+        let subText = dev.source;
+        if (dev.currentVideo?.title) {
+          subText += ` • Playing: ${dev.currentVideo.title.slice(0, 24)}…`;
+        } else {
+          subText += ' • Ready to cast';
+        }
+
+        btn.innerHTML = `
+          <div class="device-item-icon${isCurrent ? ' connected' : ''}">
+            ${iconSvg}
+          </div>
+          <div class="device-item-meta">
+            <p class="device-item-title">${dev.name}</p>
+            <p class="device-item-sub">${subText}</p>
+          </div>
+          <span class="device-item-action-icon">${isCurrent ? '✓' : '›'}</span>
+        `;
+
+        btn.addEventListener('click', () => {
+          if (isCurrent) {
+            disconnectFromTv();
+          } else {
+            connectToRoom(dev.id, dev.name);
+            if (video?.id && isAnyPlaying()) {
+              playOnRemoteDevice(video);
+              pauseActivePlayer();
+            }
+            closeDevicePicker();
+          }
+        });
+
+        deviceListEl.appendChild(btn);
+      });
+    }
+
+    async function linkWithTvCode(codeStr) {
+      const code = (codeStr || '').replace(/\D/g, '').trim();
+      if (code.length < 6) {
+        if (tvCodeStatus) {
+          tvCodeStatus.textContent = 'Please enter a valid 6-digit code';
+          tvCodeStatus.className = 'tv-code-status error';
+          tvCodeStatus.hidden = false;
+        }
+        return;
+      }
+
+      if (tvCodeStatus) {
+        tvCodeStatus.textContent = 'Linking with TV…';
+        tvCodeStatus.className = 'tv-code-status';
+        tvCodeStatus.hidden = false;
+      }
+
+      try {
+        const snap = await getDoc(doc(db, 'pairing_codes', code));
+        if (!snap.exists()) {
+          if (tvCodeStatus) {
+            tvCodeStatus.textContent = 'TV code not found or expired. Check code on TV.';
+            tvCodeStatus.className = 'tv-code-status error';
+            tvCodeStatus.hidden = false;
+          }
+          return;
+        }
+
+        const data = snap.data();
+        const targetRoom = data.roomId || code;
+        const targetName = data.deviceName || 'Smart TV';
+
+        try {
+          const paired = JSON.parse(localStorage.getItem('clearplay_paired_tvs') || '[]');
+          if (!paired.some(p => p.id === targetRoom)) {
+            paired.push({ id: targetRoom, name: targetName, code: code });
+            localStorage.setItem('clearplay_paired_tvs', JSON.stringify(paired));
+          }
+        } catch (_) {}
+
+        if (tvCodeStatus) {
+          tvCodeStatus.textContent = `Connected to ${targetName}!`;
+          tvCodeStatus.className = 'tv-code-status success';
+          tvCodeStatus.hidden = false;
+        }
+
+        setTimeout(() => {
+          connectToRoom(targetRoom, targetName);
+          closeDevicePicker();
+          if (tvCodeStatus) tvCodeStatus.hidden = true;
+          if (tvCodeInput) tvCodeInput.value = '';
+        }, 600);
+      } catch (err) {
+        console.warn('linkWithTvCode error:', err);
+        if (tvCodeStatus) {
+          tvCodeStatus.textContent = 'Could not link with TV. Check network connection.';
+          tvCodeStatus.className = 'tv-code-status error';
+          tvCodeStatus.hidden = false;
+        }
+      }
     }
 
     // Connect banner controls
@@ -4105,22 +5105,98 @@
       });
     }
 
+    // Cast Picker & Device Modal controls
+    if (castPickerBtn) {
+      castPickerBtn.addEventListener('click', openDevicePicker);
+    }
+
+    if (castPlayerBtn) {
+      castPlayerBtn.addEventListener('click', openDevicePicker);
+    }
+
+    if (closeDeviceModal) {
+      closeDeviceModal.addEventListener('click', closeDevicePicker);
+    }
+
+    if (devicePickerModal) {
+      devicePickerModal.addEventListener('click', e => {
+        if (e.target === devicePickerModal) closeDevicePicker();
+      });
+    }
+
+    if (deviceDisconnectBtn) {
+      deviceDisconnectBtn.addEventListener('click', () => {
+        disconnectFromTv();
+      });
+    }
+
+    if (toggleCodeInput) {
+      toggleCodeInput.addEventListener('click', () => {
+        const isHidden = codeInputForm.hidden;
+        codeInputForm.hidden = !isHidden;
+        if (codeChevron) codeChevron.classList.toggle('open', isHidden);
+      });
+    }
+
+    if (tvCodeSubmitBtn) {
+      tvCodeSubmitBtn.addEventListener('click', () => {
+        linkWithTvCode(tvCodeInput?.value);
+      });
+    }
+
+    if (tvCodeInput) {
+      tvCodeInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          linkWithTvCode(tvCodeInput.value);
+        }
+      });
+    }
+
+    if (toggleTvReceiverMode) {
+      toggleTvReceiverMode.addEventListener('click', () => {
+        const isTvNow = localStorage.getItem('clearplay_force_tv') === '1';
+        if (isTvNow) {
+          localStorage.removeItem('clearplay_force_tv');
+          showToast('Switched to Mobile / Desktop mode');
+        } else {
+          localStorage.setItem('clearplay_force_tv', '1');
+          showToast('Switched to TV Receiver Mode');
+        }
+        setTimeout(() => window.location.reload(), 300);
+      });
+    }
+
     // Background Heartbeat Interval
     setInterval(() => {
-      if (currentUser) {
+      if (myDeviceType === 'tv') {
+        broadcastTvPlaybackState(false);
+      } else if (currentUser) {
         if (isAnyPlaying()) {
           broadcastConnectSession(false);
-        } else if (myDeviceType === 'tv') {
-          broadcastConnectSession(false, { isPlaying: false, isOnline: true });
         }
       }
     }, 3500);
 
     window.addEventListener('pagehide', () => {
+      if (myDeviceType === 'tv') {
+        registerTvPresence(false);
+        broadcastTvPlaybackState(true, { isPlaying: false, isOnline: false });
+      }
       if (currentUser) {
         broadcastConnectSession(true, { isPlaying: false, isOnline: false });
       }
     });
+
+    // Initial Cast & TV Setup
+    if (myDeviceType === 'tv') {
+      initTvReceiver();
+    } else {
+      updateCastButtonUi(isTvCastActive);
+      if (connectedRoomId) {
+        connectToRoom(connectedRoomId, connectedDeviceName);
+      }
+    }
 
     // ==================== NAVIGATION & TABS ====================
 
@@ -5340,7 +6416,7 @@
     }
 
     function openPlayer(item) {
-      const tvTargetId = activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
+      const tvTargetId = connectedRoomId || activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
       if (isTvCastActive && tvTargetId && myDeviceType !== 'tv') {
         playOnRemoteDevice(item);
         return;
@@ -5356,7 +6432,7 @@
         const data = await response.json();
         if (!response.ok || !data.results?.length) throw new Error();
         const first = { ...data.results[0], playlistId: item.id };
-        const tvTargetId = activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
+        const tvTargetId = connectedRoomId || activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
         if (isTvCastActive && tvTargetId && myDeviceType !== 'tv') {
           playOnRemoteDevice(first);
           return;

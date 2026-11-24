@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clearplay-shell-v18';
+const CACHE_NAME = 'clearplay-shell-v19';
 const SHELL_ASSETS = [
   '/',
   '/index.html',
