@@ -2026,78 +2026,6 @@
       background: rgba(255, 255, 255, 0.08);
     }
 
-    /* Mobile TV Player Sync Banner */
-    .tv-sync-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 14px;
-      margin: 10px 0 8px;
-      background: linear-gradient(90deg, rgba(181, 243, 107, 0.14), rgba(28, 31, 38, 0.95));
-      border: 1px solid rgba(181, 243, 107, 0.35);
-      border-radius: 12px;
-      font-size: 13px;
-      color: var(--text);
-      animation: fadeIn 0.2s ease;
-      flex-wrap: wrap;
-    }
-    .tv-sync-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 500;
-    }
-    .tv-sync-info svg {
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-    .tv-sync-info strong {
-      color: var(--accent);
-      font-weight: 700;
-    }
-    .tv-sync-pulse {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 8px var(--accent);
-      animation: pulse 1.5s infinite;
-      flex-shrink: 0;
-    }
-    .tv-sync-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
-    }
-    .tv-sync-action-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--line-strong);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 5px 11px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .tv-sync-action-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: var(--text);
-    }
-    .tv-sync-action-btn.danger {
-      color: var(--danger);
-      border-color: rgba(255, 142, 142, 0.3);
-    }
-    .tv-sync-action-btn.danger:hover {
-      background: rgba(255, 142, 142, 0.15);
-      border-color: var(--danger);
-    }
-
     /* YouTube-style Full Remote Sheet */
     .remote-modal-backdrop {
       position: fixed;
@@ -3540,25 +3468,6 @@
               <audio id="audio-player" preload="auto" playsinline></audio>
             </div>
           </div>
-          <!-- TV SYNC BANNER -->
-          <div id="tv-sync-banner" class="tv-sync-banner" hidden>
-            <div class="tv-sync-info">
-              <span class="tv-sync-pulse"></span>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
-              <span>Synced with <strong id="tv-sync-name">Samsung Smart TV</strong></span>
-            </div>
-            <div class="tv-sync-actions">
-              <button id="tv-sync-audio-btn" class="tv-sync-action-btn" type="button" title="Sound playing on TV. Click to un-mute phone.">
-                <svg id="tv-sync-audio-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                  <line x1="23" y1="9" x2="17" y2="15"/>
-                  <line x1="17" y1="9" x2="23" y2="15"/>
-                </svg>
-                <span id="tv-sync-audio-txt">TV Sound</span>
-              </button>
-              <button id="tv-sync-disconnect-btn" class="tv-sync-action-btn danger" type="button" title="Disconnect from TV">Disconnect</button>
-            </div>
-          </div>
           <div class="controls">
             <button id="back" class="control" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -4177,18 +4086,6 @@
 
     let sleepTimerTimeout = null;
     let sleepTimerTargetTime = null;
-
-    // TV Player Sync Banner Elements & Tracking
-    const tvSyncBanner = document.querySelector('#tv-sync-banner');
-    const tvSyncName = document.querySelector('#tv-sync-name');
-    const tvSyncAudioBtn = document.querySelector('#tv-sync-audio-btn');
-    const tvSyncAudioIcon = document.querySelector('#tv-sync-audio-icon');
-    const tvSyncAudioTxt = document.querySelector('#tv-sync-audio-txt');
-    const tvSyncDisconnectBtn = document.querySelector('#tv-sync-disconnect-btn');
-
-    let isSyncingFromRemote = false;
-    let lastScrubPlayerTime = 0;
-    let lastScrubRealTime = Date.now();
 
     // Device Picker & Cast Header Elements
     const castPickerBtn = document.querySelector('#cast-picker-btn');
@@ -4941,31 +4838,6 @@
       return myNetworkHash;
     }
 
-    function updateTvSyncBanner(show = isTvCastActive) {
-      if (!tvSyncBanner) return;
-      if (show && isTvCastActive && myDeviceType !== 'tv') {
-        if (tvSyncName) tvSyncName.textContent = connectedDeviceName || activeRemoteSession?.deviceName || 'Samsung Smart TV';
-        tvSyncBanner.hidden = false;
-        syncTvAudioBtnUi();
-      } else {
-        tvSyncBanner.hidden = true;
-      }
-    }
-
-    function syncTvAudioBtnUi() {
-      if (!tvSyncAudioBtn || !tvSyncAudioTxt || !tvSyncAudioIcon) return;
-      const isMuted = player?.isMuted ? player.isMuted() : true;
-      if (isMuted) {
-        tvSyncAudioTxt.textContent = 'TV Sound';
-        tvSyncAudioIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
-        tvSyncAudioBtn.setAttribute('title', 'Audio is muted on phone and playing on TV. Click to un-mute phone.');
-      } else {
-        tvSyncAudioTxt.textContent = 'Phone Sound On';
-        tvSyncAudioIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>';
-        tvSyncAudioBtn.setAttribute('title', 'Phone sound is unmuted. Click to mute phone sound.');
-      }
-    }
-
     function updateCastButtonUi(isConnected) {
       if (castPickerBtn) {
         castPickerBtn.classList.toggle('connected', isConnected);
@@ -4977,7 +4849,6 @@
       if (castPlayerBtn) {
         castPlayerBtn.classList.toggle('active', isConnected);
       }
-      updateTvSyncBanner(isConnected);
     }
 
     function connectToRoom(roomId, deviceName) {
@@ -4993,22 +4864,6 @@
       } catch (_) {}
 
       updateCastButtonUi(true);
-      updateTvSyncBanner(true);
-
-      // If phone is currently watching a video, send it to TV
-      if (video?.id && myDeviceType !== 'tv') {
-        try { player?.mute?.(); } catch (_) {}
-        const cur = player?.getCurrentTime?.() || 0;
-        sendRemoteCommand(connectedRoomId, 'load', {
-          videoId: video.id,
-          title: video.title || 'YouTube Video',
-          author: video.author || '',
-          thumbnail: video.thumbnail || '',
-          duration: video.duration || 0,
-          seekTo: cur
-        });
-        showToast(`▶ Streaming to ${connectedDeviceName}`);
-      }
 
       if (roomUnsubscribe) {
         roomUnsubscribe();
@@ -5027,28 +4882,6 @@
             };
             if (data.videoId) {
               showConnectBanner(activeRemoteSession);
-              // If phone does not have this video loaded, load it in sync
-              if (myDeviceType !== 'tv' && (!video || video.id !== data.videoId)) {
-                loadPlayer({
-                  id: data.videoId,
-                  title: data.title,
-                  author: data.author,
-                  thumbnail: data.thumbnail,
-                  duration: data.duration,
-                  resumeAt: data.currentTime || 0
-                }, { autoplay: Boolean(data.isPlaying) });
-              } else if (myDeviceType !== 'tv' && video && video.id === data.videoId && player && typeof player.getPlayerState === 'function') {
-                const ps = player.getPlayerState();
-                if (data.isPlaying && ps !== 1 && ps !== 3) {
-                  isSyncingFromRemote = true;
-                  try { player.playVideo?.(); } catch (_) {}
-                  setTimeout(() => { isSyncingFromRemote = false; }, 400);
-                } else if (!data.isPlaying && ps === 1) {
-                  isSyncingFromRemote = true;
-                  try { player.pauseVideo?.(); } catch (_) {}
-                  setTimeout(() => { isSyncingFromRemote = false; }, 400);
-                }
-              }
             }
             if (remoteModal && !remoteModal.hidden) {
               updateRemoteModalUi(activeRemoteSession);
@@ -5078,8 +4911,6 @@
         roomUnsubscribe = null;
       }
 
-      try { player?.unMute?.(); } catch (_) {}
-      updateTvSyncBanner(false);
       updateCastButtonUi(false);
       hideConnectBanner();
       if (remoteModal) remoteModal.hidden = true;
@@ -6227,31 +6058,6 @@
       });
     }
 
-    // TV Player Sync Banner Button Event Listeners
-    if (tvSyncAudioBtn) {
-      tvSyncAudioBtn.addEventListener('click', () => {
-        if (!player) return;
-        try {
-          if (player.isMuted && player.isMuted()) {
-            player.unMute();
-            showToast('Phone audio unmuted');
-          } else {
-            player.mute();
-            showToast('Phone audio muted (playing on TV)');
-          }
-        } catch (_) {}
-        syncTvAudioBtnUi();
-      });
-    }
-
-    if (tvSyncDisconnectBtn) {
-      tvSyncDisconnectBtn.addEventListener('click', () => {
-        disconnectFromTv();
-        try { player?.unMute?.(); } catch (_) {}
-        updateTvSyncBanner(false);
-      });
-    }
-
     // TV prompt controls
     if (tvPromptPlay) {
       tvPromptPlay.addEventListener('click', async () => {
@@ -7299,10 +7105,6 @@
           playerVars,
           events: {
             onReady: () => {
-              if (isTvCastActive && myDeviceType !== 'tv') {
-                try { player.mute?.(); } catch (_) {}
-                updateTvSyncBanner(true);
-              }
               try { player.playVideo?.(); } catch (_) {}
               if (startSec >= 2) {
                 try {
@@ -7329,29 +7131,8 @@
               if (currentRate && currentRate !== 1) {
                 try { player.setPlaybackRate?.(currentRate); } catch (_) {}
               }
-              lastScrubPlayerTime = 0;
-              lastScrubRealTime = Date.now();
               poll = setInterval(() => {
                 processSegments();
-                if (player && typeof player.getCurrentTime === 'function') {
-                  const cur = player.getCurrentTime() || 0;
-                  const now = Date.now();
-                  const elapsedSec = (now - lastScrubRealTime) / 1000;
-                  const rate = player.getPlaybackRate?.() || 1;
-                  const isPlaying = player.getPlayerState?.() === 1;
-                  const expected = lastScrubPlayerTime + (isPlaying ? elapsedSec * rate : 0);
-                  const diff = Math.abs(cur - expected);
-
-                  if (diff > 1.8 && lastScrubPlayerTime > 0) {
-                    if (isTvCastActive && myDeviceType !== 'tv' && connectedRoomId && !isSyncingFromRemote) {
-                      console.log('[Clearplay Sync] Iframe seek detected:', cur);
-                      sendRemoteCommand(connectedRoomId, 'seek', { seekTo: cur });
-                      showToast(`TV Seek: ${formatDuration(Math.floor(cur))}`);
-                    }
-                  }
-                  lastScrubPlayerTime = cur;
-                  lastScrubRealTime = now;
-                }
               }, 250);
               drawSegments();
               syncPipPlayIcon();
@@ -7361,14 +7142,6 @@
             onStateChange: event => {
               syncPipPlayIcon(event.data);
               syncMediaSession();
-              if (isTvCastActive && myDeviceType !== 'tv' && connectedRoomId && !isSyncingFromRemote) {
-                const cur = player?.getCurrentTime?.() || 0;
-                if (event.data === YT.PlayerState.PLAYING) {
-                  sendRemoteCommand(connectedRoomId, 'play', { seekTo: cur });
-                } else if (event.data === YT.PlayerState.PAUSED) {
-                  sendRemoteCommand(connectedRoomId, 'pause', { seekTo: cur });
-                }
-              }
               if (event.data === YT.PlayerState.PLAYING) {
                 playerHasPlayed = true;
                 drawSegments();
@@ -7382,13 +7155,6 @@
                 flushVideoProgress(true);
                 broadcastConnectSession(true, { isPlaying: false });
                 if (autoplayEnabled) playNext();
-              }
-            },
-            onPlaybackRateChange: event => {
-              if (isTvCastActive && myDeviceType !== 'tv' && connectedRoomId && !isSyncingFromRemote) {
-                const newRate = event.data;
-                sendRemoteCommand(connectedRoomId, 'speed', { rate: newRate });
-                showToast(`TV Speed: ${newRate}x`);
               }
             }
           }
@@ -7629,13 +7395,13 @@
     }
 
     function openPlayer(item) {
-      history.pushState({ view: 'watch', video: item }, '', `/watch?v=${encodeURIComponent(item.id)}${item.playlistId ? `&list=${encodeURIComponent(item.playlistId)}` : ''}`);
-      loadPlayer(item);
-
       const tvTargetId = connectedRoomId || activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
       if (isTvCastActive && tvTargetId && myDeviceType !== 'tv') {
         playOnRemoteDevice(item);
+        return;
       }
+      history.pushState({ view: 'watch', video: item }, '', `/watch?v=${encodeURIComponent(item.id)}${item.playlistId ? `&list=${encodeURIComponent(item.playlistId)}` : ''}`);
+      loadPlayer(item);
     }
 
     async function openPlaylist(item) {
@@ -7645,13 +7411,13 @@
         const data = await response.json();
         if (!response.ok || !data.results?.length) throw new Error();
         const first = { ...data.results[0], playlistId: item.id };
-        history.pushState({ view: 'watch', video: first }, '', `/watch?v=${encodeURIComponent(first.id)}&list=${encodeURIComponent(item.id)}`);
-        loadPlayer(first);
-
         const tvTargetId = connectedRoomId || activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
         if (isTvCastActive && tvTargetId && myDeviceType !== 'tv') {
           playOnRemoteDevice(first);
+          return;
         }
+        history.pushState({ view: 'watch', video: first }, '', `/watch?v=${encodeURIComponent(first.id)}&list=${encodeURIComponent(item.id)}`);
+        loadPlayer(first);
       } catch (_) {
         setStatus('Could not load that playlist.', true);
       }
