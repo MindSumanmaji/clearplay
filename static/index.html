@@ -3690,21 +3690,43 @@
     }
 
     async function playOnRemoteDevice(item) {
-      if (!activeRemoteSession?.deviceId) return;
-      const targetDeviceId = activeRemoteSession.deviceId;
-      const targetName = activeRemoteSession.deviceName || 'Smart TV';
+      const targetDeviceId = activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id') || 'tv';
+      const targetName = activeRemoteSession?.deviceName || localStorage.getItem('clearplay_last_tv_name') || 'Smart TV';
 
-      await sendRemoteCommand(targetDeviceId, 'load', {
+      const cmd = {
+        commandId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        fromDeviceId: myDeviceId,
+        fromDeviceName: myDeviceName,
+        targetDeviceId,
+        action: 'load',
         videoId: item.id,
         title: item.title || 'YouTube Video',
         author: item.author || '',
         thumbnail: item.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(item.id)}/hqdefault.jpg`,
         duration: item.duration || 0,
         seekTo: item.resumeAt || 0
-      });
+      };
+
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), {
+          videoId: item.id,
+          title: item.title || 'YouTube Video',
+          author: item.author || '',
+          thumbnail: item.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(item.id)}/hqdefault.jpg`,
+          duration: item.duration || 0,
+          currentTime: item.resumeAt || 0,
+          isPlaying: true,
+          updatedAt: Date.now(),
+          command: cmd
+        }, { merge: true });
+      } catch (err) {
+        console.warn('playOnRemoteDevice error:', err);
+      }
 
       activeRemoteSession = {
-        ...activeRemoteSession,
+        ...(activeRemoteSession || {}),
+        deviceId: targetDeviceId,
+        deviceName: targetName,
         videoId: item.id,
         title: item.title || 'YouTube Video',
         author: item.author || '',
@@ -3736,8 +3758,6 @@
       if (!force && now - lastBroadcastTime < 2800) return;
       lastBroadcastTime = now;
 
-      if (!video?.id) return;
-
       const playing = typeof stateOverride.isPlaying === 'boolean' ? stateOverride.isPlaying : isAnyPlaying();
       const curTime = typeof stateOverride.currentTime === 'number' ? stateOverride.currentTime : Math.floor(getActiveTime());
       const dur = typeof stateOverride.duration === 'number' ? stateOverride.duration : Math.floor(getActiveDuration());
@@ -3746,16 +3766,20 @@
         deviceId: myDeviceId,
         deviceName: myDeviceName,
         deviceType: myDeviceType,
-        videoId: video.id,
-        title: video.title || 'YouTube Video',
-        author: video.author || '',
-        thumbnail: video.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg`,
-        currentTime: curTime,
-        duration: dur,
-        isPlaying: playing,
+        isOnline: true,
         updatedAt: now,
         ...stateOverride
       };
+
+      if (video?.id) {
+        payload.videoId = video.id;
+        payload.title = video.title || 'YouTube Video';
+        payload.author = video.author || '';
+        payload.thumbnail = video.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg`;
+        payload.currentTime = curTime;
+        payload.duration = dur;
+        payload.isPlaying = playing;
+      }
 
       try {
         await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), payload, { merge: true });
@@ -3765,12 +3789,12 @@
     }
 
     async function sendRemoteCommand(targetDeviceId, action, extra = {}) {
-      if (!currentUser || !targetDeviceId) return;
+      if (!currentUser) return;
       const cmd = {
         commandId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         fromDeviceId: myDeviceId,
         fromDeviceName: myDeviceName,
-        targetDeviceId,
+        targetDeviceId: targetDeviceId || 'tv',
         action,
         ...extra
       };
@@ -3807,6 +3831,39 @@
           break;
         case 'load':
           if (cmd.videoId) {
+            console.log('[Clearplay Connect] Executing load command on TV:', cmd.videoId);
+            try {
+              if (player && typeof player.loadVideoById === 'function') {
+                video = {
+                  id: cmd.videoId,
+                  title: cmd.title || 'YouTube Video',
+                  author: cmd.author || '',
+                  thumbnail: cmd.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(cmd.videoId)}/hqdefault.jpg`,
+                  duration: cmd.duration || 0
+                };
+                document.title = `${video.title} — Clearplay`;
+                const titleEl = document.querySelector('#video-title');
+                if (titleEl) titleEl.textContent = video.title;
+                const authorEl = document.querySelector('#video-author');
+                if (authorEl) authorEl.textContent = video.author;
+                document.body.classList.remove('pip-mode');
+                document.body.classList.add('watch-mode');
+                watch.hidden = false;
+                fetchSegments(cmd.videoId);
+                loadSuggestions(video);
+                player.loadVideoById({
+                  videoId: cmd.videoId,
+                  startSeconds: cmd.seekTo || 0
+                });
+                try { player.playVideo?.(); } catch (_) {}
+                showToast(`Playing on TV`);
+                broadcastConnectSession(true, { isPlaying: true, videoId: cmd.videoId, currentTime: cmd.seekTo || 0 });
+                return;
+              }
+            } catch (err) {
+              console.warn('[Clearplay Connect] player.loadVideoById error, falling back:', err);
+            }
+
             loadPlayer({
               id: cmd.videoId,
               title: cmd.title,
@@ -3814,8 +3871,8 @@
               thumbnail: cmd.thumbnail,
               duration: cmd.duration,
               resumeAt: cmd.seekTo || 0
-            });
-            showToast(`Playing from ${cmd.fromDeviceName || 'Remote'}`);
+            }, { autoplay: true });
+            showToast(`Playing on TV`);
           }
           break;
       }
@@ -3825,21 +3882,32 @@
       if (!data) return;
 
       // 1. Check for incoming commands directed to this device
-      if (data.command && data.command.targetDeviceId === myDeviceId) {
-        if (data.command.commandId && data.command.commandId !== lastExecutedCmdId) {
-          lastExecutedCmdId = data.command.commandId;
-          executeRemoteCommand(data.command);
+      if (data.command) {
+        const isTarget = data.command.targetDeviceId === myDeviceId ||
+                         data.command.targetDeviceId === 'tv' ||
+                         data.command.targetDeviceId === 'any_tv' ||
+                         (myDeviceType === 'tv' && data.command.fromDeviceId !== myDeviceId);
+        if (isTarget && data.command.fromDeviceId !== myDeviceId) {
+          if (data.command.commandId && data.command.commandId !== lastExecutedCmdId) {
+            lastExecutedCmdId = data.command.commandId;
+            executeRemoteCommand(data.command);
+          }
         }
       }
 
       // 2. Check for active streaming session on another device
       if (data.deviceId && data.deviceId !== myDeviceId) {
         const now = Date.now();
-        const age = now - (data.updatedAt || 0);
-        const isFresh = (data.isPlaying && age < 25000) || (!data.isPlaying && age < 60000);
+        const age = Math.abs(now - (data.updatedAt || 0));
+        const isFresh = data.isOnline !== false && ((data.isPlaying && age < 300000) || (!data.isPlaying && age < 900000));
 
         if (isFresh && data.videoId) {
           activeRemoteSession = data;
+          try {
+            localStorage.setItem('clearplay_last_tv_id', data.deviceId);
+            localStorage.setItem('clearplay_last_tv_name', data.deviceName || 'Smart TV');
+          } catch (_) {}
+
           if (isTvCastActive) {
             if (myDeviceType === 'tv') {
               if (video?.id !== data.videoId && dismissedSessionVideoId !== data.videoId) {
@@ -3854,7 +3922,7 @@
             }
             updateRemoteModalUi(data);
           }
-        } else {
+        } else if (age >= 900000 || data.isOnline === false) {
           activeRemoteSession = null;
           hideConnectBanner();
           hideTvPrompt();
@@ -4039,14 +4107,18 @@
 
     // Background Heartbeat Interval
     setInterval(() => {
-      if (currentUser && isAnyPlaying()) {
-        broadcastConnectSession(false);
+      if (currentUser) {
+        if (isAnyPlaying()) {
+          broadcastConnectSession(false);
+        } else if (myDeviceType === 'tv') {
+          broadcastConnectSession(false, { isPlaying: false, isOnline: true });
+        }
       }
     }, 3500);
 
     window.addEventListener('pagehide', () => {
-      if (currentUser && isAnyPlaying()) {
-        broadcastConnectSession(true, { isPlaying: false });
+      if (currentUser) {
+        broadcastConnectSession(true, { isPlaying: false, isOnline: false });
       }
     });
 
@@ -4968,7 +5040,8 @@
           playsinline: 1,
           fs: 1,
           controls: 1,
-          iv_load_policy: 3
+          iv_load_policy: 3,
+          autoplay: 1
         };
         if (startSec >= 2) playerVars.start = startSec;
         player = new YT.Player(mountPoint, {
@@ -4977,6 +5050,7 @@
           playerVars,
           events: {
             onReady: () => {
+              try { player.playVideo?.(); } catch (_) {}
               if (startSec >= 2) {
                 try {
                   if ((player.getCurrentTime?.() || 0) < startSec - 5) player.seekTo(startSec, true);
@@ -5266,7 +5340,8 @@
     }
 
     function openPlayer(item) {
-      if (isTvCastActive && activeRemoteSession?.deviceId) {
+      const tvTargetId = activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
+      if (isTvCastActive && tvTargetId && myDeviceType !== 'tv') {
         playOnRemoteDevice(item);
         return;
       }
@@ -5281,7 +5356,8 @@
         const data = await response.json();
         if (!response.ok || !data.results?.length) throw new Error();
         const first = { ...data.results[0], playlistId: item.id };
-        if (isTvCastActive && activeRemoteSession?.deviceId) {
+        const tvTargetId = activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
+        if (isTvCastActive && tvTargetId && myDeviceType !== 'tv') {
           playOnRemoteDevice(first);
           return;
         }
