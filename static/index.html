@@ -1162,6 +1162,199 @@
     body.pip-mode .audio-badge,
     body.pip-mode .audio-stage-actions { display: none !important; }
 
+    /* TV Cast Watch Stage (Screenshot 1 1:1 Match) */
+    .tv-cast-stage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      background: #000;
+      z-index: 7;
+    }
+    .tv-cast-stage[hidden] {
+      display: none !important;
+    }
+    .tv-cast-poster {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.72);
+      z-index: 1;
+    }
+    .tv-cast-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.2) 35%, rgba(0, 0, 0, 0.2) 65%, rgba(0, 0, 0, 0.85) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .tv-cast-topbar {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      gap: 10px;
+    }
+    .tv-cast-status-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 600;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+    .tv-cast-indicator-icon {
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .tv-cast-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tv-cast-icon-btn {
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .tv-cast-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+    .tv-cast-icon-btn:active {
+      transform: scale(0.92);
+    }
+    .tv-cast-center-controls {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+    .tv-cast-seek-btn {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      border-radius: 50%;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      backdrop-filter: blur(4px);
+    }
+    .tv-cast-seek-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.08);
+    }
+    .tv-cast-seek-btn:active {
+      transform: scale(0.92);
+    }
+    .tv-cast-play-btn {
+      background: rgba(255, 255, 255, 0.95);
+      border: none;
+      color: #0f1117;
+      border-radius: 50%;
+      width: 66px;
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .tv-cast-play-btn:hover {
+      background: #fff;
+      transform: scale(1.08);
+    }
+    .tv-cast-play-btn:active {
+      transform: scale(0.92);
+    }
+    .tv-cast-bottom-bar {
+      position: relative;
+      z-index: 3;
+      padding: 4px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tv-cast-slider {
+      width: 100%;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.3);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      accent-color: #ff0000;
+    }
+    .tv-cast-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ff0000;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.7);
+    }
+    .tv-cast-time-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      font-variant-numeric: tabular-nums;
+    }
+    .tv-cast-time-sep {
+      opacity: 0.7;
+    }
+    .tv-cast-fs-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.85;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .tv-cast-fs-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -2103,10 +2296,24 @@
       width: 100%;
     }
 
+    .remote-header-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .remote-now-playing-heading {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
     .remote-header-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .remote-gear-btn {
@@ -2125,7 +2332,7 @@
     .remote-gear-btn:hover {
       background: rgba(255, 255, 255, 0.16);
       border-color: var(--line-strong);
-      transform: rotate(35deg);
+      transform: scale(1.05);
     }
     .remote-gear-btn:active {
       transform: scale(0.92);
@@ -2134,71 +2341,233 @@
     .remote-device-tag {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
     }
     .remote-device-tag svg {
       color: var(--accent);
-    }
-
-    .remote-cast-status {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--accent);
-      background: rgba(181, 243, 107, 0.12);
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
-
-    .remote-now-playing {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      padding: 10px 12px;
-      background: rgba(0, 0, 0, 0.35);
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      box-sizing: border-box;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .remote-now-playing img {
-      width: 68px;
-      height: 48px;
-      border-radius: 8px;
-      object-fit: cover;
       flex-shrink: 0;
+    }
+
+    /* Hero Card in Now Playing Sheet (Screenshot 2 Match) */
+    .remote-hero-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 16px;
+      overflow: hidden;
       background: #000;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--line-strong);
+      cursor: pointer;
+    }
+    .remote-hero-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.72);
+      transition: filter 0.15s ease;
+    }
+    .remote-hero-card:hover .remote-hero-thumb {
+      filter: brightness(0.8);
+    }
+    .remote-hero-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.65) 100%);
+      pointer-events: none;
+    }
+    .remote-hero-controls {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 26px;
+      z-index: 2;
+    }
+    .remote-hero-btn {
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .remote-hero-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.08);
+    }
+    .remote-hero-btn:active {
+      transform: scale(0.92);
+    }
+    .remote-hero-play-btn {
+      background: rgba(255, 255, 255, 0.95);
+      border: none;
+      color: #0f1117;
+      border-radius: 50%;
+      width: 62px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .remote-hero-play-btn:hover {
+      background: #fff;
+      transform: scale(1.08);
+    }
+    .remote-hero-play-btn:active {
+      transform: scale(0.92);
+    }
+    .remote-hero-expand-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      z-index: 3;
+      background: rgba(0, 0, 0, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 0.15s, color 0.15s;
+    }
+    .remote-hero-expand-btn:hover {
+      background: rgba(0, 0, 0, 0.85);
+      color: var(--accent);
     }
 
-    .remote-now-info {
-      flex: 1;
-      min-width: 0;
-      overflow: hidden;
+    .remote-meta-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 0 2px;
+      box-sizing: border-box;
     }
-
-    .remote-now-title {
-      font-size: 13.5px;
+    .remote-meta-title {
+      font-size: 14.5px;
       font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin: 0 0 3px;
       color: var(--text);
+      line-height: 1.35;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
-
-    .remote-now-author {
-      font-size: 11.5px;
+    .remote-meta-author {
+      font-size: 12.5px;
       color: var(--muted);
       margin: 0;
+      font-weight: 500;
+    }
+
+    .remote-channel-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 6px 2px;
+      box-sizing: border-box;
+    }
+    .remote-channel-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .remote-channel-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .remote-channel-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    .remote-channel-subs {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .remote-channel-sub-btn {
+      background: #fff;
+      color: #0f1117;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .remote-channel-sub-btn:hover {
+      background: #e6e6e6;
+    }
+    .remote-channel-sub-btn:active {
+      transform: scale(0.95);
+    }
+    .remote-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 4px 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      box-sizing: border-box;
+    }
+    .remote-actions-row::-webkit-scrollbar {
+      display: none;
+    }
+    .remote-action-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .remote-action-pill:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--line-strong);
+    }
+    .remote-action-pill:active {
+      transform: scale(0.95);
     }
 
     .remote-progress-area {
@@ -3467,6 +3836,60 @@
               </div>
               <audio id="audio-player" preload="auto" playsinline></audio>
             </div>
+
+            <!-- TV Cast Watch Stage (Screenshot 1 1:1 Match) -->
+            <div id="tv-cast-stage" class="tv-cast-stage" hidden>
+              <img id="tv-cast-poster" class="tv-cast-poster" src="" alt="TV playback thumbnail" />
+              <div class="tv-cast-scrim"></div>
+              
+              <!-- Top bar: Minimize/back, Playing on TV, Cast, CC, Settings -->
+              <div class="tv-cast-topbar">
+                <button id="tv-cast-minimize-btn" class="tv-cast-icon-btn" type="button" aria-label="Minimize" title="Minimize">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <div class="tv-cast-status-wrap">
+                  <span>Playing on</span>
+                  <span id="tv-cast-device-label">Samsung Smart TV</span>
+                </div>
+                <div class="tv-cast-top-actions">
+                  <button id="tv-cast-header-cast-btn" class="tv-cast-icon-btn" type="button" aria-label="Cast status" title="Cast status">
+                    <svg class="tv-cast-indicator-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/><line x1="2" y1="20" x2="2.01" y2="20"/></svg>
+                  </button>
+                  <button id="tv-cast-cc-btn" class="tv-cast-icon-btn" type="button" aria-label="Closed Captions" title="Captions">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><text x="7" y="15" font-size="7.5" font-weight="bold" fill="currentColor" stroke="none">CC</text></svg>
+                  </button>
+                  <button id="tv-cast-settings-btn" class="tv-cast-icon-btn" type="button" aria-label="YouTube Settings" title="Settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Center Transport Controls (Rewind 10s, Play/Pause, Forward 10s) -->
+              <div class="tv-cast-center-controls">
+                <button id="tv-cast-rewind-btn" class="tv-cast-seek-btn" type="button" aria-label="Rewind 10 seconds" title="Rewind 10s">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/><text x="12" y="14" font-size="7" font-weight="bold" fill="currentColor" text-anchor="middle" stroke="none">10</text></svg>
+                </button>
+                <button id="tv-cast-play-btn" class="tv-cast-play-btn" type="button" aria-label="Play or pause" title="Play / Pause">
+                  <svg id="tv-cast-play-icon" width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+                </button>
+                <button id="tv-cast-fwd-btn" class="tv-cast-seek-btn" type="button" aria-label="Forward 10 seconds" title="Forward 10s">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/><text x="12" y="14" font-size="7" font-weight="bold" fill="currentColor" text-anchor="middle" stroke="none">10</text></svg>
+                </button>
+              </div>
+
+              <!-- Bottom Scrubber & Time Bar -->
+              <div class="tv-cast-bottom-bar">
+                <input id="tv-cast-seek-slider" class="tv-cast-slider" type="range" min="0" max="100" value="0" aria-label="Scrub TV video" />
+                <div class="tv-cast-time-row">
+                  <span id="tv-cast-time-cur">0:00</span>
+                  <span class="tv-cast-time-sep">/</span>
+                  <span id="tv-cast-time-dur">0:00</span>
+                  <button id="tv-cast-fs-btn" class="tv-cast-fs-btn" type="button" aria-label="TV Fullscreen" title="TV Fullscreen">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="controls">
             <button id="back" class="control" type="button">
@@ -3630,7 +4053,7 @@
     </div>
   </aside>
 
-  <!-- YouTube-style TV Remote Bottom Sheet -->
+  <!-- YouTube-style TV Remote Bottom Sheet (Screenshot 2 Match) -->
   <div id="remote-modal" class="remote-modal-backdrop" hidden>
     <section class="remote-dialog" role="dialog" aria-modal="true" aria-labelledby="remote-modal-title">
       <div class="remote-drag-bar-wrap">
@@ -3639,44 +4062,86 @@
         </button>
       </div>
       <div class="remote-header">
-        <div class="remote-device-tag">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
-          <span id="remote-modal-title">Samsung Smart TV</span>
+        <div class="remote-header-titles">
+          <h3 class="remote-now-playing-heading">Now playing</h3>
+          <div class="remote-device-tag">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+            <span id="remote-modal-title">Samsung Smart TV</span>
+          </div>
         </div>
         <div class="remote-header-actions">
-          <span class="remote-cast-status">Connected</span>
           <button id="remote-yt-settings-btn" class="remote-gear-btn" type="button" aria-label="YouTube Settings" title="YouTube Settings">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"/>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
           </button>
+          <button id="close-remote-modal-x" class="remote-gear-btn" type="button" aria-label="Close" title="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
       </div>
-      <div class="remote-now-playing">
-        <img id="remote-thumb" src="" alt="">
-        <div class="remote-now-info">
-          <p id="remote-title" class="remote-now-title">—</p>
-          <p id="remote-author" class="remote-now-author">—</p>
+
+      <!-- Hero 16:9 Thumbnail Card with transport controls overlaid (Screenshot 2 Match) -->
+      <div id="remote-hero-card" class="remote-hero-card" title="Tap to expand watch view">
+        <img id="remote-thumb" class="remote-hero-thumb" src="" alt="Now playing thumbnail">
+        <div class="remote-hero-scrim"></div>
+        <div class="remote-hero-controls">
+          <button id="remote-rewind-btn" class="remote-hero-btn" type="button" aria-label="Rewind 10 seconds" title="Rewind 10s">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/><text x="12" y="14" font-size="7" font-weight="bold" fill="currentColor" text-anchor="middle" stroke="none">10</text></svg>
+          </button>
+          <button id="remote-play-btn" class="remote-hero-play-btn" type="button" aria-label="Play or pause on TV" title="Play / Pause">
+            <svg id="remote-play-icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </button>
+          <button id="remote-fwd-btn" class="remote-hero-btn" type="button" aria-label="Forward 10 seconds" title="Forward 10s">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/><text x="12" y="14" font-size="7" font-weight="bold" fill="currentColor" text-anchor="middle" stroke="none">10</text></svg>
+          </button>
         </div>
+        <button id="remote-open-watch-btn" class="remote-hero-expand-btn" type="button" aria-label="Expand watch view">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          <span>Expand</span>
+        </button>
       </div>
+
+      <!-- Video Meta (Title & Stats) -->
+      <div class="remote-meta-section">
+        <p id="remote-title" class="remote-meta-title">—</p>
+        <p id="remote-meta-views" class="remote-meta-author">Now playing on TV</p>
+      </div>
+
+      <!-- Channel Row (Screenshot 2 Match) -->
+      <div class="remote-channel-row">
+        <img id="remote-channel-avatar" class="remote-channel-avatar" src="" alt="Channel avatar" style="display:none;" />
+        <div class="remote-channel-info">
+          <span id="remote-author" class="remote-channel-name">—</span>
+          <span id="remote-subscribers" class="remote-channel-subs">YouTube Channel</span>
+        </div>
+        <button id="remote-sub-btn" class="remote-channel-sub-btn" type="button">Subscribe</button>
+      </div>
+
+      <!-- Action Pills Row (Like, Dislike, Share) -->
+      <div class="remote-actions-row">
+        <button id="remote-like-btn" class="remote-action-pill" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+          <span>Like</span>
+        </button>
+        <button id="remote-dislike-btn" class="remote-action-pill" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
+          <span>Dislike</span>
+        </button>
+        <button id="remote-share-btn" class="remote-action-pill" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span>Share</span>
+        </button>
+      </div>
+
+      <!-- Scrubber & Time -->
       <div class="remote-progress-area">
         <input id="remote-seek-slider" class="remote-slider" type="range" min="0" max="100" value="0" aria-label="Seek remote video">
         <div class="remote-time-row">
           <span id="remote-time-cur">0:00</span>
           <span id="remote-time-dur">0:00</span>
         </div>
-      </div>
-      <div class="remote-controls-row">
-        <button id="remote-rewind-btn" class="remote-ctrl-btn seek-btn" type="button" aria-label="Rewind 10 seconds" title="Rewind 10s">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/><text x="12" y="14" font-size="7" font-weight="bold" fill="currentColor" text-anchor="middle" stroke="none">10</text></svg>
-        </button>
-        <button id="remote-play-btn" class="remote-ctrl-btn play-btn" type="button" aria-label="Play or pause on TV" title="Play / Pause">
-          <svg id="remote-play-icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
-        </button>
-        <button id="remote-fwd-btn" class="remote-ctrl-btn seek-btn" type="button" aria-label="Forward 10 seconds" title="Forward 10s">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/><text x="12" y="14" font-size="7" font-weight="bold" fill="currentColor" text-anchor="middle" stroke="none">10</text></svg>
-        </button>
       </div>
 
       <!-- TV Volume Controller Row -->
@@ -3691,7 +4156,6 @@
         <input id="remote-vol-slider" class="remote-vol-slider" type="range" min="0" max="100" value="100" aria-label="TV Volume" title="TV Volume">
         <span id="remote-vol-txt" class="remote-vol-txt">100%</span>
       </div>
-
 
       <div class="remote-handoff-action">
         <button id="remote-transfer-btn" class="remote-transfer-btn" type="button">
@@ -4050,6 +4514,37 @@
     const remoteFwdBtn = document.querySelector('#remote-fwd-btn');
     const remoteTransferBtn = document.querySelector('#remote-transfer-btn');
     const remoteDisconnectBtn = document.querySelector('#remote-disconnect-btn');
+
+    // TV Cast Watch Stage Elements (Screenshot 1 Match)
+    const tvCastStage = document.querySelector('#tv-cast-stage');
+    const tvCastPoster = document.querySelector('#tv-cast-poster');
+    const tvCastDeviceLabel = document.querySelector('#tv-cast-device-label');
+    const tvCastMinimizeBtn = document.querySelector('#tv-cast-minimize-btn');
+    const tvCastHeaderCastBtn = document.querySelector('#tv-cast-header-cast-btn');
+    const tvCastCcBtn = document.querySelector('#tv-cast-cc-btn');
+    const tvCastSettingsBtn = document.querySelector('#tv-cast-settings-btn');
+    const tvCastRewindBtn = document.querySelector('#tv-cast-rewind-btn');
+    const tvCastPlayBtn = document.querySelector('#tv-cast-play-btn');
+    const tvCastPlayIcon = document.querySelector('#tv-cast-play-icon');
+    const tvCastFwdBtn = document.querySelector('#tv-cast-fwd-btn');
+    const tvCastSeekSlider = document.querySelector('#tv-cast-seek-slider');
+    const tvCastTimeCur = document.querySelector('#tv-cast-time-cur');
+    const tvCastTimeDur = document.querySelector('#tv-cast-time-dur');
+    const tvCastFsBtn = document.querySelector('#tv-cast-fs-btn');
+    let isSeekingTvCast = false;
+    let isTvCastStageActive = false;
+
+    // Additional Remote Modal Elements (Screenshot 2 Match)
+    const closeRemoteModalX = document.querySelector('#close-remote-modal-x');
+    const remoteHeroCard = document.querySelector('#remote-hero-card');
+    const remoteOpenWatchBtn = document.querySelector('#remote-open-watch-btn');
+    const remoteMetaViews = document.querySelector('#remote-meta-views');
+    const remoteChannelAvatar = document.querySelector('#remote-channel-avatar');
+    const remoteSubscribers = document.querySelector('#remote-subscribers');
+    const remoteSubBtn = document.querySelector('#remote-sub-btn');
+    const remoteLikeBtn = document.querySelector('#remote-like-btn');
+    const remoteDislikeBtn = document.querySelector('#remote-dislike-btn');
+    const remoteShareBtn = document.querySelector('#remote-share-btn');
 
     // Remote Volume & YouTube Settings Elements
     const remoteMuteBtn = document.querySelector('#remote-mute-btn');
@@ -4771,7 +5266,8 @@
       remoteModalTitle.textContent = data.deviceName || connectedDeviceName || 'Samsung Smart TV';
       remoteThumb.src = data.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(data.videoId)}/hqdefault.jpg`;
       remoteTitle.textContent = data.title || 'YouTube Video';
-      remoteAuthor.textContent = data.author || '';
+      if (remoteAuthor) remoteAuthor.textContent = data.author || 'YouTube Channel';
+      if (remoteMetaViews) remoteMetaViews.textContent = data.views || 'Now playing on TV';
 
       const dur = Math.max(1, Number(data.duration || 0));
       const cur = Math.max(0, Number(data.currentTime || 0));
@@ -4804,6 +5300,96 @@
 
       // Sync YouTube Settings Sheet UI
       syncYtSettingsUi(data);
+    }
+
+    function syncTvCastStageUi(data) {
+      if (!data) data = activeRemoteSession || {};
+      if (!tvCastStage || tvCastStage.hidden) return;
+
+      if (tvCastDeviceLabel) {
+        tvCastDeviceLabel.textContent = data.deviceName || connectedDeviceName || 'Samsung Smart TV';
+      }
+      if (tvCastPoster && data.videoId) {
+        const thumbUrl = data.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(data.videoId)}/hqdefault.jpg`;
+        if (tvCastPoster.src !== thumbUrl) tvCastPoster.src = thumbUrl;
+      }
+
+      const dur = Math.max(1, Number(data.duration || 0));
+      const cur = Math.max(0, Number(data.currentTime || 0));
+
+      if (!isSeekingTvCast && tvCastSeekSlider) {
+        tvCastSeekSlider.max = String(dur);
+        tvCastSeekSlider.value = String(cur);
+        if (tvCastTimeCur) tvCastTimeCur.textContent = formatDuration(cur) || '0:00';
+        if (tvCastTimeDur) tvCastTimeDur.textContent = formatDuration(dur) || '0:00';
+      }
+
+      if (tvCastPlayBtn && tvCastPlayIcon) {
+        if (data.isPlaying) {
+          tvCastPlayIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+          tvCastPlayBtn.setAttribute('title', 'Pause TV');
+          tvCastPlayBtn.setAttribute('aria-label', 'Pause TV');
+        } else {
+          tvCastPlayIcon.innerHTML = '<polygon points="6 4 20 12 6 20 6 4"/>';
+          tvCastPlayBtn.setAttribute('title', 'Play TV');
+          tvCastPlayBtn.setAttribute('aria-label', 'Play TV');
+        }
+      }
+    }
+
+    function openTvCastWatchView(session) {
+      if (!session || !session.videoId) return;
+
+      // Ensure local player on phone is paused and muted (Screenshot 1: no local stream)
+      try { player?.pauseVideo?.(); } catch (_) {}
+      try { if (audioPlayer) audioPlayer.pause(); } catch (_) {}
+
+      isTvCastStageActive = true;
+      document.body.classList.add('watch-mode');
+      document.body.classList.remove('pip-mode');
+
+      // Hide local embed & audio stage; Show tvCastStage
+      if (playerEmbedSlot) playerEmbedSlot.hidden = true;
+      if (audioStage) audioStage.hidden = true;
+      if (tvCastStage) tvCastStage.hidden = false;
+      if (watch) watch.hidden = false;
+      if (pipBar) pipBar.hidden = true;
+
+      // Close remote bottom sheet modal if open
+      if (remoteModal) remoteModal.hidden = true;
+
+      // Update TV poster & label
+      if (tvCastPoster) {
+        tvCastPoster.src = session.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(session.videoId)}/hqdefault.jpg`;
+      }
+      if (tvCastDeviceLabel) {
+        tvCastDeviceLabel.textContent = session.deviceName || connectedDeviceName || 'Samsung Smart TV';
+      }
+
+      // Sync scrubber & controls
+      syncTvCastStageUi(session);
+
+      // Populate watch page title, channel, suggestions & comments below player
+      document.title = `${session.title || 'Watching on TV'} — Clearplay`;
+      const videoMeta = {
+        id: session.videoId,
+        title: session.title || 'YouTube Video',
+        author: session.author || '',
+        thumbnail: session.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(session.videoId)}/hqdefault.jpg`
+      };
+      video = videoMeta;
+      const titleEl = document.querySelector('#video-title');
+      if (titleEl) titleEl.textContent = videoMeta.title;
+      const authorEl = document.querySelector('#video-author');
+      if (authorEl) authorEl.textContent = videoMeta.author;
+      fetchSegments(session.videoId);
+      loadSuggestions(videoMeta);
+
+      history.pushState(
+        { view: 'watch', video: videoMeta, isTvCast: true },
+        '',
+        `/watch?v=${encodeURIComponent(session.videoId)}`
+      );
     }
 
     async function resolveNetworkHash() {
@@ -4886,6 +5472,9 @@
             if (remoteModal && !remoteModal.hidden) {
               updateRemoteModalUi(activeRemoteSession);
             }
+            if (tvCastStage && !tvCastStage.hidden) {
+              syncTvCastStageUi(activeRemoteSession);
+            }
           }
         }, err => console.warn('roomUnsubscribe snapshot error:', err));
       } catch (err) {
@@ -4901,6 +5490,8 @@
       connectedRoomId = null;
       isTvCastActive = false;
       activeRemoteSession = null;
+      isTvCastStageActive = false;
+      if (tvCastStage) tvCastStage.hidden = true;
 
       try {
         localStorage.removeItem('clearplay_active_room_id');
@@ -5024,6 +5615,7 @@
       showConnectBanner(activeRemoteSession);
       if (remoteModal && !remoteModal.hidden) updateRemoteModalUi(activeRemoteSession);
       showToast(`▶ Playing on ${targetName}`);
+      openTvCastWatchView(activeRemoteSession);
     }
 
     function executeRemoteCommand(cmd) {
@@ -5714,9 +6306,128 @@
       });
     }
 
+    if (closeRemoteModalX) {
+      closeRemoteModalX.addEventListener('click', () => {
+        if (remoteModal) remoteModal.hidden = true;
+      });
+    }
+
     if (remoteModal) {
       remoteModal.addEventListener('click', e => {
         if (e.target === remoteModal) remoteModal.hidden = true;
+      });
+    }
+
+    if (remoteHeroCard) {
+      remoteHeroCard.addEventListener('click', e => {
+        if (e.target.closest('button') && !e.target.closest('#remote-open-watch-btn')) return;
+        if (activeRemoteSession) openTvCastWatchView(activeRemoteSession);
+      });
+    }
+
+    if (remoteOpenWatchBtn) {
+      remoteOpenWatchBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        if (activeRemoteSession) openTvCastWatchView(activeRemoteSession);
+      });
+    }
+
+    if (remoteLikeBtn) {
+      remoteLikeBtn.addEventListener('click', () => {
+        showToast('Liked video');
+      });
+    }
+
+    if (remoteDislikeBtn) {
+      remoteDislikeBtn.addEventListener('click', () => {
+        showToast('Disliked video');
+      });
+    }
+
+    if (remoteShareBtn) {
+      remoteShareBtn.addEventListener('click', async () => {
+        const vidId = activeRemoteSession?.videoId || video?.id;
+        if (!vidId) return;
+        const curTime = Math.floor(activeRemoteSession?.currentTime || 0);
+        const url = `${window.location.origin}/?v=${encodeURIComponent(vidId)}${curTime > 5 ? `&t=${curTime}s` : ''}`;
+        try {
+          await navigator.clipboard.writeText(url);
+          showToast('Link copied to clipboard!');
+        } catch (_) {}
+      });
+    }
+
+    // TV Cast Watch Stage Controls (Screenshot 1 Match)
+    if (tvCastMinimizeBtn) {
+      tvCastMinimizeBtn.addEventListener('click', () => {
+        showSearch();
+      });
+    }
+
+    if (tvCastHeaderCastBtn) {
+      tvCastHeaderCastBtn.addEventListener('click', () => {
+        if (remoteModal) {
+          remoteModal.hidden = false;
+          if (activeRemoteSession) updateRemoteModalUi(activeRemoteSession);
+        }
+      });
+    }
+
+    if (tvCastPlayBtn) {
+      tvCastPlayBtn.addEventListener('click', () => {
+        if (!activeRemoteSession) return;
+        const nextAction = activeRemoteSession.isPlaying ? 'pause' : 'play';
+        sendRemoteCommand(connectedRoomId, nextAction);
+        activeRemoteSession.isPlaying = !activeRemoteSession.isPlaying;
+        syncTvCastStageUi(activeRemoteSession);
+        if (remoteModal && !remoteModal.hidden) updateRemoteModalUi(activeRemoteSession);
+      });
+    }
+
+    if (tvCastRewindBtn) {
+      tvCastRewindBtn.addEventListener('click', () => {
+        sendRemoteCommand(connectedRoomId, 'rewind');
+      });
+    }
+
+    if (tvCastFwdBtn) {
+      tvCastFwdBtn.addEventListener('click', () => {
+        sendRemoteCommand(connectedRoomId, 'forward');
+      });
+    }
+
+    if (tvCastSeekSlider) {
+      tvCastSeekSlider.addEventListener('input', () => {
+        isSeekingTvCast = true;
+        if (tvCastTimeCur) tvCastTimeCur.textContent = formatDuration(Number(tvCastSeekSlider.value)) || '0:00';
+      });
+      tvCastSeekSlider.addEventListener('change', () => {
+        isSeekingTvCast = false;
+        const val = Number(tvCastSeekSlider.value);
+        sendRemoteCommand(connectedRoomId, 'seek', { seekTo: val });
+        if (activeRemoteSession) activeRemoteSession.currentTime = val;
+      });
+    }
+
+    if (tvCastCcBtn) {
+      tvCastCcBtn.addEventListener('click', () => {
+        const curCc = Boolean(activeRemoteSession?.captions && activeRemoteSession.captions !== 'off');
+        const nextCc = curCc ? 'off' : 'on';
+        sendRemoteCommand(connectedRoomId, 'captions', { captions: nextCc });
+        if (activeRemoteSession) activeRemoteSession.captions = nextCc;
+        showToast(nextCc === 'on' ? 'Captions enabled on TV' : 'Captions turned off on TV');
+      });
+    }
+
+    if (tvCastSettingsBtn) {
+      tvCastSettingsBtn.addEventListener('click', () => {
+        openYtSettingsSheet();
+      });
+    }
+
+    if (tvCastFsBtn) {
+      tvCastFsBtn.addEventListener('click', () => {
+        sendRemoteCommand(connectedRoomId, 'fullscreen');
       });
     }
 
@@ -6086,11 +6797,31 @@
 
     // Cast Picker & Device Modal controls
     if (castPickerBtn) {
-      castPickerBtn.addEventListener('click', openDevicePicker);
+      castPickerBtn.addEventListener('click', () => {
+        if (isTvCastActive && (connectedRoomId || activeRemoteSession)) {
+          if (remoteModal) {
+            remoteModal.hidden = false;
+            if (activeRemoteSession) updateRemoteModalUi(activeRemoteSession);
+          }
+        } else {
+          openDevicePicker();
+        }
+      });
     }
 
     if (castPlayerBtn) {
-      castPlayerBtn.addEventListener('click', openDevicePicker);
+      castPlayerBtn.addEventListener('click', () => {
+        if (isTvCastActive && (connectedRoomId || activeRemoteSession)) {
+          if (video?.id && video.id !== activeRemoteSession?.videoId) {
+            playOnRemoteDevice(video);
+          } else if (remoteModal) {
+            remoteModal.hidden = false;
+            if (activeRemoteSession) updateRemoteModalUi(activeRemoteSession);
+          }
+        } else {
+          openDevicePicker();
+        }
+      });
     }
 
     if (closeDeviceModal) {
@@ -7395,11 +8126,13 @@
     }
 
     function openPlayer(item) {
-      const tvTargetId = connectedRoomId || activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
-      if (isTvCastActive && tvTargetId && myDeviceType !== 'tv') {
-        playOnRemoteDevice(item);
+      if (isTvCastActive && activeRemoteSession?.videoId && item.id === activeRemoteSession.videoId) {
+        openTvCastWatchView(activeRemoteSession);
         return;
       }
+      if (tvCastStage) tvCastStage.hidden = true;
+      if (playerEmbedSlot) playerEmbedSlot.hidden = false;
+      isTvCastStageActive = false;
       history.pushState({ view: 'watch', video: item }, '', `/watch?v=${encodeURIComponent(item.id)}${item.playlistId ? `&list=${encodeURIComponent(item.playlistId)}` : ''}`);
       loadPlayer(item);
     }
@@ -7411,11 +8144,13 @@
         const data = await response.json();
         if (!response.ok || !data.results?.length) throw new Error();
         const first = { ...data.results[0], playlistId: item.id };
-        const tvTargetId = connectedRoomId || activeRemoteSession?.deviceId || localStorage.getItem('clearplay_last_tv_id');
-        if (isTvCastActive && tvTargetId && myDeviceType !== 'tv') {
-          playOnRemoteDevice(first);
+        if (isTvCastActive && activeRemoteSession?.videoId && first.id === activeRemoteSession.videoId) {
+          openTvCastWatchView(activeRemoteSession);
           return;
         }
+        if (tvCastStage) tvCastStage.hidden = true;
+        if (playerEmbedSlot) playerEmbedSlot.hidden = false;
+        isTvCastStageActive = false;
         history.pushState({ view: 'watch', video: first }, '', `/watch?v=${encodeURIComponent(first.id)}&list=${encodeURIComponent(item.id)}`);
         loadPlayer(first);
       } catch (_) {
@@ -7428,6 +8163,18 @@
     }
 
     function showSearch(focusInput = false, forceStop = false) {
+      if (isTvCastStageActive) {
+        isTvCastStageActive = false;
+        if (tvCastStage) tvCastStage.hidden = true;
+        document.body.classList.remove('watch-mode', 'pseudo-fs');
+        watch.hidden = true;
+        document.title = 'Clearplay — YouTube Embed & Personal Library';
+        if (focusInput) {
+          queryInput.focus();
+          queryInput.select();
+        }
+        return;
+      }
       if ((isPipActive() || audioModeActive) && !forceStop) {
         if (audioModeActive && !isPipActive()) {
           enterPipMode();
@@ -7637,8 +8384,18 @@
       const sp = new URLSearchParams(location.search);
       const id = sp.get('v');
       if (id) {
-        loadPlayer(event.state?.video || { id, title: 'YouTube video', author: '' });
+        if (isTvCastActive && activeRemoteSession?.videoId && id === activeRemoteSession.videoId) {
+          openTvCastWatchView(activeRemoteSession);
+        } else {
+          loadPlayer(event.state?.video || { id, title: 'YouTube video', author: '' });
+        }
       } else {
+        if (isTvCastStageActive) {
+          isTvCastStageActive = false;
+          if (tvCastStage) tvCastStage.hidden = true;
+          document.body.classList.remove('watch-mode');
+          if (watch) watch.hidden = true;
+        }
         const tab = sp.get('tab');
         if (tab && ['home', 'subscriptions', 'history', 'watchlater'].includes(tab)) {
           switchTab(tab, false);
