@@ -1867,6 +1867,482 @@
         aspect-ratio: auto;
       }
     }
+
+    /* ==========================================================================
+       CLEARPLAY CONNECT & REMOTE
+       ========================================================================== */
+    .connect-banner {
+      position: fixed;
+      right: 20px;
+      bottom: 24px;
+      width: min(420px, calc(100vw - 32px));
+      background: rgba(19, 21, 27, 0.94);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--line-strong);
+      border-radius: 16px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(181, 243, 107, 0.12);
+      padding: 12px 14px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: connectSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    @keyframes connectSlideUp {
+      from { transform: translateY(24px) scale(0.96); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .connect-banner {
+        right: 12px;
+        left: 12px;
+        bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+        width: auto;
+      }
+    }
+
+    .connect-banner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .connect-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .connect-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulseLive 1.8s infinite;
+      flex-shrink: 0;
+    }
+
+    .connect-pulse.paused {
+      background: #fbbf24;
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+      animation: none;
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+
+    .connect-banner-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+      padding: 0 4px;
+      border-radius: 6px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .connect-banner-close:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .connect-banner-body {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .connect-thumb {
+      width: 64px;
+      height: 45px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #000;
+      flex-shrink: 0;
+    }
+
+    .connect-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .connect-title {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+      margin: 0 0 2px;
+    }
+
+    .connect-author {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+    }
+
+    .connect-banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .connect-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .connect-btn-remote {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border-color: var(--line);
+    }
+    .connect-btn-remote:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: var(--line-strong);
+    }
+
+    .connect-btn-handoff {
+      background: var(--accent);
+      color: var(--accent-dark);
+      box-shadow: 0 2px 10px var(--accent-glow);
+    }
+    .connect-btn-handoff:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    /* Remote Controller Modal */
+    .remote-dialog {
+      background: var(--panel);
+      border: 1px solid var(--line-strong);
+      border-radius: 24px;
+      max-width: 440px;
+      width: 100%;
+      padding: 22px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+    }
+
+    @media (max-width: 768px) {
+      .remote-dialog {
+        border-radius: 24px 24px 0 0;
+        border-bottom: 0;
+        max-width: 100%;
+        padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+    }
+
+    .remote-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .remote-device-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .remote-now-playing {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+    }
+
+    .remote-now-playing img {
+      width: 72px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #000;
+    }
+
+    .remote-now-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .remote-now-title {
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0 0 3px;
+    }
+
+    .remote-now-author {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .remote-progress-area {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .remote-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.16);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .remote-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      cursor: pointer;
+    }
+
+    .remote-time-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .remote-controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 6px 0;
+    }
+
+    .remote-ctrl-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .remote-ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--line-strong);
+      transform: scale(1.05);
+    }
+
+    .remote-ctrl-btn.seek-btn {
+      width: 48px;
+      height: 48px;
+    }
+
+    .remote-ctrl-btn.play-btn {
+      width: 64px;
+      height: 64px;
+      background: var(--accent);
+      color: var(--accent-dark);
+      border-color: transparent;
+      box-shadow: 0 4px 18px var(--accent-glow);
+    }
+
+    .remote-ctrl-btn.play-btn:hover {
+      transform: scale(1.08);
+      filter: brightness(1.1);
+    }
+
+    .remote-handoff-action {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .remote-transfer-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--line-strong);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .remote-transfer-btn:hover {
+      background: rgba(181, 243, 107, 0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* TV Continue Watching Overlay */
+    .tv-continue-overlay {
+      position: fixed;
+      bottom: 40px;
+      right: 40px;
+      z-index: 1001;
+      max-width: 520px;
+      width: calc(100vw - 80px);
+      background: rgba(19, 21, 27, 0.96);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 2px solid var(--accent);
+      border-radius: 20px;
+      padding: 20px 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 24px var(--accent-glow);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: connectSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tv-prompt-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .tv-prompt-body {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .tv-prompt-thumb {
+      width: 96px;
+      height: 64px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #000;
+      flex-shrink: 0;
+    }
+
+    .tv-prompt-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tv-prompt-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 0 0 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+
+    .tv-prompt-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .tv-prompt-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .tv-prompt-play-btn {
+      flex: 2;
+      background: var(--accent);
+      color: var(--accent-dark);
+      border: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s, filter 0.15s;
+    }
+
+    .tv-prompt-play-btn:focus,
+    .tv-prompt-play-btn:hover {
+      outline: 3px solid #fff;
+      transform: scale(1.03);
+      filter: brightness(1.1);
+    }
+
+    .tv-prompt-dismiss-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line-strong);
+      color: var(--muted);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .tv-prompt-dismiss-btn:focus,
+    .tv-prompt-dismiss-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: var(--text);
+    }
   </style>
 </head>
 <body>
@@ -2231,12 +2707,106 @@
     </section>
   </div>
 
+  <!-- Clearplay Connect: Cross-Device Remote & Sync -->
+  <aside id="connect-banner" class="connect-banner" hidden aria-label="Active stream on another device">
+    <div class="connect-banner-header">
+      <div class="connect-badge">
+        <span id="cb-pulse" class="connect-pulse"></span>
+        <span id="cb-device-name">Smart TV</span>
+      </div>
+      <button id="cb-close-btn" class="connect-banner-close" aria-label="Dismiss banner" title="Dismiss">×</button>
+    </div>
+    <div class="connect-banner-body">
+      <img id="cb-thumb" class="connect-thumb" alt="" src="">
+      <div class="connect-info">
+        <p id="cb-title" class="connect-title">Video Title</p>
+        <p id="cb-author" class="connect-author">Channel Name</p>
+      </div>
+    </div>
+    <div class="connect-banner-actions">
+      <button id="cb-remote-btn" class="connect-btn connect-btn-remote" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="4"/><circle cx="12" cy="7" r="1.5"/><circle cx="12" cy="11" r="1.5"/><circle cx="12" cy="15" r="1.5"/><path d="M9 19h6"/></svg>
+        <span>Remote</span>
+      </button>
+      <button id="cb-handoff-btn" class="connect-btn connect-btn-handoff" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Play Here</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Clearplay Remote Control Modal / Bottom-Sheet -->
+  <div id="remote-modal" class="modal-backdrop" hidden>
+    <section class="remote-dialog" role="dialog" aria-modal="true" aria-labelledby="remote-modal-title">
+      <div class="remote-header">
+        <div class="remote-device-tag">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          <span id="remote-modal-title">Controlling Smart TV</span>
+        </div>
+        <button id="close-remote-modal" class="close" aria-label="Close remote">×</button>
+      </div>
+      <div class="remote-now-playing">
+        <img id="remote-thumb" src="" alt="">
+        <div class="remote-now-info">
+          <p id="remote-title" class="remote-now-title">—</p>
+          <p id="remote-author" class="remote-now-author">—</p>
+        </div>
+      </div>
+      <div class="remote-progress-area">
+        <input id="remote-seek-slider" class="remote-slider" type="range" min="0" max="100" value="0" aria-label="Seek remote video">
+        <div class="remote-time-row">
+          <span id="remote-time-cur">0:00</span>
+          <span id="remote-time-dur">0:00</span>
+        </div>
+      </div>
+      <div class="remote-controls-row">
+        <button id="remote-rewind-btn" class="remote-ctrl-btn seek-btn" type="button" aria-label="Rewind 10 seconds" title="Rewind 10s">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/><text x="12" y="14" font-size="7" font-weight="bold" fill="currentColor" text-anchor="middle" stroke="none">10</text></svg>
+        </button>
+        <button id="remote-play-btn" class="remote-ctrl-btn play-btn" type="button" aria-label="Play or pause on TV" title="Play / Pause">
+          <svg id="remote-play-icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+        </button>
+        <button id="remote-fwd-btn" class="remote-ctrl-btn seek-btn" type="button" aria-label="Forward 10 seconds" title="Forward 10s">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/><text x="12" y="14" font-size="7" font-weight="bold" fill="currentColor" text-anchor="middle" stroke="none">10</text></svg>
+        </button>
+      </div>
+      <div class="remote-handoff-action">
+        <button id="remote-transfer-btn" class="remote-transfer-btn" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          <span>Play on this device instead</span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Clearplay TV Continue Watching Prompt (For Smart TV / Big Screen) -->
+  <div id="tv-continue-prompt" class="tv-continue-overlay" hidden>
+    <div class="tv-prompt-badge">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+      <span id="tv-prompt-badge-txt">Continue watching on TV?</span>
+    </div>
+    <div class="tv-prompt-body">
+      <img id="tv-prompt-thumb" class="tv-prompt-thumb" alt="" src="">
+      <div class="tv-prompt-details">
+        <p id="tv-prompt-title" class="tv-prompt-title">—</p>
+        <p id="tv-prompt-meta" class="tv-prompt-meta">Paused on Phone • 0:00</p>
+      </div>
+    </div>
+    <div class="tv-prompt-actions">
+      <button id="tv-prompt-play" class="tv-prompt-play-btn" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span>Play on Big Screen</span>
+      </button>
+      <button id="tv-prompt-dismiss" class="tv-prompt-dismiss-btn" type="button">Dismiss</button>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
     import {
       getFirestore, doc, setDoc, getDoc, deleteDoc, getDocs, collection,
-      query as fsQuery, orderBy, limit, writeBatch, serverTimestamp
+      query as fsQuery, orderBy, limit, writeBatch, serverTimestamp, onSnapshot
     } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -2315,6 +2885,86 @@
     const userChip = document.querySelector('#user-chip');
     const userAvatar = document.querySelector('#user-avatar');
     const userName = document.querySelector('#user-name');
+
+    // Clearplay Connect & Remote Elements
+    const connectBanner = document.querySelector('#connect-banner');
+    const cbPulse = document.querySelector('#cb-pulse');
+    const cbDeviceName = document.querySelector('#cb-device-name');
+    const cbCloseBtn = document.querySelector('#cb-close-btn');
+    const cbThumb = document.querySelector('#cb-thumb');
+    const cbTitle = document.querySelector('#cb-title');
+    const cbAuthor = document.querySelector('#cb-author');
+    const cbRemoteBtn = document.querySelector('#cb-remote-btn');
+    const cbHandoffBtn = document.querySelector('#cb-handoff-btn');
+
+    const remoteModal = document.querySelector('#remote-modal');
+    const closeRemoteModal = document.querySelector('#close-remote-modal');
+    const remoteModalTitle = document.querySelector('#remote-modal-title');
+    const remoteThumb = document.querySelector('#remote-thumb');
+    const remoteTitle = document.querySelector('#remote-title');
+    const remoteAuthor = document.querySelector('#remote-author');
+    const remoteSeekSlider = document.querySelector('#remote-seek-slider');
+    const remoteTimeCur = document.querySelector('#remote-time-cur');
+    const remoteTimeDur = document.querySelector('#remote-time-dur');
+    const remoteRewindBtn = document.querySelector('#remote-rewind-btn');
+    const remotePlayBtn = document.querySelector('#remote-play-btn');
+    const remotePlayIcon = document.querySelector('#remote-play-icon');
+    const remoteFwdBtn = document.querySelector('#remote-fwd-btn');
+    const remoteTransferBtn = document.querySelector('#remote-transfer-btn');
+
+    const tvContinuePrompt = document.querySelector('#tv-continue-prompt');
+    const tvPromptBadgeTxt = document.querySelector('#tv-prompt-badge-txt');
+    const tvPromptThumb = document.querySelector('#tv-prompt-thumb');
+    const tvPromptTitle = document.querySelector('#tv-prompt-title');
+    const tvPromptMeta = document.querySelector('#tv-prompt-meta');
+    const tvPromptPlay = document.querySelector('#tv-prompt-play');
+    const tvPromptDismiss = document.querySelector('#tv-prompt-dismiss');
+
+    // Device Identification
+    function detectDeviceInfo() {
+      let id = '';
+      try {
+        id = localStorage.getItem('clearplay_device_id') || '';
+        if (!id) {
+          id = 'dev-' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+          localStorage.setItem('clearplay_device_id', id);
+        }
+      } catch (_) {
+        id = 'dev-' + Math.random().toString(36).slice(2, 9);
+      }
+
+      const ua = navigator.userAgent || '';
+      let type = 'desktop';
+      let name = 'Computer';
+
+      const isTv = /SmartTV|Tizen|Web0S|Android TV|CrKey|AFTB|Silk|GoogleTV|AppleTV|HbbTV|NETTV|POV_TV/i.test(ua);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(ua) || (window.innerWidth <= 768 && ('ontouchstart' in window));
+
+      if (isTv) {
+        type = 'tv';
+        name = /Tizen/i.test(ua) ? 'Samsung Smart TV' : /Web0S/i.test(ua) ? 'LG Smart TV' : /AFTB/i.test(ua) ? 'Fire TV' : 'Smart TV';
+      } else if (isMobile) {
+        type = 'mobile';
+        if (/iPhone/i.test(ua)) name = 'iPhone';
+        else if (/iPad/i.test(ua)) name = 'iPad';
+        else if (/Android/i.test(ua)) name = 'Android Phone';
+        else name = 'Mobile Phone';
+      } else {
+        type = 'desktop';
+        if (/Macintosh|Mac OS/i.test(ua)) name = 'Mac';
+        else if (/Windows/i.test(ua)) name = 'Windows PC';
+        else name = 'Computer';
+      }
+      return { id, type, name };
+    }
+
+    const { id: myDeviceId, type: myDeviceType, name: myDeviceName } = detectDeviceInfo();
+    let activeRemoteSession = null;
+    let connectUnsubscribe = null;
+    let lastExecutedCmdId = null;
+    let dismissedSessionVideoId = null;
+    let isSeekingRemote = false;
+    let lastBroadcastTime = 0;
 
     const categoryNames = ['sponsor', 'selfpromo', 'interaction', 'intro', 'outro', 'preview', 'music_offtopic', 'filler'];
     const categoryColors = {
@@ -2521,6 +3171,7 @@
       } else if (player?.seekTo) {
         player.seekTo(target, true);
       }
+      broadcastConnectSession(true, { currentTime: target });
     }
 
     function isAnyPlaying() {
@@ -2747,6 +3398,7 @@
     document.querySelectorAll('.gate-signin').forEach(b => b.addEventListener('click', triggerGoogleLogin));
     signoutBtn.addEventListener('click', async () => {
       pendingAuthAction = null;
+      initConnectSync(null);
       await signOut(auth);
       showToast('Signed out (Guest Mode)');
     });
@@ -2772,6 +3424,358 @@
         } catch (err) { console.error(err); }
       }
       await loadUserData();
+      initConnectSync(user);
+    });
+
+    // ==================== CLEARPLAY CONNECT & REMOTE ====================
+
+    function showConnectBanner(data) {
+      if (!connectBanner) return;
+      cbPulse.classList.toggle('paused', !data.isPlaying);
+      cbDeviceName.textContent = `${data.deviceName || 'Device'} • ${data.isPlaying ? 'Playing now' : 'Paused'}`;
+      cbThumb.src = data.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(data.videoId)}/hqdefault.jpg`;
+      cbTitle.textContent = data.title || 'YouTube Video';
+      cbAuthor.textContent = data.author || '';
+      connectBanner.hidden = false;
+    }
+
+    function hideConnectBanner() {
+      if (connectBanner) connectBanner.hidden = true;
+    }
+
+    function showTvPrompt(data) {
+      if (!tvContinuePrompt) return;
+      tvPromptBadgeTxt.textContent = `Continue watching from ${data.deviceName || 'Phone'}?`;
+      tvPromptThumb.src = data.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(data.videoId)}/hqdefault.jpg`;
+      tvPromptTitle.textContent = data.title || 'YouTube Video';
+      tvPromptMeta.textContent = `${data.isPlaying ? 'Playing' : 'Paused'} on ${data.deviceName || 'Phone'} • ${formatDuration(data.currentTime || 0)}`;
+      tvContinuePrompt.hidden = false;
+    }
+
+    function hideTvPrompt() {
+      if (tvContinuePrompt) tvContinuePrompt.hidden = true;
+    }
+
+    function updateRemoteModalUi(data) {
+      if (!remoteModal || remoteModal.hidden) return;
+      remoteModalTitle.textContent = `Controlling ${data.deviceName || 'Smart TV'}`;
+      remoteThumb.src = data.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(data.videoId)}/hqdefault.jpg`;
+      remoteTitle.textContent = data.title || 'YouTube Video';
+      remoteAuthor.textContent = data.author || '';
+
+      const dur = Math.max(1, Number(data.duration || 0));
+      const cur = Math.max(0, Number(data.currentTime || 0));
+
+      if (!isSeekingRemote) {
+        remoteSeekSlider.max = String(dur);
+        remoteSeekSlider.value = String(cur);
+        remoteTimeCur.textContent = formatDuration(cur) || '0:00';
+        remoteTimeDur.textContent = formatDuration(dur) || '0:00';
+      }
+
+      if (data.isPlaying) {
+        remotePlayIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+        remotePlayBtn.setAttribute('title', 'Pause TV');
+        remotePlayBtn.setAttribute('aria-label', 'Pause TV');
+      } else {
+        remotePlayIcon.innerHTML = '<polygon points="6 4 20 12 6 20 6 4"/>';
+        remotePlayBtn.setAttribute('title', 'Play TV');
+        remotePlayBtn.setAttribute('aria-label', 'Play TV');
+      }
+    }
+
+    async function broadcastConnectSession(force = false, stateOverride = {}) {
+      if (!currentUser) return;
+      const now = Date.now();
+      if (!force && now - lastBroadcastTime < 2800) return;
+      lastBroadcastTime = now;
+
+      if (!video?.id) return;
+
+      const playing = typeof stateOverride.isPlaying === 'boolean' ? stateOverride.isPlaying : isAnyPlaying();
+      const curTime = typeof stateOverride.currentTime === 'number' ? stateOverride.currentTime : Math.floor(getActiveTime());
+      const dur = typeof stateOverride.duration === 'number' ? stateOverride.duration : Math.floor(getActiveDuration());
+
+      const payload = {
+        deviceId: myDeviceId,
+        deviceName: myDeviceName,
+        deviceType: myDeviceType,
+        videoId: video.id,
+        title: video.title || 'YouTube Video',
+        author: video.author || '',
+        thumbnail: video.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg`,
+        currentTime: curTime,
+        duration: dur,
+        isPlaying: playing,
+        updatedAt: now,
+        ...stateOverride
+      };
+
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), payload, { merge: true });
+      } catch (err) {
+        console.warn('broadcastConnectSession error:', err);
+      }
+    }
+
+    async function sendRemoteCommand(targetDeviceId, action, extra = {}) {
+      if (!currentUser || !targetDeviceId) return;
+      const cmd = {
+        commandId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        fromDeviceId: myDeviceId,
+        fromDeviceName: myDeviceName,
+        targetDeviceId,
+        action,
+        ...extra
+      };
+      try {
+        await setDoc(doc(db, 'users', currentUser.uid, 'connect', 'session'), {
+          command: cmd
+        }, { merge: true });
+      } catch (err) {
+        console.warn('sendRemoteCommand error:', err);
+      }
+    }
+
+    function executeRemoteCommand(cmd) {
+      if (!cmd?.action) return;
+      switch (cmd.action) {
+        case 'play':
+          playActivePlayer();
+          showToast(`Resumed from ${cmd.fromDeviceName || 'Remote'}`);
+          break;
+        case 'pause':
+          pauseActivePlayer();
+          showToast(`Paused from ${cmd.fromDeviceName || 'Remote'}`);
+          break;
+        case 'seek':
+          if (typeof cmd.seekTo === 'number') {
+            seekActivePlayer(cmd.seekTo);
+          }
+          break;
+        case 'rewind':
+          seekActivePlayer(Math.max(0, getActiveTime() - 10));
+          break;
+        case 'forward':
+          seekActivePlayer(getActiveTime() + 10);
+          break;
+        case 'load':
+          if (cmd.videoId) {
+            loadPlayer({
+              id: cmd.videoId,
+              title: cmd.title,
+              author: cmd.author,
+              thumbnail: cmd.thumbnail,
+              duration: cmd.duration,
+              resumeAt: cmd.seekTo || 0
+            });
+            showToast(`Playing from ${cmd.fromDeviceName || 'Remote'}`);
+          }
+          break;
+      }
+    }
+
+    function handleConnectSnapshot(data) {
+      if (!data) return;
+
+      // 1. Check for incoming commands directed to this device
+      if (data.command && data.command.targetDeviceId === myDeviceId) {
+        if (data.command.commandId && data.command.commandId !== lastExecutedCmdId) {
+          lastExecutedCmdId = data.command.commandId;
+          executeRemoteCommand(data.command);
+        }
+      }
+
+      // 2. Check for active streaming session on another device
+      if (data.deviceId && data.deviceId !== myDeviceId) {
+        const now = Date.now();
+        const age = now - (data.updatedAt || 0);
+        const isFresh = (data.isPlaying && age < 25000) || (!data.isPlaying && age < 60000);
+
+        if (isFresh && data.videoId) {
+          activeRemoteSession = data;
+
+          if (myDeviceType === 'tv') {
+            if (video?.id !== data.videoId && dismissedSessionVideoId !== data.videoId) {
+              showTvPrompt(data);
+            } else {
+              hideTvPrompt();
+            }
+          } else {
+            if (dismissedSessionVideoId !== data.videoId) {
+              showConnectBanner(data);
+            }
+          }
+
+          updateRemoteModalUi(data);
+        } else {
+          activeRemoteSession = null;
+          hideConnectBanner();
+          hideTvPrompt();
+        }
+      } else if (data.deviceId === myDeviceId) {
+        hideConnectBanner();
+        hideTvPrompt();
+      }
+    }
+
+    function initConnectSync(user) {
+      if (connectUnsubscribe) {
+        connectUnsubscribe();
+        connectUnsubscribe = null;
+      }
+      if (!user) {
+        hideConnectBanner();
+        hideTvPrompt();
+        if (remoteModal) remoteModal.hidden = true;
+        return;
+      }
+
+      try {
+        const sessionRef = doc(db, 'users', user.uid, 'connect', 'session');
+        connectUnsubscribe = onSnapshot(sessionRef, snap => {
+          if (!snap.exists()) {
+            hideConnectBanner();
+            hideTvPrompt();
+            return;
+          }
+          handleConnectSnapshot(snap.data());
+        }, err => {
+          console.warn('Connect snapshot sync error:', err);
+        });
+      } catch (err) {
+        console.warn('initConnectSync error:', err);
+      }
+    }
+
+    async function transferPlaybackToLocal() {
+      if (!activeRemoteSession) return;
+      const session = activeRemoteSession;
+      await sendRemoteCommand(session.deviceId, 'pause');
+      loadPlayer({
+        id: session.videoId,
+        title: session.title,
+        author: session.author,
+        thumbnail: session.thumbnail,
+        duration: session.duration,
+        resumeAt: session.currentTime
+      });
+      hideConnectBanner();
+      if (remoteModal) remoteModal.hidden = true;
+      showToast(`Transferred playback from ${session.deviceName || 'device'}`);
+    }
+
+    // Connect banner controls
+    if (cbCloseBtn) {
+      cbCloseBtn.addEventListener('click', () => {
+        hideConnectBanner();
+        if (activeRemoteSession) dismissedSessionVideoId = activeRemoteSession.videoId;
+      });
+    }
+
+    if (cbRemoteBtn) {
+      cbRemoteBtn.addEventListener('click', () => {
+        if (activeRemoteSession) {
+          remoteModal.hidden = false;
+          updateRemoteModalUi(activeRemoteSession);
+        }
+      });
+    }
+
+    if (cbHandoffBtn) {
+      cbHandoffBtn.addEventListener('click', transferPlaybackToLocal);
+    }
+
+    // Remote modal controls
+    if (closeRemoteModal) {
+      closeRemoteModal.addEventListener('click', () => {
+        remoteModal.hidden = true;
+      });
+    }
+
+    if (remoteModal) {
+      remoteModal.addEventListener('click', e => {
+        if (e.target === remoteModal) remoteModal.hidden = true;
+      });
+    }
+
+    if (remotePlayBtn) {
+      remotePlayBtn.addEventListener('click', () => {
+        if (!activeRemoteSession) return;
+        const nextAction = activeRemoteSession.isPlaying ? 'pause' : 'play';
+        sendRemoteCommand(activeRemoteSession.deviceId, nextAction);
+        activeRemoteSession.isPlaying = !activeRemoteSession.isPlaying;
+        updateRemoteModalUi(activeRemoteSession);
+      });
+    }
+
+    if (remoteRewindBtn) {
+      remoteRewindBtn.addEventListener('click', () => {
+        if (!activeRemoteSession) return;
+        sendRemoteCommand(activeRemoteSession.deviceId, 'rewind');
+      });
+    }
+
+    if (remoteFwdBtn) {
+      remoteFwdBtn.addEventListener('click', () => {
+        if (!activeRemoteSession) return;
+        sendRemoteCommand(activeRemoteSession.deviceId, 'forward');
+      });
+    }
+
+    if (remoteSeekSlider) {
+      remoteSeekSlider.addEventListener('input', () => {
+        isSeekingRemote = true;
+        remoteTimeCur.textContent = formatDuration(Number(remoteSeekSlider.value)) || '0:00';
+      });
+      remoteSeekSlider.addEventListener('change', () => {
+        isSeekingRemote = false;
+        if (!activeRemoteSession) return;
+        sendRemoteCommand(activeRemoteSession.deviceId, 'seek', { seekTo: Number(remoteSeekSlider.value) });
+      });
+    }
+
+    if (remoteTransferBtn) {
+      remoteTransferBtn.addEventListener('click', transferPlaybackToLocal);
+    }
+
+    // TV prompt controls
+    if (tvPromptPlay) {
+      tvPromptPlay.addEventListener('click', async () => {
+        if (!activeRemoteSession) return;
+        const session = activeRemoteSession;
+        await sendRemoteCommand(session.deviceId, 'pause');
+        loadPlayer({
+          id: session.videoId,
+          title: session.title,
+          author: session.author,
+          thumbnail: session.thumbnail,
+          duration: session.duration,
+          resumeAt: session.currentTime
+        });
+        hideTvPrompt();
+        showToast(`Playing from ${session.deviceName || 'device'}`);
+      });
+    }
+
+    if (tvPromptDismiss) {
+      tvPromptDismiss.addEventListener('click', () => {
+        hideTvPrompt();
+        if (activeRemoteSession) dismissedSessionVideoId = activeRemoteSession.videoId;
+      });
+    }
+
+    // Background Heartbeat Interval
+    setInterval(() => {
+      if (currentUser && isAnyPlaying()) {
+        broadcastConnectSession(false);
+      }
+    }, 3500);
+
+    window.addEventListener('pagehide', () => {
+      if (currentUser && isAnyPlaying()) {
+        broadcastConnectSession(true, { isPlaying: false });
+      }
     });
 
     // ==================== NAVIGATION & TABS ====================
@@ -3740,12 +4744,15 @@
               if (event.data === YT.PlayerState.PLAYING) {
                 playerHasPlayed = true;
                 drawSegments();
+                broadcastConnectSession(true, { isPlaying: true });
               }
               if (event.data === YT.PlayerState.PAUSED) {
                 flushVideoProgress(true);
+                broadcastConnectSession(true, { isPlaying: false });
               }
               if (event.data === YT.PlayerState.ENDED) {
                 flushVideoProgress(true);
+                broadcastConnectSession(true, { isPlaying: false });
                 if (autoplayEnabled) playNext();
               }
             }
@@ -4471,6 +5478,26 @@
       else player.playVideo?.();
     }
 
+    function playActivePlayer() {
+      if (audioModeActive) {
+        if (audioPlayer && audioPlayer.paused) audioPlayer.play().catch(() => {});
+        return;
+      }
+      if (player && player.getPlayerState?.() !== window.YT?.PlayerState?.PLAYING) {
+        player.playVideo?.();
+      }
+    }
+
+    function pauseActivePlayer() {
+      if (audioModeActive) {
+        if (audioPlayer && !audioPlayer.paused) audioPlayer.pause();
+        return;
+      }
+      if (player && player.getPlayerState?.() === window.YT?.PlayerState?.PLAYING) {
+        player.pauseVideo?.();
+      }
+    }
+
     // Audio-Only Background Player & Lock-Screen Media Session
     function syncAudioStageMeta() {
       if (!video?.id) return;
@@ -4657,6 +5684,7 @@
       audioBadge.textContent = 'Audio Only · Background Ready';
       syncAudioPlayBtn();
       syncMediaSession();
+      broadcastConnectSession(true, { isPlaying: true });
     });
     audioPlayer.addEventListener('waiting', () => {
       if (audioModeActive) audioBadge.textContent = 'Buffering audio…';
@@ -4667,6 +5695,7 @@
       flushVideoProgress(true);
       syncAudioPlayBtn();
       syncMediaSession();
+      broadcastConnectSession(true, { isPlaying: false });
     });
     audioPlayer.addEventListener('timeupdate', () => {
       if (!audioModeActive) return;
@@ -4678,6 +5707,7 @@
       flushVideoProgress(true);
       syncAudioPlayBtn();
       syncMediaSession();
+      broadcastConnectSession(true, { isPlaying: false });
       playNext();
     });
     audioPlayer.addEventListener('error', async () => {
